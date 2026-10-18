@@ -1,4 +1,4 @@
-package tas.nms;
+package nms;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
@@ -7,13 +7,21 @@ import io.netty.channel.ChannelPromise;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
+import net.minecraft.network.protocol.game.ServerboundContainerButtonClickPacket;
+import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
+import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
+import net.minecraft.network.protocol.game.ServerboundContainerSlotStateChangedPacket;
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
+import net.minecraft.network.protocol.game.ServerboundPlaceRecipePacket;
+import net.minecraft.network.protocol.game.ServerboundRenameItemPacket;
+import net.minecraft.network.protocol.game.ServerboundSelectTradePacket;
 import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
+import net.minecraft.network.protocol.game.ServerboundSignUpdatePacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import tas.commands.Spectate;
+import commands.Spectate;
 
 import java.lang.reflect.Field;
 
@@ -51,6 +59,7 @@ public class SpectatorPacketInterceptor extends ChannelDuplexHandler {
 				return;
 			}
 		}
+		if(actsInMirroredScreen(msg)) return;
 		if(msg instanceof ServerboundSetCarriedItemPacket) {
 			Player fakePlayer = Spectate.getSpectatorMap().get(player);
 			if(fakePlayer != null) {
@@ -75,6 +84,26 @@ public class SpectatorPacketInterceptor extends ChannelDuplexHandler {
 			}
 		}
 		super.write(ctx, msg, promise);
+	}
+
+	/**
+	 * Clicks, closes and edits aimed at the fake's screen (its container id, not one the watcher has open), plus
+	 * trade/rename/sign edits while one is shown. The server would otherwise apply them to the watcher.
+	 */
+	private boolean actsInMirroredScreen(Object msg) {
+		Player fake = Spectate.getSpectatorMap().get(player);
+		if(fake == null) return false;
+		int own = ((CraftPlayer) player).getHandle().containerMenu.containerId;
+		Integer id = msg instanceof ServerboundContainerClickPacket p ? p.containerId()
+				: msg instanceof ServerboundContainerButtonClickPacket p ? p.containerId()
+				: msg instanceof ServerboundContainerClosePacket p ? p.getContainerId()
+				: msg instanceof ServerboundPlaceRecipePacket p ? p.containerId()
+				: msg instanceof ServerboundContainerSlotStateChangedPacket p ? p.containerId()
+				: null;
+		if(id != null) return id != 0 && id != own;
+		boolean screenEdit = msg instanceof ServerboundSelectTradePacket || msg instanceof ServerboundRenameItemPacket
+				|| msg instanceof ServerboundSignUpdatePacket;
+		return screenEdit && plugin.SpectatorSync.hasOpenScreen(fake);
 	}
 
 	private static Channel getChannel(Player player) throws Exception {

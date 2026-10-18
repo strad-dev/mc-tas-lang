@@ -1,4 +1,4 @@
-package tas.listeners;
+package listeners;
 
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -15,8 +15,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import tas.FakePlayerManager;
-import tas.mcTASLang;
+import plugin.FakePlayerManager;
+import plugin.mcTASLang;
 
 import java.util.EnumSet;
 import java.util.HashSet;

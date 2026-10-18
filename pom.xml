@@ -102,12 +102,5 @@
             <version>26.2.build.129-stable</version>
             <scope>provided</scope>
         </dependency>
-        <!-- `mvn install` M7 first so this resolves. -->
-        <dependency>
-            <groupId>dev.strad</groupId>
-            <artifactId>M7</artifactId>
-            <version>2.9.2</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 </project>

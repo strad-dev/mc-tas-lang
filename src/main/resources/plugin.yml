@@ -1,12 +1,11 @@
 name: mc-tas-lang
 version: '${project.version}'
-main: tas.mcTASLang
+main: plugin.mcTASLang
 api-version: '26.2'
-depend: [m7]
 
 commands:
   spawnfakes:
-    description: Spawn the fake players and give them their kits
+    description: Spawn the fake players
     usage: /spawnfakes
   kickallfakes:
     description: Kick all fake players
@@ -22,4 +21,4 @@ commands:
     usage: /tas <section>
   simulate:
     description: Simulates player actions
-    usage: /simulate <move|click|hotbar|turnhead|allblessings|undo>
+    usage: /simulate <move|click|hotbar|turnhead|swapitems|command|gui|closegui|undo>

@@ -1,4 +1,4 @@
-package tas.commands;
+package commands;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.network.protocol.Packet;
@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.PositionMoveRotation;
 import net.minecraft.world.phys.Vec3;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,12 +22,12 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Team;
 import org.jspecify.annotations.NonNull;
-import plugin.PlayerCollision;
-import plugin.Utils;
-import tas.FakePlayerManager;
-import tas.SpectatorSync;
-import tas.mcTASLang;
+import plugin.TASUtils;
+import plugin.FakePlayerManager;
+import plugin.SpectatorSync;
+import plugin.mcTASLang;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,31 +56,31 @@ public class Spectate implements CommandExecutor {
 
 	public boolean onCommand(@NonNull CommandSender sender, @NonNull Command cmd, @NonNull String label, String @NonNull [] args) {
 		if(!(sender instanceof Player p)) {
-			sender.sendMessage(Utils.msg("Only players can run this"));
+			sender.sendMessage(TASUtils.msg("Only players can run this"));
 			return true;
 		}
 
 		if(cmd.getName().equalsIgnoreCase("spectate")) {
 			if(args.length < 1) {
-				p.sendMessage(Utils.msg("<red>Please specify a class to spectate"));
+				p.sendMessage(TASUtils.msg("<red>Please specify a class to spectate"));
 				return true;
 			}
 
 			Map<String, Player> fakePlayers = FakePlayerManager.getFakePlayers();
 			if(fakePlayers.isEmpty()) {
-				p.sendMessage(Utils.msg("<red>No classes to spectate!  Try running /setup first"));
+				p.sendMessage(TASUtils.msg("<red>No classes to spectate!  Try running /setup first"));
 				return true;
 			}
 
 			String role = args[0];
 			role = Character.toUpperCase(role.charAt(0)) + role.substring(1).toLowerCase();
 			if(!fakePlayers.containsKey(role)) {
-				p.sendMessage(Utils.msg("<red>Invalid class specified"));
+				p.sendMessage(TASUtils.msg("<red>Invalid class specified"));
 				return true;
 			}
 
 			if(spectatorMap.containsKey(p)) {
-				p.sendMessage(Utils.msg("<red>You are already spectating a class.  Use /unspectate first"));
+				p.sendMessage(TASUtils.msg("<red>You are already spectating a class.  Use /unspectate first"));
 				return true;
 			}
 
@@ -89,7 +90,8 @@ public class Spectate implements CommandExecutor {
 			spectatorStates.put(p, new SpectatorState());
 
 			SpectatorSync.backup(p);
-			tas.nms.SpectatorPacketInterceptor.install(p);
+			p.addScoreboardTag(TASUtils.WATCHING_TAG);
+			nms.SpectatorPacketInterceptor.install(p);
 
 			Location fakeLocation = fakePlayer.getLocation();
 			p.teleport(fakeLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
@@ -98,21 +100,22 @@ public class Spectate implements CommandExecutor {
 
 			SpectatorSync.syncInventory(fakePlayer);
 			((CraftPlayer) p).getHandle().connection.send(new ClientboundSetHeldSlotPacket(fakePlayer.getInventory().getHeldItemSlot()));
-			Utils.scheduleTask(() -> hideFakePlayerFromSpectator(p, fakePlayer), 1);
+			SpectatorSync.showOpenScreen(fakePlayer, p);
+			TASUtils.scheduleTask(() -> hideFakePlayerFromSpectator(p, fakePlayer), 1);
 
 			if(spectatorSyncTask == null) {
 				startSpectatorSync();
 			}
 
-			p.sendMessage(Utils.msg("You are now spectating " + role));
+			p.sendMessage(TASUtils.msg("You are now spectating " + role));
 			return true;
 		} else if(cmd.getName().equalsIgnoreCase("unspectate")) {
 			if(spectatorMap.containsKey(p)) {
 				removeSpectator(p);
-				p.sendMessage(Utils.msg("You are no longer spectating a class"));
+				p.sendMessage(TASUtils.msg("You are no longer spectating a class"));
 				return true;
 			}
-			p.sendMessage(Utils.msg("<red>You are not spectating a class"));
+			p.sendMessage(TASUtils.msg("<red>You are not spectating a class"));
 			return true;
 		}
 		return true;
@@ -129,6 +132,7 @@ public class Spectate implements CommandExecutor {
 				if(spectators.isEmpty()) reverseSpectatorMap.remove(fakePlayer);
 			}
 			showFakePlayerToSpectator(p, fakePlayer);
+			SpectatorSync.hideOpenScreen(fakePlayer, p);
 		}
 
 		if(state != null) {
@@ -138,7 +142,8 @@ public class Spectate implements CommandExecutor {
 		}
 
 		SpectatorSync.restoreAndRemove(p);
-		tas.nms.SpectatorPacketInterceptor.uninstall(p);
+		p.removeScoreboardTag(TASUtils.WATCHING_TAG);
+		nms.SpectatorPacketInterceptor.uninstall(p);
 		restorePlayerCollision(p);
 	}
 
@@ -146,8 +151,7 @@ public class Spectate implements CommandExecutor {
 		return reverseSpectatorMap.getOrDefault(player, new HashSet<>());
 	}
 
-	/** True if spectating a fake player: their position mirrors the fake's and isn't their own presence
-	 *  (e.g. Storm pad occupancy). */
+	/** True if spectating a fake player: their position mirrors the fake's and isn't their own presence. */
 	public static boolean isSpectating(Player player) {
 		return spectatorMap.containsKey(player);
 	}
@@ -189,8 +193,12 @@ public class Spectate implements CommandExecutor {
 	}
 
 	public static void preventPlayerCollision(Player realPlayer, Player fakePlayer) {
-		PlayerCollision.addToNoCollisionTeam(realPlayer);
-		PlayerCollision.addToNoCollisionTeam(fakePlayer);
+		// M7's team (plugin/PlayerCollision), on the main scoreboard.
+		Team noCollision = Bukkit.getScoreboardManager().getMainScoreboard().getTeam("nocollision");
+		if(noCollision != null) {
+			noCollision.addEntry(realPlayer.getName());
+			noCollision.addEntry(fakePlayer.getName());
+		}
 		realPlayer.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, -1, 0, true, false));
 		realPlayer.setCollidable(false);
 		if(realPlayer instanceof CraftPlayer craftPlayer) {

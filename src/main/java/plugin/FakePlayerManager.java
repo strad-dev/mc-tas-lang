@@ -1,4 +1,4 @@
-package tas;
+package plugin;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -8,18 +8,25 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.ProfileResult;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.BundlePacket;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
+import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
+import net.minecraft.network.protocol.game.ClientboundRespawnPacket;
+import net.minecraft.network.protocol.game.ServerboundAcceptTeleportationPacket;
+import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
+import net.minecraft.network.protocol.game.ServerboundPlayerLoadedPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ParticleStatus;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.ChatVisiblity;
 import org.bukkit.Bukkit;
@@ -29,10 +36,6 @@ import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import plugin.BossScheduler;
-import plugin.PlayerCollision;
-import plugin.Utils;
-import tas.nms.TASGamePacketListenerImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,23 +46,15 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import instructions.Actions;
 
 public class FakePlayerManager {
 	private static final Map<String, Player> fakePlayers = new HashMap<>();
 	private static boolean fakeTickerStarted = false;
 
-	// Launch impulses (e.g. Bonzo's Staff) queued from entity-tick events, applied at the top of the fake
-	// player's NEXT aiStep. Setting deltaMovement directly in the firing event is too early: the fake ticker's
-	// aiStep already ran this tick, and by the next one ground/jump/input re-assertion has clobbered the impulse,
-	// so the full first-tick displacement is lost. Applying it immediately before aiStep guarantees the launch
-	// integrates as a clean in-air first tick, matching real (client-physics) behaviour.
-	private static final Map<UUID, net.minecraft.world.phys.Vec3> pendingLaunches = new HashMap<>();
-
-	/** Queue a launch impulse to be applied to {@code fake}'s deltaMovement at the start of its next aiStep.
-	 *  Only meaningful for fake players (those driven by {@link #startFakePlayerTicker()}). */
-	public static void launch(Player fake, org.bukkit.util.Vector velocity) {
-		pendingLaunches.put(fake.getUniqueId(), new net.minecraft.world.phys.Vec3(velocity.getX(), velocity.getY(), velocity.getZ()));
-	}
+	// Each fake's inbound pipeline. Simulated packets enter here, so the server sees them exactly like a real
+	// client's (M7 installs its interceptor before "packet_handler" on join).
+	private static final Map<UUID, EmbeddedChannel> channels = new HashMap<>();
 
 	private static final Map<String, String> SKIN_DATA = Map.of("Archer", "0b0fa6bc-69ee-4f6c-a4f8-7cac79f1871a", "Mage3", "f0b1d2e5-dfd2-4d33-9768-4d2b259a4743", "Mage4", "6715b245-be6e-496c-87eb-1d2c19066403", "Mage1", "cdb9e9c6-c096-4f58-9c49-35395d7b897c", "Mage2", "5d142c3a-bdf1-418b-b907-797bbaaed188");
 
@@ -68,7 +63,6 @@ public class FakePlayerManager {
 	}
 
 	public static void spawnAllFakes(World world) {
-		stopCustomConnection();
 		kickAllFakes();
 		fakePlayers.clear();
 
@@ -86,11 +80,13 @@ public class FakePlayerManager {
 		MinecraftServer nmsServer = ((CraftServer) mcTASLang.getInstance().getServer()).getServer();
 		ServerLevel nmsWorld = ((CraftWorld) world).getHandle();
 
-		GameProfile profile = buildFakeProfileWithSkin(UUID.randomUUID(), fakePlayerName, skinOwner);
+		// Stable per name: M7 keys class and loadout by UUID, so a random one left new files every spawn.
+		UUID id = UUID.nameUUIDFromBytes(("mc-tas-lang:" + fakePlayerName).getBytes(StandardCharsets.UTF_8));
+		GameProfile profile = buildFakeProfileWithSkin(id, fakePlayerName, skinOwner);
 
 		// View distance 0 - ChunkMap.getPlayerViewDistance clamps to min 2 internally,
 		// but this still drops the per-fake chunk load from 17x17=289 to 5x5=25.
-		ClientInformation clientInfo = new ClientInformation("en_us", 0, ChatVisiblity.FULL, true, 0, HumanoidArm.RIGHT, false, false, ParticleStatus.MINIMAL);
+		ClientInformation clientInfo = new ClientInformation("en_us", 0, ChatVisiblity.FULL, true, 0x7F, HumanoidArm.RIGHT, false, false, ParticleStatus.MINIMAL);
 		ServerPlayer nmsPlayer = new ServerPlayer(nmsServer, nmsWorld, profile, clientInfo);
 		try {
 			java.lang.reflect.Field firstTick = net.minecraft.world.entity.Entity.class.getDeclaredField("firstTick");
@@ -100,15 +96,19 @@ public class FakePlayerManager {
 			throw new RuntimeException("Failed to clear firstTick on fake player", e);
 		}
 
+		EmbeddedChannel channel = new EmbeddedChannel();
+		channel.pipeline().addLast("packet_handler", new ServerboundDispatcher(nmsPlayer));
 		Connection nm = new Connection(PacketFlow.SERVERBOUND) {
 			{
-				this.channel = new EmbeddedChannel();
+				this.channel = channel;
 				this.address = new InetSocketAddress("127.0.0.1", 0);
 			}
 
+			// The listener sends through this overload; the fake has no client, so nothing is written. A real client
+			// confirms teleports and reports loaded after a respawn, and 26.2 ignores interactions until it does.
 			@Override
-			public void send(Packet<?> packet) {
-
+			public void send(Packet<?> packet, ChannelFutureListener listener, boolean flush) {
+				answer(nmsPlayer, packet);
 			}
 
 			@Override
@@ -117,29 +117,65 @@ public class FakePlayerManager {
 			}
 		};
 		CommonListenerCookie cookie = CommonListenerCookie.createInitial(profile, false);
-		TASGamePacketListenerImpl connection = new TASGamePacketListenerImpl(nmsServer, nm, nmsPlayer, cookie);
-		nmsPlayer.connection = connection;
-		forceCustomConnection(nmsPlayer, connection);
 
-		nmsPlayer.setPos(-120.5, 71, -183.5);
-		nmsPlayer.setYRot(0.0f);
-		nmsPlayer.setXRot(0.0f);
+		org.bukkit.Location spawn = world.getSpawnLocation();
+		nmsPlayer.setPos(spawn.getX(), spawn.getY(), spawn.getZ());
 		nmsPlayer.setNoGravity(false);
 
 		nmsServer.getPlayerList().placeNewPlayer(nm, nmsPlayer, cookie);
+		channels.put(nmsPlayer.getUUID(), channel);
+		reply(nmsPlayer, new ServerboundPlayerLoadedPacket());
 
-		nmsPlayer.getEntityData().set(net.minecraft.world.entity.Avatar.DATA_PLAYER_MODE_CUSTOMISATION, (byte) 0x7F);
+		return nmsPlayer.getBukkitEntity();
+	}
 
-		ClientboundSetEntityDataPacket entityMetadataPacket = new ClientboundSetEntityDataPacket(nmsPlayer.getId(), nmsPlayer.getEntityData().getNonDefaultValues());
+	/** Feeds a serverbound packet into {@code fake}'s pipeline. False if it isn't one of ours. */
+	public static boolean receive(Player fake, Packet<?> packet) {
+		EmbeddedChannel channel = channels.get(fake.getUniqueId());
+		if(channel == null) return false;
+		channel.pipeline().fireChannelRead(packet);
+		if(packet instanceof ServerboundContainerClosePacket close) {
+			SpectatorSync.fakeClosedScreen(((CraftPlayer) fake).getHandle(), close.getContainerId());
+		}
+		return true;
+	}
 
-		Utils.broadcastPacket(entityMetadataPacket);
+	private static void answer(ServerPlayer fake, Packet<?> packet) {
+		if(packet instanceof BundlePacket<?> bundle) {
+			for(Packet<?> sub : bundle.subPackets()) answer(fake, sub);
+		} else if(packet instanceof ClientboundPlayerPositionPacket position) {
+			reply(fake, new ServerboundAcceptTeleportationPacket(position.id()));
+		} else {
+			SpectatorSync.mirrorScreen(fake, packet);
+			if(packet instanceof ClientboundRespawnPacket) reply(fake, new ServerboundPlayerLoadedPacket());
+		}
+	}
 
-		Player bukkitPlayer = nmsPlayer.getBukkitEntity();
+	// Next tick, as a client's reply would be; never re-enters the listener mid-send.
+	private static void reply(ServerPlayer fake, Packet<?> packet) {
+		Bukkit.getScheduler().runTask(mcTASLang.getInstance(), () -> {
+			if(!fake.isRemoved()) receive(fake.getBukkitEntity(), packet);
+		});
+	}
 
-		PlayerCollision.addToNoCollisionTeam(bukkitPlayer);
-		Utils.setSpeed(bukkitPlayer, 400);
+	/** End of a fake's pipeline: hands each packet to its listener, as a real Connection does. */
+	private static final class ServerboundDispatcher extends ChannelInboundHandlerAdapter {
+		private final ServerPlayer fake;
 
-		return bukkitPlayer;
+		ServerboundDispatcher(ServerPlayer fake) {
+			this.fake = fake;
+		}
+
+		@Override
+		@SuppressWarnings({"unchecked", "rawtypes"})
+		public void channelRead(ChannelHandlerContext ctx, Object msg) {
+			if(!(msg instanceof Packet packet)) return;
+			try {
+				packet.handle(fake.connection);
+			} catch(Exception e) {
+				mcTASLang.getInstance().getLogger().warning(fake.getPlainTextName() + " " + packet.getClass().getSimpleName() + ": " + e);
+			}
+		}
 	}
 
 	private static final long SKIN_CACHE_TTL_MS = 24L * 60L * 60L * 1000L;
@@ -225,11 +261,13 @@ public class FakePlayerManager {
 
 	public static void kickAllFakes() {
 		fakePlayers.values().forEach(p -> {
+			SpectatorSync.forgetScreen(p);
 			if(p.isOnline()) {
 				p.kickPlayer("");
 			}
 		});
 		fakePlayers.clear();
+		channels.clear();
 	}
 
 	private static void startFakePlayerTicker() {
@@ -253,12 +291,10 @@ public class FakePlayerManager {
 				for(Player fake : fakePlayers.values()) {
 					if(!(fake instanceof CraftPlayer)) continue;
 					ServerPlayer npc = ((CraftPlayer) fake).getHandle();
-					TASGamePacketListenerImpl conn = fakeConnections.get(npc);
-					if(conn != null) npc.connection = conn;
 					npc.setNoGravity(false);
 					npc.updatePlayerPose();
 					// Re-assert movement fields before aiStep() - zza/xxa decay by 0.98x/tick otherwise
-					String input = tas.Actions.getActiveInput(fake.getUniqueId());
+					String input = Actions.getActiveInput(fake.getUniqueId());
 					if(!input.isEmpty()) {
 						npc.xxa = (input.contains("A") && !input.contains("D")) ? 1.0F : (!input.contains("A") && input.contains("D")) ? -1.0F : 0.0F;
 						npc.zza = (input.contains("W") && !input.contains("S")) ? 1.0F : (!input.contains("W") && input.contains("S")) ? -1.0F : 0.0F;
@@ -281,56 +317,9 @@ public class FakePlayerManager {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					// Apply any queued launch impulse RIGHT before aiStep so it's the deltaMovement this tick's
-					// move() integrates - onGround/jumping cleared so a ground recompute or jumpFromGround can't
-					// overwrite the upward component before the move happens.
-					net.minecraft.world.phys.Vec3 launch = pendingLaunches.remove(fake.getUniqueId());
-					if(launch != null) {
-						npc.setOnGround(false);
-						npc.setJumping(false);
-						npc.setDeltaMovement(launch);
-						npc.hurtMarked = true;
-					}
 					npc.aiStep();
 				}
-				// Boss entity movement runs here -- the movement phase, AFTER fake aiStep -- so a boss moves at
-				// the same point as the fakes (vanilla-consistent), not at the start of the tick. Start-of-tick
-				// boss scans therefore read the boss pre-move position (a deliberate one-tick lag). See BossScheduler.
-				// In PRACTICE there are no fakes here and this ticker may not even be running, so the practice
-				// movement driver (M7tas) handles the lane instead - gate this off to avoid double-driving.
-				if(!instructions.bosses.WitherActions.isPracticeMode()) BossScheduler.runMovementTickers();
 			}
 		}.runTaskTimer(mcTASLang.getInstance(), 0, 1);
-	}
-
-	private static final Map<ServerPlayer, TASGamePacketListenerImpl> fakeConnections = new HashMap<>();
-
-	private static void forceCustomConnection(ServerPlayer serverPlayer, TASGamePacketListenerImpl connection) {
-		fakeConnections.put(serverPlayer, connection);
-	}
-
-	public static void stopCustomConnection() {
-		for(ServerPlayer serverPlayer : fakeConnections.keySet()) {
-			MinecraftServer nmsServer = ((CraftServer) mcTASLang.getInstance().getServer()).getServer();
-			Connection nm = new Connection(PacketFlow.SERVERBOUND) {
-				{
-					this.channel = new EmbeddedChannel();
-					this.address = new InetSocketAddress("127.0.0.1", 0);
-				}
-
-				@Override
-				public void send(Packet<?> packet) {
-
-				}
-
-				@Override
-				public boolean isConnected() {
-					return true;
-				}
-			};
-			CommonListenerCookie cookie = CommonListenerCookie.createInitial(serverPlayer.getGameProfile(), false);
-			serverPlayer.connection = new ServerGamePacketListenerImpl(nmsServer, nm, serverPlayer, cookie);
-		}
-		fakeConnections.clear();
 	}
 }

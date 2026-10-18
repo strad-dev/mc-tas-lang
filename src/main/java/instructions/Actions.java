@@ -1,47 +1,47 @@
-package tas;
+package instructions;
 
-import com.mojang.datafixers.util.Pair;
-import instructions.Server;
-import listeners.CustomItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.network.HashedStack;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.PositionMoveRotation;
-import net.minecraft.world.entity.Relative;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.*;
-import org.bukkit.event.block.Action;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
-import plugin.MovementAudit;
-import plugin.Utils;
-import tas.commands.Spectate;
+import plugin.TASUtils;
+import commands.Spectate;
 
 import java.util.*;
 import java.util.function.Predicate;
+import plugin.mcTASLang;
+import plugin.FakePlayerManager;
+import plugin.SpectatorSync;
 
 @SuppressWarnings("unused")
 public class Actions {
+	protected final Player player;
+
+	public Actions(Player player) {
+		this.player = player;
+	}
 
 	private static final Map<UUID, BukkitTask> jumpTasks = new HashMap<>();
 	private static final Map<UUID, String> activeInputs = new HashMap<>();
@@ -50,7 +50,7 @@ public class Actions {
 	/** Mob claimed by an in-flight Terminator arrow → server tick it should land. */
 	private static final Map<UUID, Integer> terminatorClaimedUntil = new HashMap<>();
 
-	/** Boss-fight beam range, as {@link listeners.CustomItems#mageBeam} in the arena. Helpers skip if nothing's inside. */
+	/** Mage beam range, as M7's beam in the arena. Helpers skip if nothing's inside. */
 	private static final double MAGE_BEAM_RANGE = 50.0;
 	/** Auto-aim search radius: past this the arrow hits terrain or flies long enough that the target moves. */
 	private static final double TERMINATOR_MAX_RANGE = 100.0;
@@ -78,15 +78,14 @@ public class Actions {
 	/**
 	 * Simulates a Player pressing movement input keys.  Only call this when the player changes which keys are pressed.
 	 *
-	 * @param entity        The LivingEntity sending movement packets
 	 * @param input         The input keys being held down<br>Valid Input contains the following characters: W, A, S, D, J, P, N<br>WASD: movement<br>J: Jump<br>P: sPrint<br>N: sNeak
 	 * @param durationTicks How long the keys are held down for, or 0 for manual override
 	 */
-	public static void move(LivingEntity entity, String input, int durationTicks) {
+	public void move(String input, int durationTicks) {
 		// only handle CraftLivingEntity/NMS and positive duration
-		Utils.debug(Utils.DebugType.CLIENT, entity.getName() + " moving " + input + " for " + durationTicks);
-		if(!(entity instanceof CraftLivingEntity craftEntity)) return;
-		activeInputs.put(entity.getUniqueId(), input);
+		TASUtils.debug(TASUtils.DebugType.CLIENT, player.getName() + " moving " + input + " for " + durationTicks);
+		if(!(player instanceof CraftLivingEntity craftEntity)) return;
+		activeInputs.put(player.getUniqueId(), input);
 
 		net.minecraft.world.entity.LivingEntity serverPlayer = craftEntity.getHandle();
 		if(input.contains("A") && input.contains("D")) {
@@ -113,7 +112,7 @@ public class Actions {
 			serverPlayer.zza *= 0.3F;
 		}
 
-		BukkitTask existingJump = jumpTasks.remove(entity.getUniqueId());
+		BukkitTask existingJump = jumpTasks.remove(player.getUniqueId());
 		if(existingJump != null) existingJump.cancel();
 
 		if(input.contains("J")) {
@@ -123,39 +122,38 @@ public class Actions {
 				@Override
 				public void run() {
 					if(isCancelled() || (durationTicks > 0 && ticks++ >= durationTicks) || serverPlayer.isRemoved()) {
-						jumpTasks.remove(entity.getUniqueId());
+						jumpTasks.remove(player.getUniqueId());
 						cancel();
 						return;
 					}
 					if(serverPlayer.onGround()) {
 						serverPlayer.setJumping(true);
-						Utils.debug(Utils.DebugType.CLIENT, entity.getName() + " jumped at " + Utils.round(serverPlayer.getX(), 3) + " " + Utils.round(serverPlayer.getY(), 5) + " " + Utils.round(serverPlayer.getZ(), 3));
-						if(entity instanceof Player player) MovementAudit.startAirborneAudit(player, "jump");
+						TASUtils.debug(TASUtils.DebugType.CLIENT, player.getName() + " jumped at " + TASUtils.round(serverPlayer.getX(), 3) + " " + TASUtils.round(serverPlayer.getY(), 5) + " " + TASUtils.round(serverPlayer.getZ(), 3));
 					}
 				}
 			}.runTaskTimer(mcTASLang.getInstance(), 0L, 1L);
-			jumpTasks.put(entity.getUniqueId(), task);
+			jumpTasks.put(player.getUniqueId(), task);
 		} else {
 			serverPlayer.setJumping(false);
 		}
 		if(durationTicks > 0) {
 			int generation = movementGeneration;
-			Utils.scheduleTask(() -> {
+			TASUtils.scheduleTask(() -> {
 				if(generation != movementGeneration) return; // stale cleanup from a cancelled run
-				if(entity.isValid()) {
+				if(player.isValid()) {
 					serverPlayer.xxa = 0.0F;
 					serverPlayer.zza = 0.0F;
 					serverPlayer.setSprinting(false);
 					serverPlayer.setShiftKeyDown(false);
 					serverPlayer.setJumping(false);
 				}
-				activeInputs.remove(entity.getUniqueId());
+				activeInputs.remove(player.getUniqueId());
 			}, durationTicks);
 		}
 	}
 
 	/**
-	 * Hard-stops fake-player movement: keys, jump tasks, forceMove, momentum. Older move() cleanups become no-ops.
+	 * Hard-stops fake-player movement: keys, jump tasks, momentum. Older move() cleanups become no-ops.
 	 * TAS start.
 	 */
 	public static void cancelAllMovement() {
@@ -163,7 +161,6 @@ public class Actions {
 
 		for(BukkitTask task : jumpTasks.values()) task.cancel();
 		jumpTasks.clear();
-		instructions.Actions.cancelAllMovement();
 		activeInputs.clear();
 
 		for(Player p : FakePlayerManager.getFakePlayers().values()) {
@@ -183,111 +180,126 @@ public class Actions {
 	 * Change which hotbar slot (0-8) the player is “holding”,
 	 * and broadcast that slot change.
 	 *
-	 * @param p           The player whose hotbar slot is to be changed.
 	 * @param hotbarIndex The index of the new hotbar slot (0-8).
 	 */
-	public static void setHotbarSlot(Player p, int hotbarIndex) {
-		if(!(p instanceof CraftPlayer cp)) {
+	public void setHotbarSlot(int hotbarIndex) {
+		if(!(player instanceof CraftPlayer cp)) {
 			return;
 		}
-		ServerPlayer npc = cp.getHandle();
+		send(new ServerboundSetCarriedItemPacket(hotbarIndex));
 
-		// Update the NMS held-slot index
-		npc.getInventory().setSelectedSlot(hotbarIndex);
-
-		// Apply item attribute modifiers (Dungeonbreaker's BLOCK_BREAK_SPEED) this frame, not next entity tick.
+		// A fake's entity tick never runs, so apply item attribute modifiers (Dungeonbreaker's BLOCK_BREAK_SPEED) here.
 		try {
-			DETECT_EQUIPMENT_UPDATES.invoke(npc);
+			DETECT_EQUIPMENT_UPDATES.invoke(cp.getHandle());
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException(e);
 		}
 
-		// Tell that player's client "your held slot is now hotbarIndex"
-		ClientboundSetHeldSlotPacket heldPkt = new ClientboundSetHeldSlotPacket(hotbarIndex);
-		cp.getHandle().connection.send(heldPkt);
-
-		// Broadcast the new main-hand item to all viewers AND sync to spectators
-		SpectatorSync.syncHand(p); // This now handles both!
+		SpectatorSync.syncHand(player);
 	}
 
 	/**
-	 * Swap two items in the inventory and
-	 * immediately broadcast both slot changes.
+	 * Swaps two inventory slots with clicks in the player's own inventory screen, as a client would: a number key
+	 * (SWAP) when one side is the hotbar or off-hand, else pick up / put down / put back.
 	 *
 	 * @param slotA any slot index (0-8 hotbar, 9-35 main inv, 36-39 armor, 40 offhand)
 	 * @param slotB same range
 	 */
-	public static void swapItems(Player p, int slotA, int slotB) {
-		if(!(p instanceof CraftPlayer cp)) {
-			return;
+	public void swapItems(int slotA, int slotB) {
+		if(slotB < 9 || slotB == 40) {
+			int t = slotA;
+			slotA = slotB;
+			slotB = t;
 		}
-		ServerPlayer npc = cp.getHandle();
-		Inventory inv = npc.getInventory();
-
-		// Pre-swap, so the write below only fires on a transition (a manual setSpeed() between two non-speed helmets survives).
-		int speedBefore = (slotA == 39 || slotB == 39) ? plugin.MaxSpeedSync.maxSpeed(p) : 0;
-
-		// Swap internally
-		net.minecraft.world.item.ItemStack a = inv.getItem(slotA);
-		net.minecraft.world.item.ItemStack b = inv.getItem(slotB);
-		inv.setItem(slotA, b);
-		inv.setItem(slotB, a);
-
-		// Re-send the entire inventory window to player AND spectators
-		SpectatorSync.syncInventory(p); // This updates spectators
-
-		// If either swapped slot was in the hotbar, update the hand-item too
-		if(slotA < 9 || slotB < 9) {
-			SpectatorSync.syncHand(p); // This now handles both viewers and spectators
+		if(slotA < 9 || slotA == 40) {
+			clickSlot(0, menuSlot(slotB), slotA, ContainerInput.SWAP);
+		} else {
+			clickSlot(0, menuSlot(slotA), 0, ContainerInput.PICKUP);
+			clickSlot(0, menuSlot(slotB), 0, ContainerInput.PICKUP);
+			clickSlot(0, menuSlot(slotA), 0, ContainerInput.PICKUP);
 		}
+	}
 
-		if(slotA >= 36 || slotB >= 36) {
-			List<Pair<EquipmentSlot, net.minecraft.world.item.ItemStack>> equipmentList = new ArrayList<>();
-			equipmentList.add(new Pair<>(EquipmentSlot.HEAD, inv.getItem(39)));
-			equipmentList.add(new Pair<>(EquipmentSlot.CHEST, inv.getItem(38)));
-			equipmentList.add(new Pair<>(EquipmentSlot.LEGS, inv.getItem(37)));
-			equipmentList.add(new Pair<>(EquipmentSlot.FEET, inv.getItem(36)));
-			ClientboundSetEquipmentPacket equipmentPkt = new ClientboundSetEquipmentPacket(npc.getId(), equipmentList);
-			Utils.broadcastPacket(equipmentPkt);
-		}
+	/** Player-inventory index (0-8 hotbar, 9-35 main, 36-39 boots..helmet, 40 off-hand) to InventoryMenu slot. */
+	private static int menuSlot(int invIndex) {
+		if(invIndex < 9) return 36 + invIndex;
+		if(invIndex < 36) return invIndex;
+		if(invIndex < 40) return 8 - (invIndex - 36);
+		return 45;
+	}
 
-		// Helmet transition: same formula as real players (plugin/MaxSpeedSync.maxSpeed), not the old hardcoded
-		// 650/550/400 that drifted from it. Same tick as the swap; a setSpeed() after the swap still wins (Tank's
-		// 550 preleap in Bonzo Mask). Fakes only; real players are the poll's.
-		if(slotA == 39 || slotB == 39) {
-			int speedAfter = plugin.MaxSpeedSync.maxSpeed(p);
-			if(speedAfter != speedBefore) Utils.setSpeed(p, speedAfter);
+	/**
+	 * A click in the open container screen: {@code containerId} 0 is the player's own inventory, otherwise the open
+	 * chest GUI (terminals, Spirit Leap, /stats). {@code button} is the mouse button (0 left, 1 right), or the
+	 * hotbar number for SWAP (40 = off-hand).
+	 */
+	public void clickSlot(int containerId, int slot, int button, ContainerInput input) {
+		if(!(player instanceof CraftPlayer cp)) return;
+		var menu = cp.getHandle().containerMenu;
+		if(containerId != 0 && menu.containerId != containerId) return;
+		var target = containerId == 0 ? cp.getHandle().inventoryMenu : menu;
+		send(new ServerboundContainerClickPacket(target.containerId, target.getStateId(), (short) slot, (byte) button,
+				input, new Int2ObjectOpenHashMap<>(), HashedStack.EMPTY));
+	}
+
+	/** Left-clicks {@code slot} in whatever chest GUI is open; no-op if none is. */
+	public void clickGui(int slot) {
+		clickGui(slot, 0, ContainerInput.PICKUP);
+	}
+
+	public void clickGui(int slot, int button, ContainerInput input) {
+		if(!(player instanceof CraftPlayer cp)) return;
+		int id = cp.getHandle().containerMenu.containerId;
+		if(id == 0) return;
+		clickSlot(id, slot, button, input);
+	}
+
+	/** Closes the open chest GUI (Escape). */
+	public void closeGui() {
+		if(!(player instanceof CraftPlayer cp)) return;
+		send(new ServerboundContainerClosePacket(cp.getHandle().containerMenu.containerId));
+	}
+
+	/** Spirit Leap: right-click the held Infinileap, then click {@code target}'s head in the menu M7 opens. */
+	public void leap(Player target) {
+		rightClick();
+		org.bukkit.inventory.Inventory top = player.getOpenInventory().getTopInventory();
+		for(int slot = 0; slot < top.getSize(); slot++) {
+			org.bukkit.inventory.ItemStack item = top.getItem(slot);
+			if(item == null || item.getType() != Material.PLAYER_HEAD || !item.hasItemMeta()) continue;
+			if(target.getName().equals(TASUtils.plain(item.getItemMeta().displayName()))) {
+				clickGui(slot);
+				return;
+			}
 		}
+	}
+
+	/** Another fake by name ({@code Archer}, {@code Mage1}..{@code Mage4}). */
+	protected static Player fake(String name) {
+		return FakePlayerManager.getFakePlayers().get(name);
+	}
+
+	/** Runs {@code command} (no leading slash) as if typed in chat. */
+	public void runCommand(String command) {
+		send(new ServerboundChatCommandPacket(command.startsWith("/") ? command.substring(1) : command));
 	}
 
 	/**
 	 * Rotates a player’s body & head to the given yaw/pitch
 	 * and broadcasts that new orientation to every real client.
-	 * <p>
-	 * Works on both real and fake Players (CraftPlayer instances).
 	 *
-	 * @param entity the entity (real or NPC)
+	 * @param player the player
 	 * @param yaw    body + head yaw, in degrees (0 = south, 90 = west…)
 	 * @param pitch  look pitch, in degrees (-90 = straight up, +90 = straight down)
 	 */
-	public static void turnHead(Entity entity, float yaw, float pitch) {
-		if(!(entity instanceof Player player)) {
-			// For non-player entities, use regular teleport
-			Location to = entity.getLocation();
-			to.setYaw(yaw);
-			to.setPitch(pitch);
-			entity.teleport(to);
-			return;
-		}
-
-		// For fake players, set rotation directly
+	public void turnHead(float yaw, float pitch) {
 		ServerPlayer serverPlayer = ((CraftPlayer) player).getHandle();
 		serverPlayer.setYRot(yaw);
 		serverPlayer.setYBodyRot(yaw);
 		serverPlayer.setYHeadRot(yaw);
 		serverPlayer.setXRot(pitch);
 		serverPlayer.refreshDimensions();
-		Utils.debug(Utils.DebugType.CLIENT, player.getName() + " turning head to " + yaw + " " + pitch);
+		TASUtils.debug(TASUtils.DebugType.CLIENT, player.getName() + " turning head to " + yaw + " " + pitch);
 
 		for (Player spectator : Spectate.getSpectatingPlayers(player)) {
 			if (spectator instanceof CraftPlayer craftSpectator) {
@@ -298,16 +310,16 @@ public class Actions {
 		}
 	}
 
-	/** Aims at the nearest visible non-player, non-boss mob, for hitscan abilities (mage beam). */
-	public static void snapHeadToNearestEnemy(Player p) {
-		LivingEntity target = findNearestEnemy(p, MAGE_BEAM_RANGE, le -> hasLineOfSight(p, le));
+	/** Aims at the nearest visible non-player mob, for hitscan abilities (mage beam). */
+	public void snapHeadToNearestEnemy() {
+		LivingEntity target = findNearestEnemy(player, MAGE_BEAM_RANGE, le -> hasLineOfSight(player, le));
 		if(target == null) return;
-		snapHeadAtEntity(p, target);
+		snapHeadAtEntity(target);
 	}
 
-	/** Aims at the target's box centre; no LOS or filtering (caller picked it, e.g. beam at Storm). */
-	public static void snapHeadAtEntity(Player p, LivingEntity target) {
-		Location eye = p.getEyeLocation();
+	/** Aims at the target's box centre; no LOS or filtering (caller picked it). */
+	public void snapHeadAtEntity(LivingEntity target) {
+		Location eye = player.getEyeLocation();
 		Vector center = target.getBoundingBox().getCenter();
 		double dx = center.getX() - eye.getX();
 		double dy = center.getY() - eye.getY();
@@ -315,46 +327,46 @@ public class Actions {
 
 		float yaw = (float) Math.toDegrees(Math.atan2(-dx, dz));
 		float pitch = (float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx * dx + dz * dz)));
-		turnHead(p, yaw, pitch);
+		turnHead(yaw, pitch);
 	}
 
 	/** Nearest mob in a 32-block cube whose name contains {@code nameContains} (case-insensitive). No filtering. */
-	public static void snapHeadAtNearestNamed(Player p, String nameContains) {
+	public void snapHeadAtNearestNamed(String nameContains) {
 		LivingEntity nearest = null;
 		double nearestDistance = Double.MAX_VALUE;
-		for(Entity entity : p.getNearbyEntities(32, 32, 32)) {
+		for(Entity entity : player.getNearbyEntities(32, 32, 32)) {
 			if(!(entity instanceof LivingEntity living)) continue;
-			String livingName = Utils.plain(living.customName());
+			String livingName = TASUtils.plain(living.customName());
 			if(livingName.isEmpty() || !livingName.toLowerCase().contains(nameContains.toLowerCase())) continue;
-			double distance = p.getLocation().distance(living.getLocation());
+			double distance = player.getLocation().distance(living.getLocation());
 			if(distance < nearestDistance) {
 				nearestDistance = distance;
 				nearest = living;
 			}
 		}
-		if(nearest != null) snapHeadAtEntity(p, nearest);
+		if(nearest != null) snapHeadAtEntity(nearest);
 	}
 
 	/**
-	 * Aims a Terminator arrow (spawn {@code eye + (0, -0.1, 0)}, speed 3.175) at the nearest reachable non-player,
-	 * non-boss mob. Solves the angle iteratively for gravity 0.05/t and drag 0.99/t; skips terrain-blocked targets.
+	 * Aims a Terminator arrow (spawn {@code eye + (0, -0.1, 0)}, speed 3.175) at the nearest reachable non-player
+	 * mob. Solves the angle iteratively for gravity 0.05/t and drag 0.99/t; skips terrain-blocked targets.
 	 */
-	public static void aimTerminatorAtNearestEnemy(Player p) {
+	public void aimTerminatorAtNearestEnemy() {
 		int now = MinecraftServer.currentTick;
 		terminatorClaimedUntil.entrySet().removeIf(e -> e.getValue() <= now);
 
-		LivingEntity target = findNearestEnemy(p, TERMINATOR_MAX_RANGE, le ->
-				!terminatorClaimedUntil.containsKey(le.getUniqueId()) && canTerminatorReach(p, le));
+		LivingEntity target = findNearestEnemy(player, TERMINATOR_MAX_RANGE, le ->
+				!terminatorClaimedUntil.containsKey(le.getUniqueId()) && canTerminatorReach(player, le));
 		if(target == null) return;
-		aimTerminatorAtEntity(p, target);
+		aimTerminatorAtEntity(target);
 	}
 
 	/**
-	 * Aims a Terminator arrow at a chosen target (e.g. Storm); no filter or terrain check, silent if out of range.
+	 * Aims a Terminator arrow at a chosen target; no filter or terrain check, silent if out of range.
 	 * Claims the mob for the flight time so the auto-pick variant won't re-target it.
 	 */
-	public static void aimTerminatorAtEntity(Player p, LivingEntity target) {
-		Location spawn = p.getEyeLocation().add(0, -0.1, 0);
+	public void aimTerminatorAtEntity(LivingEntity target) {
+		Location spawn = player.getEyeLocation().add(0, -0.1, 0);
 		Vector center = target.getBoundingBox().getCenter();
 		double dx = center.getX() - spawn.getX();
 		double dy = center.getY() - spawn.getY();
@@ -371,7 +383,7 @@ public class Actions {
 
 		float yaw = (float) Math.toDegrees(Math.atan2(-dx, dz));
 		float pitch = (float) -Math.toDegrees(angle); // angle>0 (upward) → MC pitch<0
-		turnHead(p, yaw, pitch);
+		turnHead(yaw, pitch);
 	}
 
 	private static LivingEntity findNearestEnemy(Player p, double range, Predicate<LivingEntity> canHit) {
@@ -382,7 +394,6 @@ public class Actions {
 		for(Entity e : p.getNearbyEntities(range, range, range)) {
 			if(!(e instanceof LivingEntity le)) continue;
 			if(le instanceof Player) continue;
-			if(le instanceof Wither) continue;
 			if(le.isDead()) continue;
 			if(le.getBoundingBox().getCenter().distanceSquared(origin) > rangeSq) continue;
 			candidates.add(le);
@@ -397,14 +408,14 @@ public class Actions {
 
 	/**
 	 * {@link #leftClick} that only swings if a beam from the current facing would hit something within
-	 * {@link #MAGE_BEAM_RANGE}; avoids thousands of no-op packets during Storm beam spam.
+	 * {@link #MAGE_BEAM_RANGE}; avoids thousands of no-op packets during beam spam.
 	 * <br>
-	 * Mirrors {@code items.ItemUtils.mageBeam}'s filter: no players, dead or resistance-255 mobs, but Withers count
-	 * (the beam plays a stun sound on an invulnerable one). Skips if a block is closer than the entity.
+	 * Mirrors M7's {@code ItemUtils.mageBeam} filter: no players, dead or resistance-255 mobs. Skips if a block is
+	 * closer than the entity.
 	 */
-	public static void loopLeftClick(Player p) {
-		if(!mageBeamWouldHit(p)) return;
-		leftClick(p);
+	public void loopLeftClick() {
+		if(!mageBeamWouldHit(player)) return;
+		leftClick();
 	}
 
 	private static boolean mageBeamWouldHit(Player p) {
@@ -433,9 +444,9 @@ public class Actions {
 	 * Same filter as {@link #mageBeamWouldHit}. Walks arrow physics per tick ({@code v.xz *= 0.99},
 	 * {@code v.y = v.y * 0.99 - 0.05}). Middle arrow only: the side ones are ±5° and rarely matter if it misses.
 	 */
-	public static void loopRightClick(Player p) {
-		if(!terminatorWouldHit(p)) return;
-		rightClick(p);
+	public void loopRightClick() {
+		if(!terminatorWouldHit(player)) return;
+		rightClick();
 	}
 
 	private static boolean terminatorWouldHit(Player p) {
@@ -603,35 +614,32 @@ public class Actions {
 	/**
 	 * Simulates a fake player performing a left click.
 	 *
-	 * @param p The fake player performing the left click
 	 */
-	public static void leftClick(Player p) {
-		if(!(p instanceof CraftPlayer cp)) return;
+	public void leftClick() {
+		if(!(player instanceof CraftPlayer cp)) return;
 
 		ServerPlayer serverPlayer = cp.getHandle();
 
 		ServerboundSwingPacket swingPacket = new ServerboundSwingPacket(InteractionHand.MAIN_HAND);
-		simulatePacket(p, swingPacket);
+		send(swingPacket);
 
 		// Vanilla's crosshair pick raytraces blocks first and caps the entity ray at the block
 		// hit, so entities occluded by a block can't be targeted.
-		RayTraceResult blockRay = p.rayTraceBlocks(p.getAttribute(Attribute.BLOCK_INTERACTION_RANGE).getValue());
-		double entityRange = p.getAttribute(Attribute.ENTITY_INTERACTION_RANGE).getValue();
+		RayTraceResult blockRay = player.rayTraceBlocks(player.getAttribute(Attribute.BLOCK_INTERACTION_RANGE).getValue());
+		double entityRange = player.getAttribute(Attribute.ENTITY_INTERACTION_RANGE).getValue();
 		if(blockRay != null) {
-			entityRange = Math.min(entityRange, p.getEyeLocation().toVector().distance(blockRay.getHitPosition()));
+			entityRange = Math.min(entityRange, player.getEyeLocation().toVector().distance(blockRay.getHitPosition()));
 		}
 
-		RayTraceResult entityRay = p.getWorld().rayTraceEntities(p.getEyeLocation(), p.getEyeLocation().getDirection(), entityRange, entity -> {
-			if(entity == p) return false;
+		RayTraceResult entityRay = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), entityRange, entity -> {
+			if(entity == player) return false;
 			if(entity.isDead()) return false;
-			// Living only: handleInteract disconnects the fake with "Attempting to attack an invalid entity" on
-			// items, XP orbs and arrows. Storm's death XP orbs triggered it.
+			// Living only: handleAttack disconnects the fake with "Attempting to attack an invalid entity" on
+			// items, XP orbs and arrows, which a client's crosshair never picks.
 			if(!(entity instanceof LivingEntity le)) return false;
-			if(le.hasPotionEffect(PotionEffectType.RESISTANCE) && le.getPotionEffect(PotionEffectType.RESISTANCE).getAmplifier() == 255) return false;
-			if(le instanceof Wither w && w.getInvulnerableTicks() != 0) return false;
-			if(le instanceof org.bukkit.entity.Player player) {
-				if(FakePlayerManager.getFakePlayers().containsValue(player)) return false;
-				return !Spectate.getSpectatingPlayers(p).contains(player);
+			if(le instanceof org.bukkit.entity.Player target) {
+				if(FakePlayerManager.getFakePlayers().containsValue(target)) return false;
+				return !Spectate.getSpectatingPlayers(player).contains(target);
 			}
 			return true;
 		});
@@ -640,65 +648,44 @@ public class Actions {
 			net.minecraft.world.entity.Entity nmsEntity = ((CraftEntity) entityRay.getHitEntity()).getHandle();
 			// 26.2: attacks are their own packet.
 			ServerboundAttackPacket attackPacket = new ServerboundAttackPacket(nmsEntity.getId());
-			simulatePacket(p, attackPacket);
+			send(attackPacket);
 			return;
 		}
 
+		// The swing alone is the click otherwise (Paper fires LEFT_CLICK_AIR/BLOCK from it). Like the client, dig only
+		// where adventure mode lets this item break the block (can_break).
 		if(blockRay != null && blockRay.getHitBlock() != null) {
-			// Door blocks open on left-click (no-op without the key). Here because a fake's click skips PlayerInteractEvent.
-			Block hitBlock = blockRay.getHitBlock();
-			if(Server.inWitherDoor(hitBlock)) { Server.tryOpenWitherDoor(p); return; }
-			if(Server.inBloodDoor(hitBlock)) { Server.tryOpenBloodDoor(); return; }
-
-			if(p.getInventory().getItemInMainHand().getType() != Material.DIAMOND_PICKAXE) {
-				// Not a pickaxe: dispatch the ability with the hit block, so Superboom uses this pick's target.
-				CustomItems.handleCustomItems(null, org.bukkit.inventory.EquipmentSlot.HAND, p.getInventory().getItemInMainHand(), Action.LEFT_CLICK_BLOCK, p, hitBlock);
-				return;
-			}
-
 			Block block = blockRay.getHitBlock();
 			BlockPos pos = new BlockPos(block.getX(), block.getY(), block.getZ());
+			if(serverPlayer.blockActionRestricted(serverPlayer.level(), pos, serverPlayer.gameMode.getGameModeForPlayer())) return;
 			Direction direction = CraftBlock.blockFaceToNotch(blockRay.getHitBlockFace());
 
 			ServerboundPlayerActionPacket breakPacket = new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, pos, direction, 0);
-			simulatePacket(p, breakPacket);
+			send(breakPacket);
 			ServerboundPlayerActionPacket breakStopPacket = new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.STOP_DESTROY_BLOCK, pos, direction, 0);
-			simulatePacket(p, breakStopPacket);
-		} else {
-			CustomItems.handleCustomItems(null, org.bukkit.inventory.EquipmentSlot.HAND, p.getInventory().getItemInMainHand(), Action.LEFT_CLICK_AIR, p);
+			send(breakStopPacket);
 		}
 	}
 
 	/**
 	 * Simulates a fake player performing a right click.
 	 *
-	 * @param p The fake player performing the right click
 	 */
-	@SuppressWarnings("deprecation") // Material.isInteractable() is deprecated but has no exact replacement; used only for a cosmetic spectator arm-swing
-	public static void rightClick(Player p) {
-		if(!(p instanceof CraftPlayer cp)) return;
+	@SuppressWarnings("deprecation") // Material.isInteractable() is deprecated but has no exact replacement
+	public void rightClick() {
+		if(!(player instanceof CraftPlayer cp)) return;
 
 		ServerPlayer serverPlayer = cp.getHandle();
 
-		// Last Breath / Explosive Bow: BowItem.use() bails with no arrows outside creative, so start using directly
-		// (draw animation syncs via LIVING_ENTITY_FLAGS bit 0). Other bows take the packet path for their ability.
-		String heldId = items.ItemUtils.getID(p.getInventory().getItemInMainHand());
-		if("skyblock/combat/last_breath".equals(heldId) || "skyblock/combat/explosive_bow".equals(heldId)) {
-			// No packet, so simulatePacket won't log it
-			Utils.debug(Utils.DebugType.CLIENT, p.getName() + " Right Clicked" + (Utils.isSuperVerbose() ? (" at " + Utils.round(p.getLocation().getX(), 3) + " " + Utils.round(p.getLocation().getY(), 5) + " " + Utils.round(p.getLocation().getZ(), 3) + " " + p.getLocation().getYaw() + " " + p.getLocation().getPitch()) : ""));
-			serverPlayer.startUsingItem(InteractionHand.MAIN_HAND);
-			return;
-		}
-
 		// Vanilla's crosshair pick raytraces blocks first and caps the entity ray at the block
 		// hit, so entities occluded by a block can't be targeted.
-		RayTraceResult blockRay = p.rayTraceBlocks(p.getAttribute(Attribute.BLOCK_INTERACTION_RANGE).getValue());
-		double entityRange = p.getAttribute(Attribute.ENTITY_INTERACTION_RANGE).getValue();
+		RayTraceResult blockRay = player.rayTraceBlocks(player.getAttribute(Attribute.BLOCK_INTERACTION_RANGE).getValue());
+		double entityRange = player.getAttribute(Attribute.ENTITY_INTERACTION_RANGE).getValue();
 		if(blockRay != null) {
-			entityRange = Math.min(entityRange, p.getEyeLocation().toVector().distance(blockRay.getHitPosition()));
+			entityRange = Math.min(entityRange, player.getEyeLocation().toVector().distance(blockRay.getHitPosition()));
 		}
 
-		RayTraceResult entityRay = p.getWorld().rayTraceEntities(p.getEyeLocation(), p.getEyeLocation().getDirection(), entityRange, entity -> entity != p && !(entity instanceof Player target && (FakePlayerManager.getFakePlayers().containsValue(target) || Spectate.getSpectatingPlayers(p).contains(target))));
+		RayTraceResult entityRay = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), entityRange, entity -> entity != player && !(entity instanceof Player target && (FakePlayerManager.getFakePlayers().containsValue(target) || Spectate.getSpectatingPlayers(player).contains(target))));
 
 		if(entityRay != null && entityRay.getHitEntity() != null) {
 			net.minecraft.world.entity.Entity nmsEntity = ((CraftEntity) entityRay.getHitEntity()).getHandle();
@@ -709,13 +696,13 @@ public class Actions {
 
 			// 26.2: flat record. interact-at = hand + location (relative to entity); interact = hand, null location.
 			ServerboundInteractPacket interactAtPacket = new ServerboundInteractPacket(nmsEntity.getId(), InteractionHand.MAIN_HAND, localHit, serverPlayer.isShiftKeyDown());
-			simulatePacket(p, interactAtPacket);
+			send(interactAtPacket);
 			ServerboundInteractPacket interactPacket = new ServerboundInteractPacket(nmsEntity.getId(), InteractionHand.MAIN_HAND, null, serverPlayer.isShiftKeyDown());
-			simulatePacket(p, interactPacket);
-			for(Player spectator : Spectate.getSpectatingPlayers(p)) spectator.swingMainHand();
+			send(interactPacket);
+			for(Player spectator : Spectate.getSpectatingPlayers(player)) spectator.swingMainHand();
 
-			// Vanilla sends no UseItem after a consumed entity interaction; same exemptions as
-			// CustomItems#onPlayerInteractAtEntity, or a Goldor terminal click fires the ability.
+			// Vanilla sends no UseItem after a consumed entity interaction: item frames and Interaction entities
+			// consume it.
 			if(entityRay.getHitEntity() instanceof ItemFrame || entityRay.getHitEntity() instanceof Interaction) {
 				return;
 			}
@@ -732,95 +719,168 @@ public class Actions {
 				BlockHitResult blockHit = new BlockHitResult(hitVec, direction, pos, false);
 
 				ServerboundUseItemOnPacket useOnBlockPacket = new ServerboundUseItemOnPacket(InteractionHand.MAIN_HAND, blockHit, 0);
-				simulatePacket(p, useOnBlockPacket);
+				send(useOnBlockPacket);
+				// The client follows with UseItem unless the block took the click.
 				if(block.getType().isInteractable()) {
-					for(Player spectator : Spectate.getSpectatingPlayers(p)) spectator.swingMainHand();
+					for(Player spectator : Spectate.getSpectatingPlayers(player)) spectator.swingMainHand();
+					return;
 				}
-				return;
 			}
 		}
 
 		// Right click air (eat food, throw pearl, use item ability)
 		ServerboundUseItemPacket useItemPacket = new ServerboundUseItemPacket(InteractionHand.MAIN_HAND, 0, serverPlayer.getYRot(), serverPlayer.getXRot());
-		simulatePacket(p, useItemPacket);
+		send(useItemPacket);
 	}
 
-	public static void stopRightClick(Player p) {
-		ServerPlayer sp = ((CraftPlayer) p).getHandle();
-		boolean was = sp.getAbilities().instabuild;
-		sp.getAbilities().instabuild = true;
+	public void stopRightClick() {
+		ServerPlayer sp = ((CraftPlayer) player).getHandle();
 		ServerboundPlayerActionPacket packet = new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.RELEASE_USE_ITEM, sp.blockPosition(), Direction.DOWN, 0);
-		simulatePacket(p, packet);
-		sp.getAbilities().instabuild = was;
+		send(packet);
 	}
 
-	public static void dropItem(Player p, boolean dropAll) {
+	public void dropItem(boolean dropAll) {
 		ServerboundPlayerActionPacket.Action action = dropAll
 				? ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS
 				: ServerboundPlayerActionPacket.Action.DROP_ITEM;
-		ServerPlayer sp = ((CraftPlayer) p).getHandle();
+		ServerPlayer sp = ((CraftPlayer) player).getHandle();
 		ServerboundPlayerActionPacket packet = new ServerboundPlayerActionPacket(action, sp.blockPosition(), Direction.DOWN, 0);
-		simulatePacket(p, packet);
+		send(packet);
 	}
 
-	public static void mimicChest(Player p, Block b) {
-		BlockData originalData = b.getBlockData().clone();
-		org.bukkit.block.BlockState originalState = b.getState();
-		// No physics, like the restore below: an update pops carpets/torches on neighbours for good.
-		b.setType(Material.AIR, false);
-
-		Zombie zombie = (Zombie) p.getWorld().spawnEntity(b.getLocation().add(0.5, 0, 0.5), EntityType.ZOMBIE);
-		zombie.customName(Utils.msg("Mimic <yellow>4M<red>❤"));
-		zombie.setCustomNameVisible(true);
-		zombie.setAI(false);
-		zombie.setSilent(true);
-		zombie.setBaby();
-		Objects.requireNonNull(zombie.getAttribute(Attribute.ARMOR)).setBaseValue(-30);
-		Objects.requireNonNull(zombie.getAttribute(Attribute.ARMOR_TOUGHNESS)).setBaseValue(-20);
-		Objects.requireNonNull(zombie.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(2);
-		zombie.setHealth(2);
-
-		Utils.scheduleTask(() -> {
-			originalState.update(true, false);
-			try {
-				zombie.remove();
-			} catch(Exception exception) {
-				// nothing here
-			}
-		}, 21);
-	}
-
-	/** Simulates a packet sent from a Player to the server. */
+	/**
+	 * Sends {@code packet} as this player's client. A fake's goes through its own pipeline, so the server (and M7's
+	 * interceptor) sees exactly what a real client's would.
+	 */
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public static void simulatePacket(Player player, Packet<?> packet) {
+	public void send(Packet<?> packet) {
 		if(!(player instanceof CraftPlayer craftPlayer)) return;
 
-		Utils.debug(Utils.DebugType.CLIENT, player.getName() + " Sending Packet " + packet.getClass().getSimpleName() + (Utils.isSuperVerbose() ? (" at " + Utils.round(player.getLocation().getX(), 3) + " " + Utils.round(player.getLocation().getY(), 5) + " " + Utils.round(player.getLocation().getZ(), 3) + " " + player.getLocation().getYaw() + " " + player.getLocation().getPitch()) : ""));
-		ServerPlayer serverPlayer = craftPlayer.getHandle();
-		if(serverPlayer.connection instanceof tas.nms.TASGamePacketListenerImpl customConnection) {
-			((Packet) packet).handle(customConnection);
-		} else {
-			((Packet) packet).handle(serverPlayer.connection);
-		}
+		TASUtils.debug(TASUtils.DebugType.CLIENT, player.getName() + " Sending Packet " + packet.getClass().getSimpleName() + (TASUtils.isSuperVerbose() ? (" at " + TASUtils.round(player.getLocation().getX(), 3) + " " + TASUtils.round(player.getLocation().getY(), 5) + " " + TASUtils.round(player.getLocation().getZ(), 3) + " " + player.getLocation().getYaw() + " " + player.getLocation().getPitch()) : ""));
+		if(FakePlayerManager.receive(player, packet)) return;
+		((Packet) packet).handle(craftPlayer.getHandle().connection);
 	}
 
-	public static void teleport(Player p, Location to) {
-		if(!(p instanceof CraftPlayer cp)) {
-			return;
-		}
-		ServerPlayer npc = cp.getHandle();
-
-		npc.setPos(to.getX(), to.getY(), to.getZ());
-		npc.setYRot(to.getYaw());
-		npc.setXRot(to.getPitch());
-		npc.yHeadRot = to.getYaw();
-		npc.yBodyRot = to.getYaw();
-
-		PositionMoveRotation pmr = PositionMoveRotation.of(npc);
-		ClientboundTeleportEntityPacket tp = ClientboundTeleportEntityPacket.teleport(npc.getId(), pmr, EnumSet.noneOf(Relative.class), npc.onGround());
-
-		Utils.broadcastPacket(tp);
-		Spectate.snapSpectatorsToFake(p);
+	/** {@code at(20).rightClick()} = {@code rightClick()} 20 ticks from now. Chained calls run on that tick, in order. */
+	public Later at(int delay) {
+		return new Later(delay);
 	}
 
+	public final class Later {
+		private final int delay;
+
+		private Later(int delay) {
+			this.delay = delay;
+		}
+
+		public Later move(String input, int durationTicks) {
+			TASUtils.scheduleTask(() -> Actions.this.move(input, durationTicks), delay);
+			return this;
+		}
+
+		public Later setHotbarSlot(int hotbarIndex) {
+			TASUtils.scheduleTask(() -> Actions.this.setHotbarSlot(hotbarIndex), delay);
+			return this;
+		}
+
+		public Later swapItems(int slotA, int slotB) {
+			TASUtils.scheduleTask(() -> Actions.this.swapItems(slotA, slotB), delay);
+			return this;
+		}
+
+		public Later clickSlot(int containerId, int slot, int button, ContainerInput input) {
+			TASUtils.scheduleTask(() -> Actions.this.clickSlot(containerId, slot, button, input), delay);
+			return this;
+		}
+
+		public Later clickGui(int slot) {
+			TASUtils.scheduleTask(() -> Actions.this.clickGui(slot), delay);
+			return this;
+		}
+
+		public Later clickGui(int slot, int button, ContainerInput input) {
+			TASUtils.scheduleTask(() -> Actions.this.clickGui(slot, button, input), delay);
+			return this;
+		}
+
+		public Later closeGui() {
+			TASUtils.scheduleTask(() -> Actions.this.closeGui(), delay);
+			return this;
+		}
+
+		public Later leap(Player target) {
+			TASUtils.scheduleTask(() -> Actions.this.leap(target), delay);
+			return this;
+		}
+
+		public Later runCommand(String command) {
+			TASUtils.scheduleTask(() -> Actions.this.runCommand(command), delay);
+			return this;
+		}
+
+		public Later turnHead(float yaw, float pitch) {
+			TASUtils.scheduleTask(() -> Actions.this.turnHead(yaw, pitch), delay);
+			return this;
+		}
+
+		public Later snapHeadToNearestEnemy() {
+			TASUtils.scheduleTask(() -> Actions.this.snapHeadToNearestEnemy(), delay);
+			return this;
+		}
+
+		public Later snapHeadAtEntity(LivingEntity target) {
+			TASUtils.scheduleTask(() -> Actions.this.snapHeadAtEntity(target), delay);
+			return this;
+		}
+
+		public Later snapHeadAtNearestNamed(String nameContains) {
+			TASUtils.scheduleTask(() -> Actions.this.snapHeadAtNearestNamed(nameContains), delay);
+			return this;
+		}
+
+		public Later aimTerminatorAtNearestEnemy() {
+			TASUtils.scheduleTask(() -> Actions.this.aimTerminatorAtNearestEnemy(), delay);
+			return this;
+		}
+
+		public Later aimTerminatorAtEntity(LivingEntity target) {
+			TASUtils.scheduleTask(() -> Actions.this.aimTerminatorAtEntity(target), delay);
+			return this;
+		}
+
+		public Later loopLeftClick() {
+			TASUtils.scheduleTask(() -> Actions.this.loopLeftClick(), delay);
+			return this;
+		}
+
+		public Later loopRightClick() {
+			TASUtils.scheduleTask(() -> Actions.this.loopRightClick(), delay);
+			return this;
+		}
+
+		public Later leftClick() {
+			TASUtils.scheduleTask(() -> Actions.this.leftClick(), delay);
+			return this;
+		}
+
+		public Later rightClick() {
+			TASUtils.scheduleTask(() -> Actions.this.rightClick(), delay);
+			return this;
+		}
+
+		public Later stopRightClick() {
+			TASUtils.scheduleTask(() -> Actions.this.stopRightClick(), delay);
+			return this;
+		}
+
+		public Later dropItem(boolean dropAll) {
+			TASUtils.scheduleTask(() -> Actions.this.dropItem(dropAll), delay);
+			return this;
+		}
+
+		public Later send(Packet<?> packet) {
+			TASUtils.scheduleTask(() -> Actions.this.send(packet), delay);
+			return this;
+		}
+	}
 }

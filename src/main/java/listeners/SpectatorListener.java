@@ -1,4 +1,4 @@
-package tas.listeners;
+package listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -10,10 +10,10 @@ import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import tas.FakePlayerManager;
-import tas.SpectatorSync;
-import tas.commands.Spectate;
-import tas.mcTASLang;
+import plugin.FakePlayerManager;
+import plugin.SpectatorSync;
+import commands.Spectate;
+import plugin.mcTASLang;
 
 public class SpectatorListener implements Listener {
 
