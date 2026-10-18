@@ -7,7 +7,7 @@
 
     <groupId>dev.strad</groupId>
     <artifactId>mc-tas-lang</artifactId>
-    <version>1.0.0-pre1</version>
+    <version>0.1</version>
 
     <properties>
         <maven.compiler.source>25</maven.compiler.source>
@@ -100,6 +100,13 @@
             <groupId>ca.bkaw</groupId>
             <artifactId>paper-nms</artifactId>
             <version>26.2.build.129-stable</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- `mvn install` M7 first so this resolves. -->
+        <dependency>
+            <groupId>dev.strad</groupId>
+            <artifactId>M7</artifactId>
+            <version>2.9.2</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
