@@ -1,0 +1,11 @@
+m7tas.iml
+.claude/
+CLAUDE.md
+MAP.md
+.idea/
+target/
+src/main/resources/mappings.txt
+PAPER_NMS_SETUP.md
+PUBLIC_SERVER.md
+MIGRATION_PLAYBOOK.md
+.paper-nms/
