@@ -1,4 +1,6 @@
 # mc-tas lang
+# THIS IS A WORK IN PROGRESS!  IT WILL NOT WORK AT ALL UNTIL A RELEASE IS MADE.
+
 ## Introduction
 MC-TAS Lang is a language designed to allow Minecraft TASes to be written more akin to a traditional TAS: tick by tick actions VS recording movement live.  It achieves this by creating a fake Player then simulating that player sending specific packets via actions.  Any number of players can be simulated.
 
