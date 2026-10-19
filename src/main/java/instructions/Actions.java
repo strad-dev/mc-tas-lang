@@ -20,6 +20,7 @@ import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.*;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -199,13 +200,16 @@ public class Actions {
 	}
 
 	/**
-	 * Swaps two inventory slots with clicks in the player's own inventory screen, as a client would: a number key
-	 * (SWAP) when one side is the hotbar or off-hand, else pick up / put down / put back.
+	 * Swaps two inventory slots in one tick, as a client would: open the inventory (E; closes any chest GUI first,
+	 * opening sends nothing), a number key (SWAP) when one side is the hotbar or off-hand, else pick up / put down /
+	 * put back, then close it.
 	 *
 	 * @param slotA any slot index (0-8 hotbar, 9-35 main inv, 36-39 armor, 40 offhand)
 	 * @param slotB same range
 	 */
 	public void swapItems(int slotA, int slotB) {
+		if(!(player instanceof CraftPlayer cp)) return;
+		if(cp.getHandle().containerMenu.containerId != 0) closeGui();
 		if(slotB < 9 || slotB == 40) {
 			int t = slotA;
 			slotA = slotB;
@@ -218,6 +222,7 @@ public class Actions {
 			clickSlot(0, menuSlot(slotB), 0, ContainerInput.PICKUP);
 			clickSlot(0, menuSlot(slotA), 0, ContainerInput.PICKUP);
 		}
+		send(new ServerboundContainerClosePacket(0));
 	}
 
 	/** Player-inventory index (0-8 hotbar, 9-35 main, 36-39 boots..helmet, 40 off-hand) to InventoryMenu slot. */
@@ -260,7 +265,13 @@ public class Actions {
 		send(new ServerboundContainerClosePacket(cp.getHandle().containerMenu.containerId));
 	}
 
-	/** Spirit Leap: right-click the held Infinileap, then click {@code target}'s head in the menu M7 opens. */
+	/**
+	 * Spirit Leap: right-click the held Infinileap, then click {@code target}'s head in the menu M7 opens.
+	 *
+	 * @deprecated finds the head by reading the menu server-side. Script it as a client does: {@link #rightClick()},
+	 * then {@link #clickGui(int)} on the target's slot.
+	 */
+	@Deprecated
 	public void leap(Player target) {
 		rightClick();
 		org.bukkit.inventory.Inventory top = player.getOpenInventory().getTopInventory();
@@ -274,7 +285,13 @@ public class Actions {
 		}
 	}
 
-	/** Another fake by name ({@code Archer}, {@code Mage1}..{@code Mage4}). */
+	/** Puts this player on its section start. Setup before the run, not a client action (/tas passes --no-teleport). */
+	protected void startAt(double x, double y, double z, float yaw, float pitch) {
+		player.teleport(new Location(player.getWorld(), x, y, z, yaw, pitch), PlayerTeleportEvent.TeleportCause.PLUGIN);
+		Spectate.snapSpectatorsToFake(player);
+	}
+
+	/** Another fake by name ({@code akc0303}, {@code Beethoven_}, ...). */
 	protected static Player fake(String name) {
 		return FakePlayerManager.getFakePlayers().get(name);
 	}
@@ -288,7 +305,6 @@ public class Actions {
 	 * Rotates a player’s body & head to the given yaw/pitch
 	 * and broadcasts that new orientation to every real client.
 	 *
-	 * @param player the player
 	 * @param yaw    body + head yaw, in degrees (0 = south, 90 = west…)
 	 * @param pitch  look pitch, in degrees (-90 = straight up, +90 = straight down)
 	 */
@@ -612,6 +628,15 @@ public class Actions {
 	}
 
 	/**
+	 * What the client's crosshair can land on, as Paper's swing ray trace decides it: anything this player can see
+	 * that isn't in spectator mode. Teammates count (M7 never damages players); watchers are hidden from fakes.
+	 */
+	private boolean targetable(org.bukkit.entity.Entity entity) {
+		if(!player.canSee(entity)) return false;
+		return !(entity instanceof Player target && target.getGameMode() == GameMode.SPECTATOR);
+	}
+
+	/**
 	 * Simulates a fake player performing a left click.
 	 *
 	 */
@@ -637,11 +662,7 @@ public class Actions {
 			// Living only: handleAttack disconnects the fake with "Attempting to attack an invalid entity" on
 			// items, XP orbs and arrows, which a client's crosshair never picks.
 			if(!(entity instanceof LivingEntity le)) return false;
-			if(le instanceof org.bukkit.entity.Player target) {
-				if(FakePlayerManager.getFakePlayers().containsValue(target)) return false;
-				return !Spectate.getSpectatingPlayers(player).contains(target);
-			}
-			return true;
+			return targetable(le);
 		});
 
 		if(entityRay != null && entityRay.getHitEntity() != null) {
@@ -685,7 +706,7 @@ public class Actions {
 			entityRange = Math.min(entityRange, player.getEyeLocation().toVector().distance(blockRay.getHitPosition()));
 		}
 
-		RayTraceResult entityRay = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), entityRange, entity -> entity != player && !(entity instanceof Player target && (FakePlayerManager.getFakePlayers().containsValue(target) || Spectate.getSpectatingPlayers(player).contains(target))));
+		RayTraceResult entityRay = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), entityRange, entity -> entity != player && targetable(entity));
 
 		if(entityRay != null && entityRay.getHitEntity() != null) {
 			net.minecraft.world.entity.Entity nmsEntity = ((CraftEntity) entityRay.getHitEntity()).getHandle();
@@ -761,6 +782,9 @@ public class Actions {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void send(Packet<?> packet) {
 		if(!(player instanceof CraftPlayer craftPlayer)) return;
+		// Paper's decoder stamps these and its spam limiter reads the stamp; left at 0, every use after the 8th is dropped.
+		if(packet instanceof ServerboundUseItemPacket use) use.timestamp = System.currentTimeMillis();
+		if(packet instanceof ServerboundUseItemOnPacket useOn) useOn.timestamp = System.currentTimeMillis();
 
 		TASUtils.debug(TASUtils.DebugType.CLIENT, player.getName() + " Sending Packet " + packet.getClass().getSimpleName() + (TASUtils.isSuperVerbose() ? (" at " + TASUtils.round(player.getLocation().getX(), 3) + " " + TASUtils.round(player.getLocation().getY(), 5) + " " + TASUtils.round(player.getLocation().getZ(), 3) + " " + player.getLocation().getYaw() + " " + player.getLocation().getPitch()) : ""));
 		if(FakePlayerManager.receive(player, packet)) return;
@@ -772,6 +796,7 @@ public class Actions {
 		return new Later(delay);
 	}
 
+	@SuppressWarnings("UnusedReturnValue")
 	public final class Later {
 		private final int delay;
 
@@ -810,10 +835,12 @@ public class Actions {
 		}
 
 		public Later closeGui() {
-			TASUtils.scheduleTask(() -> Actions.this.closeGui(), delay);
+			TASUtils.scheduleTask(Actions.this::closeGui, delay);
 			return this;
 		}
 
+		/** @deprecated see {@link Actions#leap(Player)}. */
+		@Deprecated
 		public Later leap(Player target) {
 			TASUtils.scheduleTask(() -> Actions.this.leap(target), delay);
 			return this;
@@ -830,7 +857,7 @@ public class Actions {
 		}
 
 		public Later snapHeadToNearestEnemy() {
-			TASUtils.scheduleTask(() -> Actions.this.snapHeadToNearestEnemy(), delay);
+			TASUtils.scheduleTask(Actions.this::snapHeadToNearestEnemy, delay);
 			return this;
 		}
 
@@ -845,7 +872,7 @@ public class Actions {
 		}
 
 		public Later aimTerminatorAtNearestEnemy() {
-			TASUtils.scheduleTask(() -> Actions.this.aimTerminatorAtNearestEnemy(), delay);
+			TASUtils.scheduleTask(Actions.this::aimTerminatorAtNearestEnemy, delay);
 			return this;
 		}
 
@@ -855,22 +882,22 @@ public class Actions {
 		}
 
 		public Later loopLeftClick() {
-			TASUtils.scheduleTask(() -> Actions.this.loopLeftClick(), delay);
+			TASUtils.scheduleTask(Actions.this::loopLeftClick, delay);
 			return this;
 		}
 
 		public Later loopRightClick() {
-			TASUtils.scheduleTask(() -> Actions.this.loopRightClick(), delay);
+			TASUtils.scheduleTask(Actions.this::loopRightClick, delay);
 			return this;
 		}
 
 		public Later leftClick() {
-			TASUtils.scheduleTask(() -> Actions.this.leftClick(), delay);
+			TASUtils.scheduleTask(Actions.this::leftClick, delay);
 			return this;
 		}
 
 		public Later rightClick() {
-			TASUtils.scheduleTask(() -> Actions.this.rightClick(), delay);
+			TASUtils.scheduleTask(Actions.this::rightClick, delay);
 			return this;
 		}
 
@@ -880,7 +907,7 @@ public class Actions {
 		}
 
 		public Later stopRightClick() {
-			TASUtils.scheduleTask(() -> Actions.this.stopRightClick(), delay);
+			TASUtils.scheduleTask(Actions.this::stopRightClick, delay);
 			return this;
 		}
 

@@ -11,15 +11,17 @@ public class Berserk extends Actions {
 		super(player);
 	}
 
-	// Berserk --> Mage3
+	// Berserk --> RedFish2471
 	public void berserkInstructions(String section) {
 		int start = TAS.startDelay(section);
 		switch(section) {
 			case "all", "clear" -> {
+				startAt(-120.5, 71, -183.5, 0f, 0f);
 				preClear();
 				TASUtils.scheduleTask(() -> clear(section.equals("all")), start);
 			}
 			case "maxor", "boss" -> {
+				startAt(73.5, 221, 14.5, 0f, 0f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -32,6 +34,7 @@ public class Berserk extends Actions {
 				}
 			}
 			case "storm" -> {
+				startAt(114.145, 170, 93.962, 154f, 0f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -40,6 +43,7 @@ public class Berserk extends Actions {
 				TASUtils.scheduleTask(() -> storm(false), start);
 			}
 			case "goldor" -> {
+				startAt(91.351, 115, 133.781, -145f, -5f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -51,6 +55,7 @@ public class Berserk extends Actions {
 				TASUtils.scheduleTask(() -> goldor(false), start);
 			}
 			case "necron" -> {
+				startAt(54.524, 64, 100.707, 180f, -6f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -59,6 +64,7 @@ public class Berserk extends Actions {
 				TASUtils.scheduleTask(() -> necron(false), start);
 			}
 			case "witherking" -> {
+				startAt(90.7, 6, 56.581, -79.7f, 19.1f);
 				swapItems(1, 28);
 				swapItems(6, 33);
 				swapItems(7, 34);
@@ -71,12 +77,12 @@ public class Berserk extends Actions {
 	}
 
 	private void preClear() {
-		turnHead(180f, -89f);
+		turnHead(180f, -90f);
 		swapItems(2, 29);
 		swapItems(4, 31);
 		setHotbarSlot(7);
 		at(1).move("WP", 35); // move to pearl spot
-		at(37).rightClick(); // lands in 10 ticks
+		at(36).rightClick(); // lands in 10 ticks
 		at(38).setHotbarSlot(1).move("N", 0);
 		// dodge tick 40 teleport
 		at(47).rightClick(); // etherwarp to top
@@ -308,7 +314,7 @@ public class Berserk extends Actions {
 		at(679).setHotbarSlot(3).snapHeadAtNearestNamed("Storm");
 		at(680).leftClick();
 		at(681).setHotbarSlot(4).swapItems(12, 39).swapItems(7, 35); // equip racing helmet (speed auto-set to 650), black cat, and prepare explosive bow
-		at(682).leap(fake("Archer"));
+		at(682).leap(fake("akc0303"));
 		at(683).move("AWP", 0).setHotbarSlot(1);
 		at(685).move("WP", 0);
 		at(707).turnHead(12f, 80f);
@@ -394,7 +400,7 @@ public class Berserk extends Actions {
 		// tick 122: terminal completes
 
 		at(123).setHotbarSlot(4);
-		at(128).leap(fake("Archer")); // better positioning
+		at(128).leap(fake("akc0303")); // better positioning
 
 		/*
 		 * ██████╗
@@ -414,7 +420,7 @@ public class Berserk extends Actions {
 		at(169).rightClick();
 		// tick 170: terminal activates
 
-		at(171).leap(fake("Mage1"));
+		at(171).leap(fake("Beethoven_"));
 
 		/*
 		 * ██╗  ██╗
@@ -428,7 +434,7 @@ public class Berserk extends Actions {
 		at(187).rightClick(); // s4 3
 		// tick 188: terminal completes
 
-		at(191).leap(fake("Mage1"));
+		at(191).leap(fake("Beethoven_"));
 
 		/*
 		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
@@ -443,7 +449,7 @@ public class Berserk extends Actions {
 		at(223).turnHead(-111f, -2f).swapItems(12, 39);
 		at(224).leftClick();
 		at(225).setHotbarSlot(4);
-		at(245).leap(fake("Archer"));
+		at(245).leap(fake("akc0303"));
 		at(246).move("WP", 0);
 		at(287).move("WN", 0);
 		at(297).move("N", 10);
@@ -471,7 +477,7 @@ public class Berserk extends Actions {
 			at(i).leftClick();
 		}
 		at(501).setHotbarSlot(4);
-		at(502).leap(fake("Archer"));
+		at(502).leap(fake("akc0303"));
 		at(503).swapItems(13, 39);
 		at(504).turnHead(-122f, 0f).setHotbarSlot(5);
 		at(505).move("WP", 0);
@@ -491,7 +497,7 @@ public class Berserk extends Actions {
 		at(27).rightClick();
 		at(28).swapItems(5, 32).swapItems(13, 39);
 		at(29).setHotbarSlot(4);
-		at(100).leap(fake("Mage2"));
+		at(100).leap(fake("cookiethebald"));
 		at(101).setHotbarSlot(5).turnHead(180f, -90f);
 		at(200).rightClick();
 		at(261).setHotbarSlot(6);
@@ -504,7 +510,7 @@ public class Berserk extends Actions {
 		at(388).leftClick();
 		at(393).leftClick();
 		at(394).setHotbarSlot(4);
-		at(490).leap(fake("Mage1"));
+		at(490).leap(fake("Beethoven_"));
 		at(491).setHotbarSlot(5);
 		at(529).rightClick();
 		at(590).setHotbarSlot(6);

@@ -45,6 +45,7 @@ public class mcTASLang extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		// Also clears the M7 watching tag, which would otherwise stay on the player for good.
+		ScriptWatchers.release();
 		new java.util.ArrayList<>(Spectate.getSpectatorMap().keySet()).forEach(Spectate::removeSpectator);
 		SpectatorSync.stopInventorySync();
 		Spectate.stopSpectatorSync();

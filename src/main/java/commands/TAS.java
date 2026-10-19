@@ -7,7 +7,6 @@ import instructions.players.Healer;
 import instructions.players.Mage;
 import instructions.players.Tank;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 import plugin.FakePlayerManager;
 import plugin.M7Link;
+import plugin.ScriptWatchers;
 import plugin.TASUtils;
 
 import java.util.List;
@@ -23,7 +23,8 @@ import java.util.Map;
 public class TAS implements CommandExecutor {
 	private static final List<String> SECTIONS = List.of("all", "clear", "boss", "maxor", "storm", "goldor", "necron", "witherking");
 	private static final int COUNTDOWN = 60;
-	private static final int CLEAR_COUNTDOWN = 100;
+	/** Temporarily 126 (the routines' tick 0 is 26 before Mort's start button) until the clear is redone; then 100. */
+	private static final int CLEAR_COUNTDOWN = 126;
 	// Difficulty, mayor, Fix Watcher Bug, Bad Bonzo, in /m7practice's own argument forms.
 	private static final String SETTINGS = "perfect_rng jerry_paul off badbonzo=off";
 
@@ -59,20 +60,42 @@ public class TAS implements CommandExecutor {
 			return true;
 		}
 
-		// M7 refuses a run while anyone lacks a class. A chat command runs on the spot, so this lands first.
-		fakes.forEach((name, fake) -> new Actions(fake).runCommand(name.equals("Archer") ? "class archer" : "class mage"));
-
-		// M7 does the kits, countdown and bosses; the routines start this same tick. Fixed settings, so every TAS
-		// run is the same game. --no-teleport: the fakes start where they stand.
-		int countdown = section.equals("all") || section.equals("clear") ? CLEAR_COUNTDOWN : COUNTDOWN;
-		Bukkit.dispatchCommand(p, "m7:m7practice " + section + " " + countdown + " " + SETTINGS + " --no-teleport");
-		if(!M7Link.getBoolean("commands.Practice", "isActive")) return true; // M7 refused (and said why)
-
-		new Archer(fakes.get("Archer")).archerInstructions(section);
-		new Mage(fakes.get("Mage1")).mageInstructions(section);
-		new Tank(fakes.get("Mage2")).tankInstructions(section);
-		new Berserk(fakes.get("Mage3")).berserkInstructions(section);
-		new Healer(fakes.get("Mage4")).healerInstructions(section);
+		TASUtils.endRun();
+		// M7 refuses a run while anyone lacks a class. The server queues a chat command to run after this tick, so the
+		// run starts next tick.
+		fakes.forEach((name, fake) -> {
+			Actions actions = new Actions(fake);
+			// A chest GUI left open by the last run makes the server ignore every own-inventory click (swapItems).
+			if(((org.bukkit.craftbukkit.entity.CraftPlayer) fake).getHandle().containerMenu.containerId != 0) actions.closeGui();
+			actions.runCommand(name.equals("akc0303") ? "class archer" : "class mage");
+		});
+		TASUtils.scheduleTask(() -> start(p, section, fakes), 1);
 		return true;
+	}
+
+	private static void start(Player p, String section, Map<String, Player> fakes) {
+		if(!p.isOnline()) return;
+		boolean clear = section.equals("all") || section.equals("clear");
+		ScriptWatchers.watch();
+		// Before the routines: it hands out the kits their first inputs use.
+		if(practice(p, section, clear ? CLEAR_COUNTDOWN : COUNTDOWN)) startRoutines(section, fakes);
+		else ScriptWatchers.release();
+	}
+
+	/**
+	 * M7 does the kits, countdown and bosses. Fixed settings, so every TAS run is the same game. --no-teleport: the
+	 * fakes start where they stand. False if M7 refused (and said why).
+	 */
+	private static boolean practice(Player p, String section, int countdown) {
+		TASUtils.dispatchInRun(p, "m7:m7practice " + section + " " + countdown + " " + SETTINGS + " --no-teleport");
+		return M7Link.getBoolean("commands.Practice", "isActive");
+	}
+
+	private static void startRoutines(String section, Map<String, Player> fakes) {
+		new Archer(fakes.get("akc0303")).archerInstructions(section);
+		new Mage(fakes.get("Beethoven_")).mageInstructions(section);
+		new Tank(fakes.get("cookiethebald")).tankInstructions(section);
+		new Berserk(fakes.get("RedFish2471")).berserkInstructions(section);
+		new Healer(fakes.get("NoseThe")).healerInstructions(section);
 	}
 }

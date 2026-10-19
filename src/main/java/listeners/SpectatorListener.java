@@ -24,6 +24,7 @@ public class SpectatorListener implements Listener {
 		if (Spectate.getSpectatorMap().containsKey(player)) {
 			Spectate.removeSpectator(player);
 		}
+		plugin.ScriptWatchers.quit(player);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)

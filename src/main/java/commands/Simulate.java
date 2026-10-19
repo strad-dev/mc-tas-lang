@@ -83,7 +83,7 @@ public class Simulate implements CommandExecutor {
 					p.sendMessage(TASUtils.msg("<red>Please specify a player to apply the movement to"));
 					return true;
 				}
-				Player applyTo = FakePlayerManager.getFakePlayers().get(Character.toUpperCase(args[1].charAt(0)) + args[1].substring(1).toLowerCase());
+				Player applyTo = FakePlayerManager.getFake(args[1]);
 				if(applyTo == null) {
 					p.sendMessage(TASUtils.msg("<red>Player <v0> is not a fake player", Placeholder.unparsed("v0", String.valueOf(args[1]))));
 					return true;
@@ -123,7 +123,7 @@ public class Simulate implements CommandExecutor {
 					p.sendMessage(TASUtils.msg("<red>Please specify a player to apply the click to"));
 					return true;
 				}
-				Player applyTo = FakePlayerManager.getFakePlayers().get(Character.toUpperCase(args[1].charAt(0)) + args[1].substring(1).toLowerCase());
+				Player applyTo = FakePlayerManager.getFake(args[1]);
 				if(applyTo == null) {
 					p.sendMessage(TASUtils.msg("<red>Player <v0> is not a fake player", Placeholder.unparsed("v0", String.valueOf(args[1]))));
 					return true;
@@ -154,7 +154,7 @@ public class Simulate implements CommandExecutor {
 					p.sendMessage(TASUtils.msg("<red>Please specify a player to apply the turn to"));
 					return true;
 				}
-				Player applyTo = FakePlayerManager.getFakePlayers().get(Character.toUpperCase(args[1].charAt(0)) + args[1].substring(1).toLowerCase());
+				Player applyTo = FakePlayerManager.getFake(args[1]);
 				if(applyTo == null) {
 					p.sendMessage(TASUtils.msg("<red>Player <v0> is not a fake player", Placeholder.unparsed("v0", String.valueOf(args[1]))));
 					return true;
@@ -184,7 +184,7 @@ public class Simulate implements CommandExecutor {
 					p.sendMessage(TASUtils.msg("<red>Please specify a player to apply hotbar change to"));
 					return true;
 				}
-				Player applyTo = FakePlayerManager.getFakePlayers().get(Character.toUpperCase(args[1].charAt(0)) + args[1].substring(1).toLowerCase());
+				Player applyTo = FakePlayerManager.getFake(args[1]);
 				if(applyTo == null) {
 					p.sendMessage(TASUtils.msg("<red>Player <v0> is not a fake player", Placeholder.unparsed("v0", String.valueOf(args[1]))));
 					return true;
@@ -215,7 +215,7 @@ public class Simulate implements CommandExecutor {
 					p.sendMessage(TASUtils.msg("<red>Please specify a player to apply the swap to"));
 					return true;
 				}
-				Player applyTo = FakePlayerManager.getFakePlayers().get(Character.toUpperCase(args[1].charAt(0)) + args[1].substring(1).toLowerCase());
+				Player applyTo = FakePlayerManager.getFake(args[1]);
 				if(applyTo == null) {
 					p.sendMessage(TASUtils.msg("<red>Player <v0> is not a fake player", Placeholder.unparsed("v0", String.valueOf(args[1]))));
 					return true;
@@ -249,7 +249,7 @@ public class Simulate implements CommandExecutor {
 			p.sendMessage(TASUtils.msg(missing));
 			return null;
 		}
-		Player fake = FakePlayerManager.getFakePlayers().get(Character.toUpperCase(args[1].charAt(0)) + args[1].substring(1).toLowerCase());
+		Player fake = FakePlayerManager.getFake(args[1]);
 		if(fake == null) p.sendMessage(TASUtils.msg("<red>Player <v0> is not a fake player", Placeholder.unparsed("v0", args[1])));
 		return fake;
 	}

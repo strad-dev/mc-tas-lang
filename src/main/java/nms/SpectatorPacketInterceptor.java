@@ -7,6 +7,9 @@ import io.netty.channel.ChannelPromise;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
+import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerButtonClickPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
@@ -24,6 +27,7 @@ import org.bukkit.entity.Player;
 import commands.Spectate;
 
 import java.lang.reflect.Field;
+import java.util.ArrayDeque;
 
 public class SpectatorPacketInterceptor extends ChannelDuplexHandler {
 	private static final String NAME = "tas_spectator";
@@ -71,15 +75,34 @@ public class SpectatorPacketInterceptor extends ChannelDuplexHandler {
 		super.channelRead(ctx, msg);
 	}
 
+	/** Sound packets written lately; one sent both directly and via {@code SpectatorSync.mirrorSound} plays once. */
+	private final ArrayDeque<Object> recentSounds = new ArrayDeque<>();
+	private static final int RECENT_SOUNDS = 64;
+
+	private boolean isDuplicateSound(Object msg) {
+		if(!(msg instanceof ClientboundSoundPacket || msg instanceof ClientboundSoundEntityPacket
+				|| msg instanceof ClientboundStopSoundPacket)) return false;
+		synchronized(recentSounds) {
+			for(Object seen : recentSounds) if(seen == msg) return true;
+			recentSounds.addLast(msg);
+			if(recentSounds.size() > RECENT_SOUNDS) recentSounds.removeFirst();
+			return false;
+		}
+	}
+
 	@Override
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
+		if(isDuplicateSound(msg)) {
+			promise.trySuccess();
+			return;
+		}
 		if(msg instanceof ClientboundContainerSetContentPacket pkt && pkt.containerId() == 0) {
 			Player fakePlayer = Spectate.getSpectatorMap().get(player);
 			if(fakePlayer instanceof CraftPlayer craftFake) {
 				ServerPlayer nmsFake = craftFake.getHandle();
 				msg = new ClientboundContainerSetContentPacket(
 					0, pkt.stateId(),
-					nmsFake.containerMenu.getItems(), nmsFake.containerMenu.getCarried()
+					nmsFake.inventoryMenu.getItems(), nmsFake.containerMenu.getCarried()
 				);
 			}
 		}

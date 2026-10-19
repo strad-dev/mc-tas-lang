@@ -11,15 +11,17 @@ public class Healer extends Actions {
 	}
 
 	@SuppressWarnings("FieldCanBeLocal")
-	// Healer --> Mage4
+	// Healer --> NoseThe
 	public void healerInstructions(String section) {
 		int start = TAS.startDelay(section);
 		switch(section) {
 			case "all", "clear" -> {
+				startAt(-120.5, 71, -183.5, 0f, 0f);
 				preClear();
 				TASUtils.scheduleTask(() -> clear(section.equals("all")), start);
 			}
 			case "maxor", "boss" -> {
+				startAt(73.5, 221, 14.5, 0f, 0f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -33,6 +35,7 @@ public class Healer extends Actions {
 				}
 			}
 			case "storm" -> {
+				startAt(32.702, 170, 95.151, -155f, 0f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -41,6 +44,7 @@ public class Healer extends Actions {
 				TASUtils.scheduleTask(() -> storm(false), start);
 			}
 			case "goldor" -> {
+				startAt(107.622, 120, 93.618, -123f, 1f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -50,6 +54,7 @@ public class Healer extends Actions {
 				TASUtils.scheduleTask(() -> goldor(false), start);
 			}
 			case "necron" -> {
+				startAt(54.524, 64, 100.707, 180f, -6f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -57,6 +62,7 @@ public class Healer extends Actions {
 				TASUtils.scheduleTask(() -> necron(false), start);
 			}
 			case "witherking" -> {
+				startAt(56.326, 8, 130.7, -16.2f, 18.8f);
 				swapItems(1, 28);
 				swapItems(6, 33);
 				swapItems(7, 34);
@@ -274,7 +280,7 @@ public class Healer extends Actions {
 		at(283).turnHead(66f, -43f);
 		at(284).rightClick();
 		at(285).setHotbarSlot(4);
-		at(286).leap(fake("Mage3")); // leap to bers
+		at(286).leap(fake("RedFish2471")); // leap to bers
 		at(403).setHotbarSlot(1).move("WP", 0);
 		at(408).move("WPJ", 0).turnHead(34f, 80f);
 		at(410).rightClick(); // bonzo to yellow pad
@@ -325,7 +331,7 @@ public class Healer extends Actions {
 		at(759).snapHeadAtNearestNamed("Storm");
 		at(760).leftClick();
 		at(761).setHotbarSlot(4).swapItems(12, 39); // put on racing helmet -> speed auto-set to 650
-		at(782).leap(fake("Mage3"));
+		at(782).leap(fake("RedFish2471"));
 		at(783).setHotbarSlot(1).move("WP", 12);
 		at(784).rightClick();
 		at(785).turnHead(-47f, 0f).setHotbarSlot(5);
@@ -370,7 +376,7 @@ public class Healer extends Actions {
 		at(41).rightClick(); //s1 right
 
 		at(42).setHotbarSlot(4);
-		at(51).leap(fake("Mage3")); // delay for better positioning
+		at(51).leap(fake("RedFish2471")); // delay for better positioning
 
 		/*
 		 * ██████╗
@@ -395,7 +401,7 @@ public class Healer extends Actions {
 		at(128).turnHead(90f, 6f);
 		at(129).rightClick(); // s2 top
 
-		at(130).leap(fake("Archer"));
+		at(130).leap(fake("akc0303"));
 
 		/*
 		 * ██████╗
@@ -416,7 +422,7 @@ public class Healer extends Actions {
 		at(158).rightClick(); // s3 2
 		// tick 159: terminal completes
 
-		at(160).leap(fake("Mage1"));
+		at(160).leap(fake("Beethoven_"));
 
 		/*
 		 * ██╗  ██╗
@@ -434,7 +440,7 @@ public class Healer extends Actions {
 		at(180).turnHead(-151f, -22f);
 		at(181).rightClick(); // s4 bottom
 
-		at(191).leap(fake("Mage1"));
+		at(191).leap(fake("Beethoven_"));
 
 		/*
 		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
@@ -449,7 +455,7 @@ public class Healer extends Actions {
 		at(223).turnHead(-111f, -2f).swapItems(12, 39);
 		at(224).leftClick();
 		at(225).setHotbarSlot(4);
-		at(245).leap(fake("Archer"));
+		at(245).leap(fake("akc0303"));
 		at(246).move("WP", 0);
 		at(287).move("WN", 0); 
 		at(297).move("N", 10);
@@ -477,7 +483,7 @@ public class Healer extends Actions {
 			at(i).leftClick();
 		}
 		at(501).setHotbarSlot(4);
-		at(502).leap(fake("Archer"));
+		at(502).leap(fake("akc0303"));
 		at(503).swapItems(13, 39);
 		at(504).turnHead(-2f, 0f).setHotbarSlot(5);
 		at(505).move("WP", 0);
@@ -495,13 +501,13 @@ public class Healer extends Actions {
 	public void witherKing() {
 		rightClick();
 		at(1).setHotbarSlot(4);
-		at(25).leap(fake("Mage3"));
+		at(25).leap(fake("RedFish2471"));
 		at(26).turnHead(90f, 0f).move("WDP", 0).setHotbarSlot(8);
 		at(27).move("WP", 1);
 		at(28).rightClick();
 		at(29).swapItems(5, 32).swapItems(13, 39);
 		at(30).setHotbarSlot(4);
-		at(100).leap(fake("Mage1"));
+		at(100).leap(fake("Beethoven_"));
 		at(101).setHotbarSlot(5).turnHead(180f, -90f);
 		at(200).rightClick();
 		at(261).setHotbarSlot(6);

@@ -11,15 +11,17 @@ public class Tank extends Actions {
 		super(player);
 	}
 
-	// Tank --> Mage2
+	// Tank --> cookiethebald
 	public void tankInstructions(String section) {
 		int start = TAS.startDelay(section);
 		switch(section) {
 			case "all", "clear" -> {
+				startAt(-120.5, 71, -183.5, 0f, 0f);
 				preclear();
 				TASUtils.scheduleTask(() -> clear(section.equals("all")), start);
 			}
 			case "maxor", "boss" -> {
+				startAt(73.5, 221, 14.5, 0f, 0f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -32,6 +34,7 @@ public class Tank extends Actions {
 				}
 			}
 			case "storm" -> {
+				startAt(46.794, 169, 53.835, -90f, 0f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -39,6 +42,7 @@ public class Tank extends Actions {
 				TASUtils.scheduleTask(() -> storm(false), start);
 			}
 			case "goldor" -> {
+				startAt(-0.240, 120, 76.775, 72f, -25f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -48,6 +52,7 @@ public class Tank extends Actions {
 				TASUtils.scheduleTask(() -> goldor(false), start);
 			}
 			case "necron" -> {
+				startAt(54.524, 64, 100.707, 180f, -6f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -55,6 +60,7 @@ public class Tank extends Actions {
 				TASUtils.scheduleTask(() -> necron(false), start);
 			}
 			case "witherking" -> {
+				startAt(22.3, 6, 94.452, 67.3f, 29.7f);
 				swapItems(1, 28);
 				swapItems(6, 33);
 				swapItems(7, 34);
@@ -86,7 +92,7 @@ public class Tank extends Actions {
 		at(22).turnHead(0f, 3.98f).move("N", 2).setHotbarSlot(1);
 		at(23).rightClick(); // etherwarp to miniboss death location
 		at(24).setHotbarSlot(4);
-		at(25).leap(fake("Archer"));
+		at(25).leap(fake("akc0303"));
 		at(26).turnHead(0f, 6f).setHotbarSlot(3).swapItems(4, 31);
 		at(46).leftClick(); // kill miniboss instantly
 		at(47).setHotbarSlot(1).turnHead(0f, 15f);
@@ -275,7 +281,7 @@ public class Tank extends Actions {
 		at(217).leftClick(); // hit 1, avoid insta-enrage
 		at(400).leftClick(); // hit 2 to kill
 		at(401).setHotbarSlot(4);
-		at(402).leap(fake("Mage4"));
+		at(402).leap(fake("NoseThe"));
 		at(403).turnHead(156f, 0f).setHotbarSlot(0);
 		at(404).move("WP", 12);
 		at(416).turnHead(-90f, 0f);
@@ -292,7 +298,7 @@ public class Tank extends Actions {
 			at(i).loopLeftClick();
 		} // kill outstanding wither skeletons
 		at(531).setHotbarSlot(4);
-		at(532).leap(fake("Mage4"));
+		at(532).leap(fake("NoseThe"));
 		at(533).turnHead(73f, 0f).setHotbarSlot(5).swapItems(12, 39); // swap to black cat racing helmet -> speed auto-set to 650
 		at(546).move("WP", 0);
 		at(554).move("WPJ", 0);
@@ -352,7 +358,7 @@ public class Tank extends Actions {
 		 *  ╚═╝
 		 */
 		rightClick(); // complete i2
-		at(1).leap(fake("Mage4"));
+		at(1).leap(fake("NoseThe"));
 		at(2).setHotbarSlot(5).move("WAP", 0); // get out of the way
 		at(3).move("N", 0).turnHead(-112f, -4f); // prevent fall
 		at(4).rightClick();
@@ -374,7 +380,7 @@ public class Tank extends Actions {
 		// tick 35: terminal completes
 
 		at(36).setHotbarSlot(4);
-		at(37).leap(fake("Mage3"));
+		at(37).leap(fake("RedFish2471"));
 
 		/*
 		 * ██████╗
@@ -387,7 +393,7 @@ public class Tank extends Actions {
 		at(46).rightClick(); // s2 1
 		// tick 47: terminal completes
 
-		at(52).leap(fake("Mage3"));
+		at(52).leap(fake("RedFish2471"));
 		at(53).move("WP", 0).setHotbarSlot(1);
 		at(55).rightClick();
 		at(56).turnHead(58f, 0f).setHotbarSlot(5);
@@ -407,7 +413,7 @@ public class Tank extends Actions {
 		at(106).swapItems(9, 39); // equip mask for preleap
 		at(107).rightClick(); // s2 bottom
 
-		at(108).leap(fake("Archer"));
+		at(108).leap(fake("akc0303"));
 
 		/*
 		 * ██████╗
@@ -433,7 +439,7 @@ public class Tank extends Actions {
 		at(134).move("WP", 8);
 		at(142).rightClick(); // s3 right
 
-		at(158).leap(fake("Mage1"));
+		at(158).leap(fake("Beethoven_"));
 
 		/*
 		 * ██╗  ██╗
@@ -455,7 +461,7 @@ public class Tank extends Actions {
 		at(191).turnHead(-90f, -43f).setHotbarSlot(4);
 		at(200).rightClick(); // s4 top FUCK THIS STUPID FUCKING LEVER
 
-		at(201).leap(fake("Mage1"));
+		at(201).leap(fake("Beethoven_"));
 
 		/*
 		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
@@ -470,7 +476,7 @@ public class Tank extends Actions {
 		at(223).turnHead(-111f, -2f).swapItems(12, 39);
 		at(224).leftClick();
 		at(225).setHotbarSlot(4);
-		at(245).leap(fake("Archer"));
+		at(245).leap(fake("akc0303"));
 		at(246).move("WP", 0);
 		at(287).move("WN", 0);
 		at(297).move("N", 10);
@@ -498,7 +504,7 @@ public class Tank extends Actions {
 			at(i).leftClick();
 		}
 		at(501).setHotbarSlot(4);
-		at(502).leap(fake("Archer"));
+		at(502).leap(fake("akc0303"));
 		at(503).swapItems(13, 39);
 		at(504).turnHead(65f, 0f).setHotbarSlot(5);
 		at(505).move("WP", 0);
@@ -512,7 +518,7 @@ public class Tank extends Actions {
 	public void witherKing() {
 		rightClick();
 		at(1).setHotbarSlot(4);
-		at(23).leap(fake("Archer"));
+		at(23).leap(fake("akc0303"));
 		at(24).turnHead(-105f, -10f).setHotbarSlot(8);
 		at(25).rightClick();
 		at(26).turnHead(-6.25f, 0f);
@@ -535,7 +541,7 @@ public class Tank extends Actions {
 		at(388).leftClick();
 		at(393).leftClick();
 		at(394).setHotbarSlot(4);
-		at(490).leap(fake("Mage1"));
+		at(490).leap(fake("Beethoven_"));
 		at(491).setHotbarSlot(5);
 		at(529).rightClick();
 		at(590).setHotbarSlot(6);

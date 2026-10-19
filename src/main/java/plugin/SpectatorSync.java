@@ -15,6 +15,9 @@ import net.minecraft.network.protocol.game.ClientboundOpenSignEditorPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket;
 import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
+import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -104,10 +107,10 @@ public class SpectatorSync {
 		for(Player target : targets) {
 			if(target instanceof CraftPlayer craftTarget) {
 				ServerPlayer targetHandle = craftTarget.getHandle();
-				AbstractContainerMenu targetMenu = targetHandle.containerMenu;
+				AbstractContainerMenu targetMenu = targetHandle.inventoryMenu;
 				ClientboundContainerSetContentPacket pkt = new ClientboundContainerSetContentPacket(
 					targetMenu.containerId, targetMenu.incrementStateId(),
-					sourceHandle.containerMenu.getItems(), sourceHandle.containerMenu.getCarried()
+					sourceHandle.inventoryMenu.getItems(), sourceHandle.containerMenu.getCarried()
 				);
 				targetHandle.connection.send(pkt);
 			}
@@ -158,6 +161,16 @@ public class SpectatorSync {
 		} else if(packet instanceof ClientboundMerchantOffersPacket && openScreens.containsKey(key)) {
 			openScreens.get(key).add(packet);
 		}
+		for(Player watcher : Spectate.getSpectatingPlayers(fake.getBukkitEntity())) send(watcher, packet);
+	}
+
+	/**
+	 * Called with every packet the server sends a fake: sounds also go to its watchers, so they hear what it hears.
+	 * A broadcast the watcher got directly is the same instance; the watcher's interceptor drops the second copy.
+	 */
+	public static void mirrorSound(ServerPlayer fake, Packet<?> packet) {
+		if(!(packet instanceof ClientboundSoundPacket || packet instanceof ClientboundSoundEntityPacket
+				|| packet instanceof ClientboundStopSoundPacket)) return;
 		for(Player watcher : Spectate.getSpectatingPlayers(fake.getBukkitEntity())) send(watcher, packet);
 	}
 

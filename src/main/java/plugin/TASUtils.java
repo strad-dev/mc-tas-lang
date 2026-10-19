@@ -36,20 +36,47 @@ public class TASUtils {
 	}
 
 	/**
-	 * runTaskLater; delay in ticks. Dropped if an M7 run starts or ends in between (M7's schedule generation), so
-	 * choreography can't bleed into the next run.
+	 * runTaskLater; delay in ticks. Dropped if the run changes in between ({@link #run()}), so choreography can't
+	 * bleed into the next run.
 	 */
 	public static void scheduleTask(Runnable task, long delay) {
 		if(!mcTASLang.getInstance().isEnabled()) return;
-		Object generation = scheduleGeneration();
+		int queuedIn = run();
 		Bukkit.getScheduler().runTaskLater(mcTASLang.getInstance(), () -> {
-			if(!Objects.equals(generation, scheduleGeneration())) return;
+			if(queuedIn != run()) return;
 			task.run();
 		}, delay);
 	}
 
-	private static Object scheduleGeneration() {
-		return M7Link.get("plugin.Utils", "scheduleGeneration");
+	private static int run;
+	private static Object m7Generation;
+
+	/** Bumped by {@link #endRun()} and whenever M7's schedule generation moves (an M7 run starts or ends), except by {@link #dispatchInRun}. */
+	private static int run() {
+		Object generation = M7Link.get("plugin.Utils", "scheduleGeneration");
+		if(!Objects.equals(generation, m7Generation)) {
+			m7Generation = generation;
+			run++;
+		}
+		return run;
+	}
+
+	/** Changes whenever a queued task would be dropped. */
+	public static int currentRun() {
+		return run();
+	}
+
+	/** Drops every queued task. */
+	public static void endRun() {
+		run++;
+	}
+
+	/** Runs {@code command} as {@code p}; the M7 run it starts is this run, so queued tasks survive it. */
+	public static void dispatchInRun(Player p, String command) {
+		int current = run();
+		Bukkit.dispatchCommand(p, command);
+		m7Generation = M7Link.get("plugin.Utils", "scheduleGeneration");
+		run = current;
 	}
 
 	public static void broadcastPacket(Packet<?> pkt) {

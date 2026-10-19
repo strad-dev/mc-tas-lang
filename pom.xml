@@ -87,6 +87,10 @@
                             <target>
                                 <copy file="${project.build.directory}/${project.build.finalName}.jar"
                                       todir="${project.basedir}/../../../testing servers/network test/assets/plugins"/>
+                                <!-- Local tas server: Paper swaps update/ in on next start, so building while it
+                                     runs is fine (the live jar is locked on Windows). -->
+                                <copy file="${project.build.directory}/${project.build.finalName}.jar"
+                                      todir="${project.basedir}/../../../testing servers/tas server/plugins/update"/>
                             </target>
                         </configuration>
                     </execution>

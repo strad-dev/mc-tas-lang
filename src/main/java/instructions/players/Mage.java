@@ -14,10 +14,12 @@ public class Mage extends Actions {
 		int start = TAS.startDelay(section);
 		switch(section) {
 			case "all", "clear" -> {
+				startAt(-120.5, 71, -183.5, 0f, 0f);
 				preClear();
 				TASUtils.scheduleTask(() -> clear(section.equals("all")), start);
 			}
 			case "maxor", "boss" -> {
+				startAt(73.5, 221, 14.5, 0f, 0f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -31,6 +33,7 @@ public class Mage extends Actions {
 				}
 			}
 			case "storm" -> {
+				startAt(100.504, 169, 53.534, 90f, 0f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -39,6 +42,7 @@ public class Mage extends Actions {
 				TASUtils.scheduleTask(() -> storm(false), start);
 			}
 			case "goldor" -> {
+				startAt(108.5, 120, 94.496, -141f, 1f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -48,6 +52,7 @@ public class Mage extends Actions {
 				TASUtils.scheduleTask(() -> goldor(false), start);
 			}
 			case "necron" -> {
+				startAt(54.524, 64, 100.707, 180f, -6f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -55,6 +60,7 @@ public class Mage extends Actions {
 				TASUtils.scheduleTask(() -> necron(false), start);
 			}
 			case "witherking" -> {
+				startAt(89.7, 6, 94.406, -75.6f, 18.8f);
 				swapItems(1, 28);
 				swapItems(6, 33);
 				swapItems(7, 34);
@@ -66,11 +72,11 @@ public class Mage extends Actions {
 	}
 
 	private void preClear() {
-		turnHead(180f, -89f);
+		turnHead(180f, -90f);
 		swapItems(2, 29);
 		setHotbarSlot(7);
 		at(1).move("WP", 35); // move to pearl spot
-		at(37).rightClick(); // lands in 10 ticks
+		at(36).rightClick(); // lands in 10 ticks
 		at(38).setHotbarSlot(1).move("N", 0);
 		// dodge tick 40 teleport
 		at(47).rightClick(); // etherwarp to top
@@ -110,7 +116,7 @@ public class Mage extends Actions {
 		// tick 1: tac TP back
 		at(2).rightClick();
 		at(4).setHotbarSlot(4);
-		at(50).leap(fake("Mage2"));
+		at(50).leap(fake("cookiethebald"));
 		at(51).turnHead(-65f, 3f).setHotbarSlot(7);
 		at(52).rightClick(); // pearl to next secret | lands in 8 ticks
 		at(53).turnHead(72f, -3f).setHotbarSlot(1);
@@ -242,7 +248,7 @@ public class Mage extends Actions {
 		at(241).turnHead(-128f, 0f);
 		at(242).move("WP", 24);
 		at(243).setHotbarSlot(4);
-		at(339).leap(fake("Mage3"));
+		at(339).leap(fake("RedFish2471"));
 		at(340).turnHead(-121f, 0f).setHotbarSlot(0);
 		at(341).move("WP", 9); // move to storm clear spot
 		at(350).turnHead(90f, 0f);
@@ -259,7 +265,7 @@ public class Mage extends Actions {
 			at(i).loopLeftClick();
 		} // kill outstanding wither skeletons
 		at(531).setHotbarSlot(4);
-		at(532).leap(fake("Mage3"));
+		at(532).leap(fake("RedFish2471"));
 		at(533).turnHead(-26f, 0f).setHotbarSlot(1).swapItems(5, 32);
 		at(546).move("WP", 0);
 		at(554).move("WPJ", 0);
@@ -282,7 +288,7 @@ public class Mage extends Actions {
 		at(679).setHotbarSlot(3).snapHeadAtNearestNamed("Storm");
 		at(680).leftClick();
 		at(681).setHotbarSlot(4);
-		at(682).leap(fake("Mage4"));
+		at(682).leap(fake("NoseThe"));
 		at(683).move("S", 29).setHotbarSlot(3);
 		for(int i = 685; i <= 760; i += 5) {
 			at(i - 1).snapHeadAtNearestNamed("Storm");
@@ -292,7 +298,7 @@ public class Mage extends Actions {
 		at(735).move("N", 2);
 		at(738).swapItems(11, 36);
 		at(800).setHotbarSlot(4).swapItems(12, 39); // put on racing helmet -> speed auto-set to 650
-		at(811).leap(fake("Mage4"));
+		at(811).leap(fake("NoseThe"));
 		at(812).setHotbarSlot(5);
 		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
@@ -330,7 +336,7 @@ public class Mage extends Actions {
 		// tick 45: terminal completes
 
 		at(46).setHotbarSlot(4);
-		at(48).leap(fake("Mage3"));
+		at(48).leap(fake("RedFish2471"));
 
 		/*
 		 * ██████╗
@@ -399,7 +405,7 @@ public class Mage extends Actions {
 		at(223).turnHead(-111f, -2f).swapItems(12, 39);
 		at(224).leftClick();
 		at(225).setHotbarSlot(4);
-		at(245).leap(fake("Archer"));
+		at(245).leap(fake("akc0303"));
 		at(246).move("WP", 0);
 		at(287).move("WN", 0);
 		at(297).move("N", 10);
@@ -415,7 +421,7 @@ public class Mage extends Actions {
 			at(i).leftClick();
 		}
 		at(501).setHotbarSlot(4);
-		at(502).leap(fake("Archer"));
+		at(502).leap(fake("akc0303"));
 		at(503).swapItems(13, 39);
 		at(504).turnHead(-67f, 0f).setHotbarSlot(5);
 		at(505).move("WP", 0);
@@ -429,7 +435,7 @@ public class Mage extends Actions {
 	public void witherKing() {
 		rightClick();
 		at(1).setHotbarSlot(4);
-		at(22).leap(fake("Mage3"));
+		at(22).leap(fake("RedFish2471"));
 		at(23).turnHead(90f, 0f).setHotbarSlot(8);
 		at(24).rightClick();
 		at(25).turnHead(-20f, 0f);

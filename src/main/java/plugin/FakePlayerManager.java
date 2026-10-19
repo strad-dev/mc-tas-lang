@@ -52,15 +52,29 @@ import instructions.Actions;
 public class FakePlayerManager {
 	private static final Map<String, Player> fakePlayers = new HashMap<>();
 	private static boolean fakeTickerStarted = false;
+	/** True only inside the ticker's physics step; see the ServerPlayer override in spawnFakePlayer. */
+	private static boolean steppingPhysics = false;
 
 	// Each fake's inbound pipeline. Simulated packets enter here, so the server sees them exactly like a real
 	// client's (M7 installs its interceptor before "packet_handler" on join).
 	private static final Map<UUID, EmbeddedChannel> channels = new HashMap<>();
 
-	private static final Map<String, String> SKIN_DATA = Map.of("Archer", "0b0fa6bc-69ee-4f6c-a4f8-7cac79f1871a", "Mage3", "f0b1d2e5-dfd2-4d33-9768-4d2b259a4743", "Mage4", "6715b245-be6e-496c-87eb-1d2c19066403", "Mage1", "cdb9e9c6-c096-4f58-9c49-35395d7b897c", "Mage2", "5d142c3a-bdf1-418b-b907-797bbaaed188");
+	private static final Map<String, String> SKIN_DATA = Map.of("akc0303", "0b0fa6bc-69ee-4f6c-a4f8-7cac79f1871a",
+																"RedFish2471", "2abb218f-ada3-49be-a6d1-81a2872941e2",
+																"NoseThe", "43c561aa-ed1b-4f8b-8fa6-f28a8aaafaad",
+																"Beethoven_", "cdb9e9c6-c096-4f58-9c49-35395d7b897c",
+																"cookiethebald", "5d142c3a-bdf1-418b-b907-797bbaaed188");
 
 	public static Map<String, Player> getFakePlayers() {
 		return fakePlayers;
+	}
+
+	/** The fake named {@code name}, ignoring case, or null. */
+	public static Player getFake(String name) {
+		for(var entry : fakePlayers.entrySet()) {
+			if(entry.getKey().equalsIgnoreCase(name)) return entry.getValue();
+		}
+		return null;
 	}
 
 	public static void spawnAllFakes(World world) {
@@ -68,27 +82,35 @@ public class FakePlayerManager {
 		fakePlayers.clear();
 
 		for(var entry : SKIN_DATA.entrySet()) {
-			String role = entry.getKey();
+			String name = entry.getKey();
 			String skin = entry.getValue();
 
-			Player fake = spawnFakePlayer(world, role, UUID.fromString(skin));
-			fakePlayers.put(role, fake);
+			Player fake = spawnFakePlayer(world, name, UUID.fromString(skin));
+			fakePlayers.put(name, fake);
 		}
 		startFakePlayerTicker();
 	}
 
-	public static Player spawnFakePlayer(World world, String fakePlayerName, UUID skinOwner) {
+	public static Player spawnFakePlayer(World world, String name, UUID skinOwner) {
 		MinecraftServer nmsServer = ((CraftServer) mcTASLang.getInstance().getServer()).getServer();
 		ServerLevel nmsWorld = ((CraftWorld) world).getHandle();
 
 		// Stable per name: M7 keys class and loadout by UUID, so a random one left new files every spawn.
-		UUID id = UUID.nameUUIDFromBytes(("mc-tas-lang:" + fakePlayerName).getBytes(StandardCharsets.UTF_8));
-		GameProfile profile = buildFakeProfileWithSkin(id, fakePlayerName, skinOwner);
+		UUID id = UUID.nameUUIDFromBytes(("mc-tas-lang:" + name).getBytes(StandardCharsets.UTF_8));
+		GameProfile profile = buildFakeProfileWithSkin(id, name, skinOwner);
 
 		// View distance 0 - ChunkMap.getPlayerViewDistance clamps to min 2 internally,
 		// but this still drops the per-fake chunk load from 17x17=289 to 5x5=25.
 		ClientInformation clientInfo = new ClientInformation("en_us", 0, ChatVisiblity.FULL, true, 0x7F, HumanoidArm.RIGHT, false, false, ParticleStatus.MINIMAL);
-		ServerPlayer nmsPlayer = new ServerPlayer(nmsServer, nmsWorld, profile, clientInfo);
+		ServerPlayer nmsPlayer = new ServerPlayer(nmsServer, nmsWorld, profile, clientInfo) {
+			// While the ticker runs this fake's physics it is the client, so move() takes a LocalPlayer's
+			// authoritative path: ground/collision update, fall check, and the fluid re-read after the move that makes
+			// a lava launch the shallow x0.8 bounce instead of x0.5.
+			@Override
+			public boolean isClientAuthoritative() {
+				return !steppingPhysics && super.isClientAuthoritative();
+			}
+		};
 		try {
 			java.lang.reflect.Field firstTick = net.minecraft.world.entity.Entity.class.getDeclaredField("firstTick");
 			firstTick.setAccessible(true);
@@ -97,11 +119,11 @@ public class FakePlayerManager {
 			throw new RuntimeException("Failed to clear firstTick on fake player", e);
 		}
 
-		EmbeddedChannel channel = new EmbeddedChannel();
-		channel.pipeline().addLast("packet_handler", new ServerboundDispatcher(nmsPlayer));
+		EmbeddedChannel embedded = new EmbeddedChannel();
+		embedded.pipeline().addLast("packet_handler", new ServerboundDispatcher(nmsPlayer));
 		Connection nm = new Connection(PacketFlow.SERVERBOUND) {
 			{
-				this.channel = channel;
+				this.channel = embedded;
 				this.address = new InetSocketAddress("127.0.0.1", 0);
 			}
 
@@ -124,7 +146,7 @@ public class FakePlayerManager {
 		nmsPlayer.setNoGravity(false);
 
 		nmsServer.getPlayerList().placeNewPlayer(nm, nmsPlayer, cookie);
-		channels.put(nmsPlayer.getUUID(), channel);
+		channels.put(nmsPlayer.getUUID(), embedded);
 		reply(nmsPlayer, new ServerboundPlayerLoadedPacket());
 
 		return nmsPlayer.getBukkitEntity();
@@ -135,7 +157,7 @@ public class FakePlayerManager {
 		EmbeddedChannel channel = channels.get(fake.getUniqueId());
 		if(channel == null) return false;
 		channel.pipeline().fireChannelRead(packet);
-		if(packet instanceof ServerboundContainerClosePacket close) {
+		if(packet instanceof ServerboundContainerClosePacket close && close.getContainerId() != 0) {
 			SpectatorSync.fakeClosedScreen(((CraftPlayer) fake).getHandle(), close.getContainerId());
 		}
 		return true;
@@ -148,6 +170,7 @@ public class FakePlayerManager {
 			reply(fake, new ServerboundAcceptTeleportationPacket(position.id()));
 		} else {
 			SpectatorSync.mirrorScreen(fake, packet);
+			SpectatorSync.mirrorSound(fake, packet);
 			if(packet instanceof ClientboundRespawnPacket) reply(fake, new ServerboundPlayerLoadedPacket());
 		}
 	}
@@ -313,12 +336,15 @@ public class FakePlayerManager {
 						}
 					}
 					// 26.2 folded the water/lava push into Entity.updateFluidInteraction (protected)
+					steppingPhysics = true;
 					try {
 						updateFluidInteraction.invoke(npc);
+						npc.aiStep();
 					} catch (Exception e) {
 						e.printStackTrace();
+					} finally {
+						steppingPhysics = false;
 					}
-					npc.aiStep();
 				}
 			}
 		}.runTaskTimer(mcTASLang.getInstance(), 0, 1);

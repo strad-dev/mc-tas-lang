@@ -15,10 +15,12 @@ public class Archer extends Actions {
 		int start = TAS.startDelay(section);
 		switch(section) {
 			case "all", "clear" -> {
+				startAt(-120.5, 71, -183.5, 0f, 0f);
 				preClear();
 				TASUtils.scheduleTask(() -> clear(section.equals("all")), start);
 			}
 			case "maxor", "boss" -> {
+				startAt(73.5, 221, 14.5, 0f, 0f);
 				swapItems(1, 28);
 				swapItems(6, 33);
 				swapItems(7, 34);
@@ -31,6 +33,7 @@ public class Archer extends Actions {
 				}
 			}
 			case "storm" -> {
+				startAt(65.087, 165, 69.329, 180f, -4f);
 				swapItems(1, 28);
 				swapItems(6, 33);
 				swapItems(7, 34);
@@ -38,6 +41,7 @@ public class Archer extends Actions {
 				TASUtils.scheduleTask(() -> storm(false), start);
 			}
 			case "goldor" -> {
+				startAt(63.811, 127, 35.940, -74.5f, -46f);
 				swapItems(1, 28);
 				swapItems(5, 32);
 				swapItems(6, 33);
@@ -63,6 +67,7 @@ public class Archer extends Actions {
 				TASUtils.scheduleTask(() -> goldor(false), start);
 			}
 			case "necron" -> {
+				startAt(54.524, 64, 100.707, 180f, -6f);
 				swapItems(1, 28);
 				swapItems(5, 32);
 				swapItems(6, 33);
@@ -70,6 +75,7 @@ public class Archer extends Actions {
 				TASUtils.scheduleTask(() -> necron(false), start);
 			}
 			case "witherking" -> {
+				startAt(22.3, 6, 59.408, 65.6f, 29.3f);
 				swapItems(1, 28);
 				swapItems(6, 33);
 				swapItems(7, 34);
@@ -247,7 +253,7 @@ public class Archer extends Actions {
 		at(241).turnHead(128f, 0f);
 		at(242).move("WP", 24);
 		at(243).setHotbarSlot(2);
-		at(339).leap(fake("Mage4"));
+		at(339).leap(fake("NoseThe"));
 		at(340).turnHead(-76f, 0f).setHotbarSlot(4);
 		at(341).move("WP", 9); // move to storm clear spot
 		at(350).turnHead(-180f, 0f);
@@ -265,7 +271,7 @@ public class Archer extends Actions {
 			at(i).rightClick();
 		} // clear mid
 		at(141).setHotbarSlot(2);
-		at(142).leap(fake("Mage2")); // leap to help clear green pad
+		at(142).leap(fake("cookiethebald")); // leap to help clear green pad
 		at(143).turnHead(180f, 0f).setHotbarSlot(4);
 		at(144).move("WP", 0);
 		at(163).move("WN", 3);
@@ -410,7 +416,7 @@ public class Archer extends Actions {
 		at(156).rightClick();
 		// tick 157: terminal completes
 
-		at(158).leap(fake("Mage1"));
+		at(158).leap(fake("Beethoven_"));
 
 		/*
 		 * ██╗  ██╗
@@ -432,7 +438,7 @@ public class Archer extends Actions {
 		at(190).rightClick(); // s4 2
 		// tick 191: terminal completes
 
-		at(192).leap(fake("Mage1"));
+		at(192).leap(fake("Beethoven_"));
 
 		/*
 		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
@@ -463,7 +469,7 @@ public class Archer extends Actions {
 		at(285).turnHead(-180f, 90f);
 		at(298).leftClick();
 		at(299).setHotbarSlot(2);
-		at(300).leap(fake("Mage1"));
+		at(300).leap(fake("Beethoven_"));
 		at(301).swapItems(5, 32).swapItems(12, 39);
 		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}
@@ -496,7 +502,7 @@ public class Archer extends Actions {
 		at(24).rightClick();
 		at(25).swapItems(5, 32).swapItems(13, 39);
 		at(26).setHotbarSlot(2);
-		at(100).leap(fake("Mage2"));
+		at(100).leap(fake("cookiethebald"));
 		at(101).setHotbarSlot(6).turnHead(180f, -90f);
 		at(200).rightClick();
 		at(261).setHotbarSlot(5);
@@ -506,7 +512,7 @@ public class Archer extends Actions {
 			at(i + lbFor).stopRightClick();
 		}
 		at(394).setHotbarSlot(2);
-		at(490).leap(fake("Mage1"));
+		at(490).leap(fake("Beethoven_"));
 		at(566).rightClick();
 		at(629).setHotbarSlot(5);
 		lbFor = 10;

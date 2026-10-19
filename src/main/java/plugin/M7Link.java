@@ -32,6 +32,17 @@ public class M7Link {
 		}
 	}
 
+	/** M7's class {@code className}, or null without M7. */
+	public static Class<?> loadClass(String className) {
+		Plugin m7 = Bukkit.getPluginManager().getPlugin("m7");
+		if(m7 == null) return null;
+		try {
+			return Class.forName(className, true, m7.getClass().getClassLoader());
+		} catch(ClassNotFoundException e) {
+			return null;
+		}
+	}
+
 	public static int getInt(String className, String member, int fallback) {
 		return get(className, member) instanceof Integer i ? i : fallback;
 	}

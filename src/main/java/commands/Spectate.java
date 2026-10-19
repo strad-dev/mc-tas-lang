@@ -26,6 +26,7 @@ import org.bukkit.scoreboard.Team;
 import org.jspecify.annotations.NonNull;
 import plugin.TASUtils;
 import plugin.FakePlayerManager;
+import plugin.ScriptWatchers;
 import plugin.SpectatorSync;
 import plugin.mcTASLang;
 
@@ -72,9 +73,8 @@ public class Spectate implements CommandExecutor {
 				return true;
 			}
 
-			String role = args[0];
-			role = Character.toUpperCase(role.charAt(0)) + role.substring(1).toLowerCase();
-			if(!fakePlayers.containsKey(role)) {
+			Player fakePlayer = FakePlayerManager.getFake(args[0]);
+			if(fakePlayer == null) {
 				p.sendMessage(TASUtils.msg("<red>Invalid class specified"));
 				return true;
 			}
@@ -84,7 +84,6 @@ public class Spectate implements CommandExecutor {
 				return true;
 			}
 
-			Player fakePlayer = fakePlayers.get(role);
 			spectatorMap.put(p, fakePlayer);
 			reverseSpectatorMap.computeIfAbsent(fakePlayer, k -> new HashSet<>()).add(p);
 			spectatorStates.put(p, new SpectatorState());
@@ -92,6 +91,9 @@ public class Spectate implements CommandExecutor {
 			SpectatorSync.backup(p);
 			p.addScoreboardTag(TASUtils.WATCHING_TAG);
 			nms.SpectatorPacketInterceptor.install(p);
+			// Not in the fakes' world: Paper's swing ray trace hits any entity the swinger can see, and the watcher
+			// stands inside a fake, so a fake's air left-click never became LEFT_CLICK_AIR.
+			for(Player fake : FakePlayerManager.getFakePlayers().values()) fake.hidePlayer(mcTASLang.getInstance(), p);
 
 			Location fakeLocation = fakePlayer.getLocation();
 			p.teleport(fakeLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
@@ -107,7 +109,7 @@ public class Spectate implements CommandExecutor {
 				startSpectatorSync();
 			}
 
-			p.sendMessage(TASUtils.msg("You are now spectating " + role));
+			p.sendMessage(TASUtils.msg("You are now spectating " + fakePlayer.getName()));
 			return true;
 		} else if(cmd.getName().equalsIgnoreCase("unspectate")) {
 			if(spectatorMap.containsKey(p)) {
@@ -141,8 +143,9 @@ public class Spectate implements CommandExecutor {
 			}
 		}
 
+		for(Player fake : FakePlayerManager.getFakePlayers().values()) fake.showPlayer(mcTASLang.getInstance(), p);
 		SpectatorSync.restoreAndRemove(p);
-		p.removeScoreboardTag(TASUtils.WATCHING_TAG);
+		if(!ScriptWatchers.holds(p)) p.removeScoreboardTag(TASUtils.WATCHING_TAG);
 		nms.SpectatorPacketInterceptor.uninstall(p);
 		restorePlayerCollision(p);
 	}
