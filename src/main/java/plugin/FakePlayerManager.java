@@ -8,20 +8,17 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.ProfileResult;
+import instructions.Actions;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.embedded.EmbeddedChannel;
+import net.kyori.adventure.text.Component;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.BundlePacket;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
-import net.kyori.adventure.text.Component;
-import net.minecraft.network.protocol.game.ClientboundRespawnPacket;
-import net.minecraft.network.protocol.game.ServerboundAcceptTeleportationPacket;
-import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
-import net.minecraft.network.protocol.game.ServerboundPlayerLoadedPacket;
+import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ParticleStatus;
@@ -37,6 +34,7 @@ import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,29 +45,33 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import instructions.Actions;
 
 public class FakePlayerManager {
 	private static final Map<String, Player> fakePlayers = new HashMap<>();
 	private static boolean fakeTickerStarted = false;
-	/** True only inside the ticker's physics step; see the ServerPlayer override in spawnFakePlayer. */
+	/**
+	 * True only inside the ticker's physics step; see the ServerPlayer override in spawnFakePlayer.
+	 */
 	private static boolean steppingPhysics = false;
 
 	// Each fake's inbound pipeline. Simulated packets enter here, so the server sees them exactly like a real
 	// client's (M7 installs its interceptor before "packet_handler" on join).
 	private static final Map<UUID, EmbeddedChannel> channels = new HashMap<>();
 
-	private static final Map<String, String> SKIN_DATA = Map.of("akc0303", "0b0fa6bc-69ee-4f6c-a4f8-7cac79f1871a",
-																"RedFish2471", "2abb218f-ada3-49be-a6d1-81a2872941e2",
-																"NoseThe", "43c561aa-ed1b-4f8b-8fa6-f28a8aaafaad",
-																"Beethoven_", "cdb9e9c6-c096-4f58-9c49-35395d7b897c",
-																"cookiethebald", "5d142c3a-bdf1-418b-b907-797bbaaed188");
+	private static final Map<String, String> SKIN_DATA = Map.of(
+			"akc0303", "0b0fa6bc-69ee-4f6c-a4f8-7cac79f1871a", // Archer, 1st
+			"RedFish2471", "2abb218f-ada3-49be-a6d1-81a2872941e2", // Berserk 5th
+			"NoseThe", "43c561aa-ed1b-4f8b-8fa6-f28a8aaafaad", // Healer 4th
+			"Beethoven_", "cdb9e9c6-c096-4f58-9c49-35395d7b897c", // Mage 2nd
+			"cookiethebald", "5d142c3a-bdf1-418b-b907-797bbaaed188"); // Tank 3rd
 
 	public static Map<String, Player> getFakePlayers() {
 		return fakePlayers;
 	}
 
-	/** The fake named {@code name}, ignoring case, or null. */
+	/**
+	 * The fake named {@code name}, ignoring case, or null.
+	 */
 	public static Player getFake(String name) {
 		for(var entry : fakePlayers.entrySet()) {
 			if(entry.getKey().equalsIgnoreCase(name)) return entry.getValue();
@@ -101,23 +103,7 @@ public class FakePlayerManager {
 
 		// View distance 0 - ChunkMap.getPlayerViewDistance clamps to min 2 internally,
 		// but this still drops the per-fake chunk load from 17x17=289 to 5x5=25.
-		ClientInformation clientInfo = new ClientInformation("en_us", 0, ChatVisiblity.FULL, true, 0x7F, HumanoidArm.RIGHT, false, false, ParticleStatus.MINIMAL);
-		ServerPlayer nmsPlayer = new ServerPlayer(nmsServer, nmsWorld, profile, clientInfo) {
-			// While the ticker runs this fake's physics it is the client, so move() takes a LocalPlayer's
-			// authoritative path: ground/collision update, fall check, and the fluid re-read after the move that makes
-			// a lava launch the shallow x0.8 bounce instead of x0.5.
-			@Override
-			public boolean isClientAuthoritative() {
-				return !steppingPhysics && super.isClientAuthoritative();
-			}
-		};
-		try {
-			java.lang.reflect.Field firstTick = net.minecraft.world.entity.Entity.class.getDeclaredField("firstTick");
-			firstTick.setAccessible(true);
-			firstTick.set(nmsPlayer, false);
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to clear firstTick on fake player", e);
-		}
+		ServerPlayer nmsPlayer = getNmsPlayer(nmsServer, nmsWorld, profile);
 
 		EmbeddedChannel embedded = new EmbeddedChannel();
 		embedded.pipeline().addLast("packet_handler", new ServerboundDispatcher(nmsPlayer));
@@ -130,7 +116,7 @@ public class FakePlayerManager {
 			// The listener sends through this overload; the fake has no client, so nothing is written. A real client
 			// confirms teleports and reports loaded after a respawn, and 26.2 ignores interactions until it does.
 			@Override
-			public void send(Packet<?> packet, ChannelFutureListener listener, boolean flush) {
+			public void send(@NonNull Packet<?> packet, ChannelFutureListener listener, boolean flush) {
 				answer(nmsPlayer, packet);
 			}
 
@@ -152,7 +138,30 @@ public class FakePlayerManager {
 		return nmsPlayer.getBukkitEntity();
 	}
 
-	/** Feeds a serverbound packet into {@code fake}'s pipeline. False if it isn't one of ours. */
+	private static @NonNull ServerPlayer getNmsPlayer(MinecraftServer nmsServer, ServerLevel nmsWorld, GameProfile profile) {
+		ClientInformation clientInfo = new ClientInformation("en_us", 0, ChatVisiblity.FULL, true, 0x7F, HumanoidArm.RIGHT, false, false, ParticleStatus.MINIMAL);
+		ServerPlayer nmsPlayer = new ServerPlayer(nmsServer, nmsWorld, profile, clientInfo) {
+			// While the ticker runs this fake's physics it is the client, so move() takes a LocalPlayer's
+			// authoritative path: ground/collision update, fall check, and the fluid re-read after the move that makes
+			// a lava launch the shallow x0.8 bounce instead of x0.5.
+			@Override
+			public boolean isClientAuthoritative() {
+				return !steppingPhysics && super.isClientAuthoritative();
+			}
+		};
+		try {
+			java.lang.reflect.Field firstTick = net.minecraft.world.entity.Entity.class.getDeclaredField("firstTick");
+			firstTick.setAccessible(true);
+			firstTick.set(nmsPlayer, false);
+		} catch(Exception e) {
+			throw new RuntimeException("Failed to clear firstTick on fake player", e);
+		}
+		return nmsPlayer;
+	}
+
+	/**
+	 * Feeds a serverbound packet into {@code fake}'s pipeline. False if it isn't one of ours.
+	 */
 	public static boolean receive(Player fake, Packet<?> packet) {
 		EmbeddedChannel channel = channels.get(fake.getUniqueId());
 		if(channel == null) return false;
@@ -182,7 +191,9 @@ public class FakePlayerManager {
 		});
 	}
 
-	/** End of a fake's pipeline: hands each packet to its listener, as a real Connection does. */
+	/**
+	 * End of a fake's pipeline: hands each packet to its listener, as a real Connection does.
+	 */
 	private static final class ServerboundDispatcher extends ChannelInboundHandlerAdapter {
 		private final ServerPlayer fake;
 
@@ -255,13 +266,13 @@ public class FakePlayerManager {
 			return out;
 		}
 		try {
-			String raw = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+			String raw = Files.readString(file.toPath());
 			JsonObject root = JsonParser.parseString(raw).getAsJsonObject();
 			for(var entry : root.entrySet()) {
 				JsonObject obj = entry.getValue().getAsJsonObject();
 				out.put(UUID.fromString(entry.getKey()), new CachedSkin(obj.get("value").getAsString(), obj.has("signature") && !obj.get("signature").isJsonNull() ? obj.get("signature").getAsString() : null, obj.get("fetchedAt").getAsLong()));
 			}
-		} catch (Exception e) {
+		} catch(Exception e) {
 			mcTASLang.getInstance().getLogger().warning("Failed to load skin cache, starting empty: " + e.getMessage());
 		}
 		return out;
@@ -277,8 +288,8 @@ public class FakePlayerManager {
 			root.add(entry.getKey().toString(), obj);
 		}
 		try {
-			Files.write(getSkinCacheFile().toPath(), root.toString().getBytes(StandardCharsets.UTF_8));
-		} catch (IOException e) {
+			Files.writeString(getSkinCacheFile().toPath(), root.toString());
+		} catch(IOException e) {
 			mcTASLang.getInstance().getLogger().warning("Failed to save skin cache: " + e.getMessage());
 		}
 	}
@@ -302,10 +313,9 @@ public class FakePlayerManager {
 
 		Method updateFluidInteraction;
 		try {
-			updateFluidInteraction = net.minecraft.world.entity.Entity.class
-					.getDeclaredMethod("updateFluidInteraction");
+			updateFluidInteraction = net.minecraft.world.entity.Entity.class.getDeclaredMethod("updateFluidInteraction");
 			updateFluidInteraction.setAccessible(true);
-		} catch (NoSuchMethodException e) {
+		} catch(NoSuchMethodException e) {
 			throw new RuntimeException("Failed to find updateFluidInteraction", e);
 		}
 
@@ -322,7 +332,10 @@ public class FakePlayerManager {
 					if(!input.isEmpty()) {
 						npc.xxa = (input.contains("A") && !input.contains("D")) ? 1.0F : (!input.contains("A") && input.contains("D")) ? -1.0F : 0.0F;
 						npc.zza = (input.contains("W") && !input.contains("S")) ? 1.0F : (!input.contains("W") && input.contains("S")) ? -1.0F : 0.0F;
-						if(input.contains("N")) { npc.xxa *= 0.3F; npc.zza *= 0.3F; }
+						if(input.contains("N")) {
+							npc.xxa *= 0.3F;
+							npc.zza *= 0.3F;
+						}
 					}
 					if(input.contains("P") && npc.zza > 0 && !npc.isShiftKeyDown()) {
 						npc.setSprinting(true);
@@ -340,7 +353,7 @@ public class FakePlayerManager {
 					try {
 						updateFluidInteraction.invoke(npc);
 						npc.aiStep();
-					} catch (Exception e) {
+					} catch(Exception e) {
 						e.printStackTrace();
 					} finally {
 						steppingPhysics = false;
