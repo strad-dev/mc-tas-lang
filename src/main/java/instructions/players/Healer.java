@@ -207,6 +207,7 @@ public class Healer extends Actions {
 		// Yellow: 10 ticks
 
 		at(175).swapItems(1, 28).swapItems(3, 30).swapItems(6, 33).swapItems(7, 34).swapItems(12, 39).setHotbarSlot(5);
+		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
 	public void maxor(boolean doContinue) {
@@ -279,6 +280,7 @@ public class Healer extends Actions {
 		at(410).rightClick(); // bonzo to yellow pad
 		at(411).turnHead(34f, 0f).move("WP", 19).setHotbarSlot(0);
 		at(431).turnHead(-155f, 0f).swapItems(12, 39).setHotbarSlot(3); // rod swap off of black cat, remove racing helmet -> speed auto-set to 400
+		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 
 	public void storm(boolean doContinue) {
@@ -330,6 +332,7 @@ public class Healer extends Actions {
 		at(800).turnHead(-141f, 1f);
 		at(812).move("AN", 3);
 		at(814).turnHead(-123f, 1f);
+		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 
 	public void goldor(boolean doContinue) {
@@ -448,8 +451,9 @@ public class Healer extends Actions {
 		at(225).setHotbarSlot(4);
 		at(245).leap(fake("Archer"));
 		at(246).move("WP", 0);
-		at(287).move("WN", 0);
+		at(287).move("WN", 0); 
 		at(297).move("N", 10);
+		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}
 
 	public void necron(boolean doContinue) {
@@ -485,6 +489,7 @@ public class Healer extends Actions {
 		at(541).move("WP", 10);
 		at(551).turnHead(0f, 0f);
 		at(552).swapItems(3, 30);
+		if(doContinue) TASUtils.scheduleTask(this::witherKing, TAS.NECRON_TICKS);
 	}
 
 	public void witherKing() {
@@ -541,6 +546,4 @@ public class Healer extends Actions {
 		at(927).setHotbarSlot(3);
 		at(928).leftClick();
 	}
-
-	@SuppressWarnings("unused")
 }

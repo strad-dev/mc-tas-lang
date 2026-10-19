@@ -733,6 +733,12 @@ public class Actions {
 		send(useItemPacket);
 	}
 
+	/** {@link #turnHead} then {@link #rightClick()}, so the click aims and UseItem carries {@code yaw}/{@code pitch}. */
+	public void rightClick(float yaw, float pitch) {
+		turnHead(yaw, pitch);
+		rightClick();
+	}
+
 	public void stopRightClick() {
 		ServerPlayer sp = ((CraftPlayer) player).getHandle();
 		ServerboundPlayerActionPacket packet = new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.RELEASE_USE_ITEM, sp.blockPosition(), Direction.DOWN, 0);
@@ -865,6 +871,11 @@ public class Actions {
 
 		public Later rightClick() {
 			TASUtils.scheduleTask(() -> Actions.this.rightClick(), delay);
+			return this;
+		}
+
+		public Later rightClick(float yaw, float pitch) {
+			TASUtils.scheduleTask(() -> Actions.this.rightClick(yaw, pitch), delay);
 			return this;
 		}
 

@@ -27,6 +27,13 @@ public class TAS implements CommandExecutor {
 	// Difficulty, mayor, Fix Watcher Bug, Bad Bonzo, in /m7practice's own argument forms.
 	private static final String SETTINGS = "perfect_rng jerry_paul off badbonzo=off";
 
+	/** Chained run (all, boss): ticks from a segment's start to the next's. A routine may pass its own instead. */
+	public static final int CLEAR_TICKS = 742;
+	public static final int MAXOR_TICKS = 496;
+	public static final int STORM_TICKS = 881;
+	public static final int GOLDOR_TICKS = 350;
+	public static final int NECRON_TICKS = 600;
+
 	/** Ticks from /tas until the section starts. M7 gives boss and maxor no countdown, only its fixed grace. */
 	public static int startDelay(String section) {
 		return switch(section) {

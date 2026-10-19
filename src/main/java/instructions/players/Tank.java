@@ -249,6 +249,7 @@ public class Tank extends Actions {
 		// Hallway: 32 ticks
 
 		at(174).swapItems(1, 28).swapItems(3, 30).swapItems(4, 31).swapItems(6, 33).swapItems(7, 34).setHotbarSlot(3);
+		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
 	public void maxor(boolean doContinue) {
@@ -278,6 +279,7 @@ public class Tank extends Actions {
 		at(403).turnHead(156f, 0f).setHotbarSlot(0);
 		at(404).move("WP", 12);
 		at(416).turnHead(-90f, 0f);
+		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 
 	public void storm(boolean doContinue) {
@@ -337,6 +339,7 @@ public class Tank extends Actions {
 		at(745).turnHead(72f, -25f).setHotbarSlot(4);
 		at(746).move("WP", 24);
 		at(776).move("WP", 4); // move to in front of dev3
+		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 
 	public void goldor(boolean doContinue) {
@@ -471,6 +474,7 @@ public class Tank extends Actions {
 		at(246).move("WP", 0);
 		at(287).move("WN", 0);
 		at(297).move("N", 10);
+		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}
 
 	public void necron(boolean doContinue) {
@@ -502,6 +506,7 @@ public class Tank extends Actions {
 		at(522).move("WP", 10);
 		at(532).turnHead(90f, 0f);
 		at(533).swapItems(3, 30);
+		if(doContinue) TASUtils.scheduleTask(this::witherKing, TAS.NECRON_TICKS);
 	}
 
 	public void witherKing() {
@@ -562,6 +567,4 @@ public class Tank extends Actions {
 		at(927).setHotbarSlot(3);
 		at(928).leftClick();
 	}
-
-	@SuppressWarnings("unused")
 }

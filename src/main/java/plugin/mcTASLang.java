@@ -38,7 +38,6 @@ public class mcTASLang extends JavaPlugin {
 		}
 		getServer().getPluginManager().registerEvents(new SpectatorListener(), this);
 		getServer().getPluginManager().registerEvents(new listeners.FakeJoinListener(), this);
-
 		SpectatorSync.startInventorySync();
 		Spectate.startSpectatorSync();
 	}

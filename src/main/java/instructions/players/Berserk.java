@@ -252,6 +252,7 @@ public class Berserk extends Actions {
 		// Ice Fill: 127 ticks
 
 		at(251).swapItems(1, 28).swapItems(3, 30).swapItems(4, 31).swapItems(6, 33).swapItems(7, 34).setHotbarSlot(5);
+		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
 	public void maxor(boolean doContinue) {
@@ -268,6 +269,7 @@ public class Berserk extends Actions {
 		at(355).rightClick(); // bonzo to purple pad
 		at(356).turnHead(-32f, 0f).move("WP", 21);
 		at(377).turnHead(154f, 0f).setHotbarSlot(3);
+		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 
 	public void storm(boolean doContinue) {
@@ -338,6 +340,7 @@ public class Berserk extends Actions {
 		at(845).turnHead(-145f, -5).setHotbarSlot(1);
 		if(doContinue) {
 			at(849).dropItem(true);
+			TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 		}
 	}
 
@@ -444,6 +447,7 @@ public class Berserk extends Actions {
 		at(246).move("WP", 0);
 		at(287).move("WN", 0);
 		at(297).move("N", 10);
+		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}
 
 	public void necron(boolean doContinue) {
@@ -475,6 +479,7 @@ public class Berserk extends Actions {
 		at(525).move("WP", 12);
 		at(537).turnHead(-90f, 0f);
 		at(538).swapItems(3, 30);
+		if(doContinue) TASUtils.scheduleTask(this::witherKing, TAS.NECRON_TICKS);
 	}
 
 	public void witherKing() {

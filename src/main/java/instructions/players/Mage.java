@@ -216,6 +216,7 @@ public class Mage extends Actions {
 		at(659).turnHead(0f, 3.5f).setHotbarSlot(1).move("N", 2);
 		at(660).rightClick(); // etherwarp to portal
 		at(661).swapItems(1, 28).swapItems(3, 30).swapItems(4, 31).swapItems(6, 33).swapItems(7, 34).swapItems(11, 36).setHotbarSlot(5);
+		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
 	public void maxor(boolean doContinue) {
@@ -245,6 +246,7 @@ public class Mage extends Actions {
 		at(340).turnHead(-121f, 0f).setHotbarSlot(0);
 		at(341).move("WP", 9); // move to storm clear spot
 		at(350).turnHead(90f, 0f);
+		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 
 	public void storm(boolean doContinue) {
@@ -292,6 +294,7 @@ public class Mage extends Actions {
 		at(800).setHotbarSlot(4).swapItems(12, 39); // put on racing helmet -> speed auto-set to 650
 		at(811).leap(fake("Mage4"));
 		at(812).setHotbarSlot(5);
+		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 
 	public void goldor(boolean doContinue) {
@@ -400,6 +403,7 @@ public class Mage extends Actions {
 		at(246).move("WP", 0);
 		at(287).move("WN", 0);
 		at(297).move("N", 10);
+		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}
 
 	public void necron(boolean doContinue) {
@@ -419,6 +423,7 @@ public class Mage extends Actions {
 		at(522).move("WP", 12);
 		at(534).turnHead(-90f, 0f);
 		at(535).swapItems(3, 30);
+		if(doContinue) TASUtils.scheduleTask(this::witherKing, TAS.NECRON_TICKS);
 	}
 
 	public void witherKing() {
@@ -476,6 +481,4 @@ public class Mage extends Actions {
 		at(927).setHotbarSlot(3);
 		at(928).leftClick();
 	}
-
-	@SuppressWarnings("unused")
 }

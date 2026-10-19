@@ -227,6 +227,7 @@ public class Archer extends Actions {
 		// Quiz: 482 ticks | 543 ticks from open | puzzle solved 503 ticks from open
 
 		at(619).swapItems(1, 28).swapItems(6, 33).swapItems(7, 34).swapItems(11, 36).setHotbarSlot(5);
+		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
 	public void maxor(boolean doContinue) {
@@ -250,6 +251,7 @@ public class Archer extends Actions {
 		at(340).turnHead(-76f, 0f).setHotbarSlot(4);
 		at(341).move("WP", 9); // move to storm clear spot
 		at(350).turnHead(-180f, 0f);
+		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 
 	public void storm(boolean doContinue) {
@@ -329,6 +331,7 @@ public class Archer extends Actions {
 			at(857).turnHead(-3f, 4f);
 			// rapid fire #2 at 858
 			at(859).turnHead(-14.5f, 5f);
+			TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 		}
 	}
 
@@ -462,6 +465,7 @@ public class Archer extends Actions {
 		at(299).setHotbarSlot(2);
 		at(300).leap(fake("Mage1"));
 		at(301).swapItems(5, 32).swapItems(12, 39);
+		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}
 
 	public void necron(boolean doContinue) {
@@ -482,6 +486,7 @@ public class Archer extends Actions {
 		at(522).move("WPJ", 0);
 		at(524).move("WP", 9);
 		at(533).turnHead(90f, 0f);
+		if(doContinue) TASUtils.scheduleTask(this::witherKing, TAS.NECRON_TICKS);
 	}
 
 	public void witherKing() {

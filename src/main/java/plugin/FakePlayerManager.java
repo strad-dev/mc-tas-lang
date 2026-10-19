@@ -17,6 +17,7 @@ import net.minecraft.network.protocol.BundlePacket;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
+import net.kyori.adventure.text.Component;
 import net.minecraft.network.protocol.game.ClientboundRespawnPacket;
 import net.minecraft.network.protocol.game.ServerboundAcceptTeleportationPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
@@ -263,7 +264,7 @@ public class FakePlayerManager {
 		fakePlayers.values().forEach(p -> {
 			SpectatorSync.forgetScreen(p);
 			if(p.isOnline()) {
-				p.kickPlayer("");
+				p.kick(Component.empty());
 			}
 		});
 		fakePlayers.clear();
