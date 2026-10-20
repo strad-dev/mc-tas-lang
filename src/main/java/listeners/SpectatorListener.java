@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import plugin.FakePlayerManager;
@@ -16,6 +17,17 @@ import commands.Spectate;
 import plugin.mcTASLang;
 
 public class SpectatorListener implements Listener {
+
+	/** A watcher's own /pets (or /pet) opens the watched fake's, view-only (M7's /pets <player>). */
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onPetsCommand(PlayerCommandPreprocessEvent event) {
+		Player fake = Spectate.getSpectatorMap().get(event.getPlayer());
+		if(fake == null) return;
+		String command = event.getMessage().trim().toLowerCase();
+		if(command.equals("/pets") || command.equals("/pet") || command.equals("/m7:pets") || command.equals("/m7:pet")) {
+			event.setMessage("/m7:pets " + fake.getName());
+		}
+	}
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {

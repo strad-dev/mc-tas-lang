@@ -18,6 +18,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.BundlePacket;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.network.protocol.common.ClientboundDisconnectPacket;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ClientInformation;
@@ -33,7 +34,6 @@ import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
@@ -48,7 +48,6 @@ import java.util.UUID;
 
 public class FakePlayerManager {
 	private static final Map<String, Player> fakePlayers = new HashMap<>();
-	private static boolean fakeTickerStarted = false;
 	/**
 	 * True only inside the ticker's physics step; see the ServerPlayer override in spawnFakePlayer.
 	 */
@@ -62,8 +61,10 @@ public class FakePlayerManager {
 			"akc0303", "0b0fa6bc-69ee-4f6c-a4f8-7cac79f1871a", // Archer, 1st
 			"RedFish2471", "2abb218f-ada3-49be-a6d1-81a2872941e2", // Berserk 5th
 			"NoseThe", "43c561aa-ed1b-4f8b-8fa6-f28a8aaafaad", // Healer 4th
-			"Beethoven_", "cdb9e9c6-c096-4f58-9c49-35395d7b897c", // Mage 2nd
+			"Beethoven", "cdb9e9c6-c096-4f58-9c49-35395d7b897c", // Mage 2nd
 			"cookiethebald", "5d142c3a-bdf1-418b-b907-797bbaaed188"); // Tank 3rd
+
+	// leap spots: 0, 8, 36, 44
 
 	public static Map<String, Player> getFakePlayers() {
 		return fakePlayers;
@@ -117,6 +118,14 @@ public class FakePlayerManager {
 			// confirms teleports and reports loaded after a respawn, and 26.2 ignores interactions until it does.
 			@Override
 			public void send(@NonNull Packet<?> packet, ChannelFutureListener listener, boolean flush) {
+				if(packet instanceof ClientboundDisconnectPacket) {
+					// Disabled = onDisable's kickAllFakes, which finishes the kick itself.
+					Connection self = this;
+					if(mcTASLang.getInstance().isEnabled()) {
+						Bukkit.getScheduler().runTask(mcTASLang.getInstance(), () -> finishDisconnect(self));
+					}
+					return;
+				}
 				answer(nmsPlayer, packet);
 			}
 
@@ -178,8 +187,13 @@ public class FakePlayerManager {
 		} else if(packet instanceof ClientboundPlayerPositionPacket position) {
 			reply(fake, new ServerboundAcceptTeleportationPacket(position.id()));
 		} else {
+			// A client lets go of every key when a screen opens (KeyMapping.releaseAll in setScreen).
+			if(SpectatorSync.opensScreen(packet) && !instructions.Actions.getActiveInput(fake.getUUID()).isEmpty()) {
+				new instructions.Actions(fake.getBukkitEntity()).move("");
+			}
 			SpectatorSync.mirrorScreen(fake, packet);
 			SpectatorSync.mirrorSound(fake, packet);
+			SpectatorSync.mirrorHud(fake, packet);
 			if(packet instanceof ClientboundRespawnPacket) reply(fake, new ServerboundPlayerLoadedPacket());
 		}
 	}
@@ -295,71 +309,88 @@ public class FakePlayerManager {
 	}
 
 	public static void kickAllFakes() {
+		TASUtils.endRun();
+		instructions.Actions.cancelAllMovement();
 		fakePlayers.values().forEach(p -> {
 			SpectatorSync.forgetScreen(p);
 			if(p.isOnline()) {
 				p.kick(Component.empty());
+				finishDisconnect(((CraftPlayer) p).getHandle().connection.connection);
 			}
 		});
 		fakePlayers.clear();
 		channels.clear();
 	}
 
-	private static void startFakePlayerTicker() {
-		if(fakeTickerStarted) {
-			return;
-		}
-		fakeTickerStarted = true;
+	// A kick closes the socket from the disconnect packet's send callback or the next Connection.tick. A fake has
+	// neither (send above eats the packet, nothing ticks its Connection), so it stayed in the world.
+	private static void finishDisconnect(Connection connection) {
+		if(!connection.channel.isOpen()) return;
+		connection.disconnect(net.minecraft.network.chat.Component.empty());
+		connection.handleDisconnection();
+	}
 
-		Method updateFluidInteraction;
+	private static Method updateFluidInteraction;
+
+	private static void startFakePlayerTicker() {
+		if(updateFluidInteraction != null) return;
 		try {
 			updateFluidInteraction = net.minecraft.world.entity.Entity.class.getDeclaredMethod("updateFluidInteraction");
 			updateFluidInteraction.setAccessible(true);
 		} catch(NoSuchMethodException e) {
 			throw new RuntimeException("Failed to find updateFluidInteraction", e);
 		}
+	}
 
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				for(Player fake : fakePlayers.values()) {
-					if(!(fake instanceof CraftPlayer)) continue;
-					ServerPlayer npc = ((CraftPlayer) fake).getHandle();
-					npc.setNoGravity(false);
-					npc.updatePlayerPose();
-					// Re-assert movement fields before aiStep() - zza/xxa decay by 0.98x/tick otherwise
-					String input = Actions.getActiveInput(fake.getUniqueId());
-					if(!input.isEmpty()) {
-						npc.xxa = (input.contains("A") && !input.contains("D")) ? 1.0F : (!input.contains("A") && input.contains("D")) ? -1.0F : 0.0F;
-						npc.zza = (input.contains("W") && !input.contains("S")) ? 1.0F : (!input.contains("W") && input.contains("S")) ? -1.0F : 0.0F;
-						if(input.contains("N")) {
-							npc.xxa *= 0.3F;
-							npc.zza *= 0.3F;
-						}
-					}
-					if(input.contains("P") && npc.zza > 0 && !npc.isShiftKeyDown()) {
-						npc.setSprinting(true);
-					}
-					if(npc.isUsingItem()) {
-						int remaining = npc.useItemRemaining;
-						if(remaining > 1) {
-							npc.useItemRemaining = remaining - 1;
-						} else {
-							npc.stopUsingItem();
-						}
-					}
-					// 26.2 folded the water/lava push into Entity.updateFluidInteraction (protected)
-					steppingPhysics = true;
-					try {
-						updateFluidInteraction.invoke(npc);
-						npc.aiStep();
-					} catch(Exception e) {
-						e.printStackTrace();
-					} finally {
-						steppingPhysics = false;
-					}
+	/**
+	 * Each fake's client movement step, at tick end right after this tick's inputs ({@code TASUtils.runDue}), so
+	 * every server task, boss ticker and entity tick of the tick comes first. Was a Bukkit timer in the heartbeat,
+	 * ahead of any M7 task scheduled after the fakes spawned.
+	 */
+	public static void tickFakes() {
+		if(updateFluidInteraction == null) return;
+		for(Player fake : fakePlayers.values()) {
+			if(!(fake instanceof CraftPlayer)) continue;
+			ServerPlayer npc = ((CraftPlayer) fake).getHandle();
+			npc.setNoGravity(false);
+			npc.updatePlayerPose();
+			// Re-assert movement fields before aiStep() - zza/xxa decay by 0.98x/tick otherwise
+			String input = Actions.getActiveInput(fake.getUniqueId());
+			if(!input.isEmpty()) {
+				npc.xxa = (input.contains("A") && !input.contains("D")) ? 1.0F : (!input.contains("A") && input.contains("D")) ? -1.0F : 0.0F;
+				npc.zza = (input.contains("W") && !input.contains("S")) ? 1.0F : (!input.contains("W") && input.contains("S")) ? -1.0F : 0.0F;
+				if(input.contains("N")) {
+					npc.xxa *= 0.3F;
+					npc.zza *= 0.3F;
 				}
 			}
-		}.runTaskTimer(mcTASLang.getInstance(), 0, 1);
+			if(input.contains("P") && npc.zza > 0 && !npc.isShiftKeyDown()) {
+				npc.setSprinting(true);
+			}
+			// Was a Bukkit timer started by move(): at tick end it first ran next tick, after the next input could
+			// already have released J, so a one-tick "JN" never jumped.
+			if(input.contains("J") && npc.onGround()) {
+				npc.setJumping(true);
+				TASUtils.debug(TASUtils.DebugType.CLIENT, fake.getName() + " jumped at " + TASUtils.round(npc.getX(), 3) + " " + TASUtils.round(npc.getY(), 5) + " " + TASUtils.round(npc.getZ(), 3));
+			}
+			if(npc.isUsingItem()) {
+				int remaining = npc.useItemRemaining;
+				if(remaining > 1) {
+					npc.useItemRemaining = remaining - 1;
+				} else {
+					npc.stopUsingItem();
+				}
+			}
+			// 26.2 folded the water/lava push into Entity.updateFluidInteraction (protected)
+			steppingPhysics = true;
+			try {
+				updateFluidInteraction.invoke(npc);
+				npc.aiStep();
+			} catch(Exception e) {
+				e.printStackTrace();
+			} finally {
+				steppingPhysics = false;
+			}
+		}
 	}
 }

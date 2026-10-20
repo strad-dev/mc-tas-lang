@@ -12,7 +12,15 @@ import net.minecraft.network.protocol.game.ClientboundMountScreenOpenPacket;
 import net.minecraft.network.protocol.game.ClientboundOpenBookPacket;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.network.protocol.game.ClientboundOpenSignEditorPacket;
+import net.minecraft.network.protocol.game.ClientboundClearTitlesPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
+import net.minecraft.network.protocol.game.ClientboundSetExperiencePacket;
+import net.minecraft.network.protocol.game.ClientboundSetHealthPacket;
+import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
+import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
+import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
+import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket;
 import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
@@ -137,15 +145,20 @@ public class SpectatorSync {
 	// follow the open packet.
 	private static final Map<UUID, List<Packet<?>>> openScreens = new HashMap<>();
 
+	/** The server opening a screen on the client: chest, merchant, anvil, mount, book, sign, dialog. */
+	public static boolean opensScreen(Packet<?> packet) {
+		return packet instanceof ClientboundOpenScreenPacket || packet instanceof ClientboundMountScreenOpenPacket
+				|| packet instanceof ClientboundOpenBookPacket || packet instanceof ClientboundOpenSignEditorPacket
+				|| packet instanceof ClientboundShowDialogPacket;
+	}
+
 	/**
 	 * Called with every packet the server sends a fake. Screens (chest, merchant, anvil, mount, book, sign, dialog)
 	 * also go to its watchers, so they see any GUI the fake does. Container 0 is the fake's own inventory, which
 	 * {@link #syncInventory} already mirrors.
 	 */
 	public static void mirrorScreen(ServerPlayer fake, Packet<?> packet) {
-		boolean opens = packet instanceof ClientboundOpenScreenPacket || packet instanceof ClientboundMountScreenOpenPacket
-				|| packet instanceof ClientboundOpenBookPacket || packet instanceof ClientboundOpenSignEditorPacket
-				|| packet instanceof ClientboundShowDialogPacket;
+		boolean opens = opensScreen(packet);
 		boolean closes = packet instanceof ClientboundContainerClosePacket || packet instanceof ClientboundClearDialogPacket;
 		boolean updates = packet instanceof ClientboundMerchantOffersPacket
 				|| packet instanceof ClientboundContainerSetDataPacket
@@ -171,7 +184,50 @@ public class SpectatorSync {
 	public static void mirrorSound(ServerPlayer fake, Packet<?> packet) {
 		if(!(packet instanceof ClientboundSoundPacket || packet instanceof ClientboundSoundEntityPacket
 				|| packet instanceof ClientboundStopSoundPacket)) return;
-		for(Player watcher : Spectate.getSpectatingPlayers(fake.getBukkitEntity())) send(watcher, packet);
+		for(Player watcher : Spectate.getSpectatingPlayers(fake.getBukkitEntity())) {
+			// A sound on the fake itself (Player.playSound(Entity, ...), e.g. etherwarp) names the fake's entity id, and
+			// the watcher's client drops an entity sound for an entity it can't see; the fake is hidden from them. The
+			// watcher stands where the fake is, so play it on the watcher.
+			if(packet instanceof ClientboundSoundEntityPacket sound && sound.getId() == fake.getId()) {
+				send(watcher, new ClientboundSoundEntityPacket(sound.getSound(), sound.getSource(),
+						((CraftPlayer) watcher).getHandle(), sound.getVolume(), sound.getPitch(), sound.getSeed()));
+			} else {
+				send(watcher, packet);
+			}
+		}
+	}
+
+	/** What the server tells a player about themselves on screen: action bar, health, XP, titles, system chat. */
+	public static boolean isHud(Object packet) {
+		return packet instanceof ClientboundSetActionBarTextPacket || packet instanceof ClientboundSetHealthPacket
+				|| packet instanceof ClientboundSetExperiencePacket || packet instanceof ClientboundSystemChatPacket
+				|| packet instanceof ClientboundSetTitleTextPacket || packet instanceof ClientboundSetSubtitleTextPacket
+				|| packet instanceof ClientboundSetTitlesAnimationPacket || packet instanceof ClientboundClearTitlesPacket;
+	}
+
+	/**
+	 * Called with every packet the server sends a fake: its HUD goes to its watchers, whose interceptor drops their
+	 * own HUD while spectating (system chat excepted, deduped instead).
+	 */
+	public static void mirrorHud(ServerPlayer fake, Packet<?> packet) {
+		if(!isHud(packet)) return;
+		for(Player watcher : Spectate.getSpectatingPlayers(fake.getBukkitEntity())) nms.SpectatorPacketInterceptor.mirror(watcher, packet);
+	}
+
+	/** A new watcher's health and XP bars start as the fake's. */
+	public static void showHud(Player fake, Player watcher) {
+		ServerPlayer f = ((CraftPlayer) fake).getHandle();
+		nms.SpectatorPacketInterceptor.mirror(watcher, new ClientboundSetHealthPacket(((CraftPlayer) fake).getScaledHealth(),
+				f.getFoodData().getFoodLevel(), f.getFoodData().getSaturationLevel()));
+		nms.SpectatorPacketInterceptor.mirror(watcher, new ClientboundSetExperiencePacket(f.experienceProgress, f.totalExperience, f.experienceLevel));
+	}
+
+	/** A leaving watcher gets their own bars back; the fake's last action bar and title are cleared. */
+	public static void restoreHud(Player watcher) {
+		watcher.sendHealthUpdate();
+		watcher.sendExperienceChange(watcher.getExp(), watcher.getLevel());
+		watcher.sendActionBar(net.kyori.adventure.text.Component.empty());
+		watcher.clearTitle();
 	}
 
 	/** The fake closed a screen itself (its client sent the close), which the server never echoes back. */

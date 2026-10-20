@@ -12,16 +12,25 @@ public class Healer extends Actions {
 
 	@SuppressWarnings("FieldCanBeLocal")
 	// Healer --> NoseThe
+	public void startPosition(String section) {
+		switch(section) {
+			case "all", "clear" -> startAt(-120.5, 71, -183.5, 0f, 0f);
+			case "maxor", "boss" -> startAt(73.5, 221, 14.5, 0f, 0f);
+			case "storm" -> startAt(32.702, 170, 95.151, -155f, 0f);
+			case "goldor" -> startAt(107.622, 120, 93.618, -123f, 1f);
+			case "necron" -> startAt(54.524, 64, 100.707, 180f, -6f);
+			case "witherking" -> startAt(56.326, 8, 130.7, -16.2f, 18.8f);
+		}
+	}
+
 	public void healerInstructions(String section) {
 		int start = TAS.startDelay(section);
 		switch(section) {
 			case "all", "clear" -> {
-				startAt(-120.5, 71, -183.5, 0f, 0f);
 				preClear();
 				TASUtils.scheduleTask(() -> clear(section.equals("all")), start);
 			}
 			case "maxor", "boss" -> {
-				startAt(73.5, 221, 14.5, 0f, 0f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -35,7 +44,6 @@ public class Healer extends Actions {
 				}
 			}
 			case "storm" -> {
-				startAt(32.702, 170, 95.151, -155f, 0f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -44,7 +52,6 @@ public class Healer extends Actions {
 				TASUtils.scheduleTask(() -> storm(false), start);
 			}
 			case "goldor" -> {
-				startAt(107.622, 120, 93.618, -123f, 1f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -54,7 +61,6 @@ public class Healer extends Actions {
 				TASUtils.scheduleTask(() -> goldor(false), start);
 			}
 			case "necron" -> {
-				startAt(54.524, 64, 100.707, 180f, -6f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -62,7 +68,6 @@ public class Healer extends Actions {
 				TASUtils.scheduleTask(() -> necron(false), start);
 			}
 			case "witherking" -> {
-				startAt(56.326, 8, 130.7, -16.2f, 18.8f);
 				swapItems(1, 28);
 				swapItems(6, 33);
 				swapItems(7, 34);
@@ -75,9 +80,9 @@ public class Healer extends Actions {
 
 	public void preClear() {
 		setHotbarSlot(1);
-		move("WPJ", 0);
-		at(13).move("WP", 15);
-		at(31).turnHead(-9f, 2.9f);
+		move("N");
+		rightClick(0f, 23f);
+		at(1).rightClick();
 	}
 
 	public void clear(boolean doContinue) {
@@ -89,131 +94,129 @@ public class Healer extends Actions {
 		 *    ██║   ██║  ██║██║  ██║██║
 		 *    ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝
 		 */
-		at(20).move("N", 6);
-		at(21).rightClick(); // etherwarp into red blue
-		at(22).turnHead(109.5f, 1.75f);
-		at(23).rightClick(); // etherwarp towards trap
-		at(24).turnHead(-159f, 4.5f);
-		at(25).rightClick(); // etherwarp into trap
-		at(26).turnHead(-110f, 11f).setHotbarSlot(7);
-		at(27).rightClick(); // throw pearl into spot | lands in 5 ticks
-		at(28).turnHead(180f, 35f).setHotbarSlot(5);
-		// tick 32: pearl lands
-		at(33).move("WP", 6).leftClick();
-		at(34).leftClick();
-		at(35).leftClick();
-		at(36).leftClick();
-		at(37).leftClick();
-		at(38).leftClick();
-		at(39).turnHead(180f, 35f);
-		at(39).turnHead(175f, 9.5f).setHotbarSlot(7);
-		at(40).rightClick(); // throw pearl across | lands in 12 ticks
-		at(41).turnHead(-160f, 55f);
-		at(42).leftClick();
-		at(43).turnHead(109.5f, -68f);
-		// Tick 52: pearl lands
-		at(53).rightClick(); // throw pearl up | lands in 21 ticks
-		at(54).turnHead(32f, 16f);
-		// Tick 74: pearl lands
-		at(75).rightClick(); // throw pearl towards bat | lands in 4 ticks
-		at(76).turnHead(0f, 0f);
-		// Tick 79: pearl lands
-		at(80).move("AWP", 0);
-		at(82).move("WP", 3);
-		at(84).turnHead(60f, 6f);
-		at(86).rightClick(); // pearl to dig spot | lands in 3 ticks
-		at(87).turnHead(78f, -22f).setHotbarSlot(0);
-		at(88).leftClick();
-		at(89).turnHead(90f, 35f).setHotbarSlot(5); // pearl lands
-		at(90).leftClick().move("WP", 9);
-		at(91).leftClick();
-		at(92).leftClick();
-		at(93).leftClick();
-		at(94).leftClick();
-		at(95).leftClick();
-		at(96).leftClick();
-		at(97).leftClick();
-		at(99).turnHead(0f, 20f).setHotbarSlot(7);
-		at(100).rightClick(); // throw pearl towards chest | lands in 4 ticks
-		at(101).turnHead(0f, 50f);
-		// Tick 104: pearl lands
-		at(105).leftClick();
-		at(106).turnHead(0f, 81.5f).setHotbarSlot(5);
-		at(107).leftClick(); // stonk block
-		at(108).setHotbarSlot(7);
-		at(109).rightClick(); // throw pearl down | lands in 8 ticks
-		at(110).turnHead(0f, 30f).setHotbarSlot(5);
-		// Tick 117: pearl lands
-		at(118).move("WP", 0).leftClick();
-		at(119).leftClick();
-		at(120).leftClick();
-		at(121).leftClick();
-		at(122).leftClick();
-		at(123).leftClick();
-		at(124).leftClick(); // stonk outwards
-		at(126).turnHead(-58.5f, 38f).move("N", 2).setHotbarSlot(7);
-		at(127).rightClick(); // throw pearl down | lands in 10 ticks
-		at(128).turnHead(-47f, 20f);
-		// Tick 137: pearl lands
-		at(138).rightClick(); // throw pearl out of trap | lands in 3 ticks
-		at(139).turnHead(16f, 2.9f).move("N", 4).setHotbarSlot(1);
-		// Tick 141: pearl lands
-		at(142).rightClick(); // etherwarp to red blue
-		// Trap: 142 ticks | Time from Enter: 117 ticks
+		at(15).rightClick(-9f, 2.9f); // etherwarp into red blue
+		at(16).rightClick(109.5f, 1.75f); // etherwarp towards trap
+		at(17).rightClick(-159f, 4.5f); // etherwarp into trap
 
-		/*
-		 * ██████╗ ███████╗██████╗     ██████╗ ██╗     ██╗   ██╗███████╗
-		 * ██╔══██╗██╔════╝██╔══██╗    ██╔══██╗██║     ██║   ██║██╔════╝
-		 * ██████╔╝█████╗  ██║  ██║    ██████╔╝██║     ██║   ██║█████╗
-		 * ██╔══██╗██╔══╝  ██║  ██║    ██╔══██╗██║     ██║   ██║██╔══╝
-		 * ██║  ██║███████╗██████╔╝    ██████╔╝███████╗╚██████╔╝███████╗
-		 * ╚═╝  ╚═╝╚══════╝╚═════╝     ╚═════╝ ╚══════╝ ╚═════╝ ╚══════╝
-		 */
-		at(143).turnHead(65f, 0f).setHotbarSlot(5);
-		at(144).leftClick();
-		at(145).setHotbarSlot(1).leftClick();
-		at(146).turnHead(90f, -90f).move("N", 30);
-		at(147).rightClick(); // etherwarp to prince
-		at(148).turnHead(90f, 0f).swapItems(5, 31).setHotbarSlot(5); // Stonk -> 31, Infinityboom TNT -> 5
-		at(149).rightClick(); // blow up crypt
-		at(150).swapItems(5, 31).setHotbarSlot(3); // restore: Stonk -> 5, Infinityboom TNT -> 31; Claymore
-		at(151).leftClick(); // kill prince | claymore swing
-		at(152).turnHead(180f, -5f).setHotbarSlot(1);
-		at(153).rightClick(); // etherwarp across
-		at(154).turnHead(100f, 10f);
-		at(155).rightClick(); // etherwarp to item
-		at(156).turnHead(-97f, -4f);
-		at(157).rightClick(); // etherwarp to chest
-		at(158).turnHead(-115f, 0f).setHotbarSlot(5);
-		at(159).leftClick();
-		at(160).leftClick(); // stonk towards chest
-		at(161).setHotbarSlot(1).leftClick();
-		at(162).turnHead(57f, 39f);
-		at(163).rightClick(); // etherwarp down
-		at(164).turnHead(118f, -39f);
-		at(165).rightClick(); // etherwarp to wither essence
-		at(166).turnHead(23f, 30f);
-		at(167).leftClick();
-		at(168).turnHead(176f, 44.4f);
-		at(169).rightClick(); // etherwarp towards yellow
-		// Red Blue: 26 ticks
-
-		/*
-		 * ██╗   ██╗███████╗██╗     ██╗      ██████╗ ██╗    ██╗
-		 * ╚██╗ ██╔╝██╔════╝██║     ██║     ██╔═══██╗██║    ██║
-		 *  ╚████╔╝ █████╗  ██║     ██║     ██║   ██║██║ █╗ ██║
-		 *   ╚██╔╝  ██╔══╝  ██║     ██║     ██║   ██║██║███╗██║
-		 *    ██║   ███████╗███████╗███████╗╚██████╔╝╚███╔███╔╝
-		 *    ╚═╝   ╚══════╝╚══════╝╚══════╝ ╚═════╝  ╚══╝╚══╝
-		 */
-		at(170).turnHead(180f, 5.5f);
-		at(171).rightClick(); // etherwarp up to miniboss
-		at(172).setHotbarSlot(3);
-		at(173).leftClick();
-		// Yellow: 10 ticks
-
-		at(175).swapItems(1, 28).swapItems(3, 30).swapItems(6, 33).swapItems(7, 34).swapItems(12, 39).setHotbarSlot(5);
-		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
+//		at(26).turnHead(-110f, 11f).setHotbarSlot(7);
+//		at(27).rightClick(); // throw pearl into spot | lands in 5 ticks
+//		at(28).turnHead(180f, 35f).setHotbarSlot(5);
+//		// tick 32: pearl lands
+//		at(33).move("WP", 6).leftClick();
+//		at(34).leftClick();
+//		at(35).leftClick();
+//		at(36).leftClick();
+//		at(37).leftClick();
+//		at(38).leftClick();
+//		at(39).turnHead(180f, 35f);
+//		at(39).turnHead(175f, 9.5f).setHotbarSlot(7);
+//		at(40).rightClick(); // throw pearl across | lands in 12 ticks
+//		at(41).turnHead(-160f, 55f);
+//		at(42).leftClick();
+//		at(43).turnHead(109.5f, -68f);
+//		// Tick 52: pearl lands
+//		at(53).rightClick(); // throw pearl up | lands in 21 ticks
+//		at(54).turnHead(32f, 16f);
+//		// Tick 74: pearl lands
+//		at(75).rightClick(); // throw pearl towards bat | lands in 4 ticks
+//		at(76).turnHead(0f, 0f);
+//		// Tick 79: pearl lands
+//		at(80).move("AWP", 0);
+//		at(82).move("WP", 3);
+//		at(84).turnHead(60f, 6f);
+//		at(86).rightClick(); // pearl to dig spot | lands in 3 ticks
+//		at(87).turnHead(78f, -22f).setHotbarSlot(0);
+//		at(88).leftClick();
+//		at(89).turnHead(90f, 35f).setHotbarSlot(5); // pearl lands
+//		at(90).leftClick().move("WP", 9);
+//		at(91).leftClick();
+//		at(92).leftClick();
+//		at(93).leftClick();
+//		at(94).leftClick();
+//		at(95).leftClick();
+//		at(96).leftClick();
+//		at(97).leftClick();
+//		at(99).turnHead(0f, 20f).setHotbarSlot(7);
+//		at(100).rightClick(); // throw pearl towards chest | lands in 4 ticks
+//		at(101).turnHead(0f, 50f);
+//		// Tick 104: pearl lands
+//		at(105).leftClick();
+//		at(106).turnHead(0f, 81.5f).setHotbarSlot(5);
+//		at(107).leftClick(); // stonk block
+//		at(108).setHotbarSlot(7);
+//		at(109).rightClick(); // throw pearl down | lands in 8 ticks
+//		at(110).turnHead(0f, 30f).setHotbarSlot(5);
+//		// Tick 117: pearl lands
+//		at(118).move("WP", 0).leftClick();
+//		at(119).leftClick();
+//		at(120).leftClick();
+//		at(121).leftClick();
+//		at(122).leftClick();
+//		at(123).leftClick();
+//		at(124).leftClick(); // stonk outwards
+//		at(126).turnHead(-58.5f, 38f).move("N", 2).setHotbarSlot(7);
+//		at(127).rightClick(); // throw pearl down | lands in 10 ticks
+//		at(128).turnHead(-47f, 20f);
+//		// Tick 137: pearl lands
+//		at(138).rightClick(); // throw pearl out of trap | lands in 3 ticks
+//		at(139).turnHead(16f, 2.9f).move("N", 4).setHotbarSlot(1);
+//		// Tick 141: pearl lands
+//		at(142).rightClick(); // etherwarp to red blue
+//		// Trap: 142 ticks | Time from Enter: 117 ticks
+//
+//		/*
+//		 * ██████╗ ███████╗██████╗     ██████╗ ██╗     ██╗   ██╗███████╗
+//		 * ██╔══██╗██╔════╝██╔══██╗    ██╔══██╗██║     ██║   ██║██╔════╝
+//		 * ██████╔╝█████╗  ██║  ██║    ██████╔╝██║     ██║   ██║█████╗
+//		 * ██╔══██╗██╔══╝  ██║  ██║    ██╔══██╗██║     ██║   ██║██╔══╝
+//		 * ██║  ██║███████╗██████╔╝    ██████╔╝███████╗╚██████╔╝███████╗
+//		 * ╚═╝  ╚═╝╚══════╝╚═════╝     ╚═════╝ ╚══════╝ ╚═════╝ ╚══════╝
+//		 */
+//		at(143).turnHead(65f, 0f).setHotbarSlot(5);
+//		at(144).leftClick();
+//		at(145).setHotbarSlot(1).leftClick();
+//		at(146).turnHead(90f, -90f).move("N", 30);
+//		at(147).rightClick(); // etherwarp to prince
+//		at(148).turnHead(90f, 0f).swapItems(5, 31).setHotbarSlot(5); // Stonk -> 31, Infinityboom TNT -> 5
+//		at(149).rightClick(); // blow up crypt
+//		at(150).swapItems(5, 31).setHotbarSlot(3); // restore: Stonk -> 5, Infinityboom TNT -> 31; Claymore
+//		at(151).leftClick(); // kill prince | claymore swing
+//		at(152).turnHead(180f, -5f).setHotbarSlot(1);
+//		at(153).rightClick(); // etherwarp across
+//		at(154).turnHead(100f, 10f);
+//		at(155).rightClick(); // etherwarp to item
+//		at(156).turnHead(-97f, -4f);
+//		at(157).rightClick(); // etherwarp to chest
+//		at(158).turnHead(-115f, 0f).setHotbarSlot(5);
+//		at(159).leftClick();
+//		at(160).leftClick(); // stonk towards chest
+//		at(161).setHotbarSlot(1).leftClick();
+//		at(162).turnHead(57f, 39f);
+//		at(163).rightClick(); // etherwarp down
+//		at(164).turnHead(118f, -39f);
+//		at(165).rightClick(); // etherwarp to wither essence
+//		at(166).turnHead(23f, 30f);
+//		at(167).leftClick();
+//		at(168).turnHead(176f, 44.4f);
+//		at(169).rightClick(); // etherwarp towards yellow
+//		// Red Blue: 26 ticks
+//
+//		/*
+//		 * ██╗   ██╗███████╗██╗     ██╗      ██████╗ ██╗    ██╗
+//		 * ╚██╗ ██╔╝██╔════╝██║     ██║     ██╔═══██╗██║    ██║
+//		 *  ╚████╔╝ █████╗  ██║     ██║     ██║   ██║██║ █╗ ██║
+//		 *   ╚██╔╝  ██╔══╝  ██║     ██║     ██║   ██║██║███╗██║
+//		 *    ██║   ███████╗███████╗███████╗╚██████╔╝╚███╔███╔╝
+//		 *    ╚═╝   ╚══════╝╚══════╝╚══════╝ ╚═════╝  ╚══╝╚══╝
+//		 */
+//		at(170).turnHead(180f, 5.5f);
+//		at(171).rightClick(); // etherwarp up to miniboss
+//		at(172).setHotbarSlot(3);
+//		at(173).leftClick();
+//		// Yellow: 10 ticks
+//
+//		at(175).swapItems(1, 28).swapItems(3, 30).swapItems(6, 33).swapItems(7, 34).swapItems(12, 39).setHotbarSlot(5);
+//		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
 	public void maxor(boolean doContinue) {
@@ -422,7 +425,7 @@ public class Healer extends Actions {
 		at(158).rightClick(); // s3 2
 		// tick 159: terminal completes
 
-		at(160).leap(fake("Beethoven_"));
+		at(160).leap(fake("Beethoven"));
 
 		/*
 		 * ██╗  ██╗
@@ -440,7 +443,7 @@ public class Healer extends Actions {
 		at(180).turnHead(-151f, -22f);
 		at(181).rightClick(); // s4 bottom
 
-		at(191).leap(fake("Beethoven_"));
+		at(191).leap(fake("Beethoven"));
 
 		/*
 		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
@@ -507,7 +510,7 @@ public class Healer extends Actions {
 		at(28).rightClick();
 		at(29).swapItems(5, 32).swapItems(13, 39);
 		at(30).setHotbarSlot(4);
-		at(100).leap(fake("Beethoven_"));
+		at(100).leap(fake("Beethoven"));
 		at(101).setHotbarSlot(5).turnHead(180f, -90f);
 		at(200).rightClick();
 		at(261).setHotbarSlot(6);

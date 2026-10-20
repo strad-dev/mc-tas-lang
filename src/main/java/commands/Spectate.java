@@ -103,6 +103,7 @@ public class Spectate implements CommandExecutor {
 			SpectatorSync.syncInventory(fakePlayer);
 			((CraftPlayer) p).getHandle().connection.send(new ClientboundSetHeldSlotPacket(fakePlayer.getInventory().getHeldItemSlot()));
 			SpectatorSync.showOpenScreen(fakePlayer, p);
+			SpectatorSync.showHud(fakePlayer, p);
 			TASUtils.scheduleTask(() -> hideFakePlayerFromSpectator(p, fakePlayer), 1);
 
 			if(spectatorSyncTask == null) {
@@ -147,6 +148,7 @@ public class Spectate implements CommandExecutor {
 		SpectatorSync.restoreAndRemove(p);
 		if(!ScriptWatchers.holds(p)) p.removeScoreboardTag(TASUtils.WATCHING_TAG);
 		nms.SpectatorPacketInterceptor.uninstall(p);
+		SpectatorSync.restoreHud(p);
 		restorePlayerCollision(p);
 	}
 

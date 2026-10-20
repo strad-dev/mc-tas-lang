@@ -9,7 +9,9 @@ import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
+import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerButtonClickPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
@@ -28,9 +30,14 @@ import commands.Spectate;
 
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SpectatorPacketInterceptor extends ChannelDuplexHandler {
 	private static final String NAME = "tas_spectator";
+	private static final Map<Player, SpectatorPacketInterceptor> INSTANCES = new ConcurrentHashMap<>();
 	private final Player player;
 
 	public SpectatorPacketInterceptor(Player player) {
@@ -40,12 +47,17 @@ public class SpectatorPacketInterceptor extends ChannelDuplexHandler {
 	public static void install(Player p) {
 		try {
 			Channel ch = getChannel(p);
-			if(ch.pipeline().get(NAME) == null) ch.pipeline().addBefore("packet_handler", NAME, new SpectatorPacketInterceptor(p));
+			if(ch.pipeline().get(NAME) == null) {
+				SpectatorPacketInterceptor interceptor = new SpectatorPacketInterceptor(p);
+				ch.pipeline().addBefore("packet_handler", NAME, interceptor);
+				INSTANCES.put(p, interceptor);
+			}
 		} catch(Exception ignored) {
 		}
 	}
 
 	public static void uninstall(Player p) {
+		INSTANCES.remove(p);
 		try {
 			Channel ch = getChannel(p);
 			if(ch.pipeline().get(NAME) != null) ch.pipeline().remove(NAME);
@@ -90,9 +102,54 @@ public class SpectatorPacketInterceptor extends ChannelDuplexHandler {
 		}
 	}
 
+	/** The fake's HUD packets sent to this watcher ({@link #mirror}); any other HUD packet is the watcher's own. */
+	private final ArrayDeque<Object> mirrors = new ArrayDeque<>();
+	/** System chat lately written, by content: a broadcast reaches the watcher directly and mirrored, as two instances. */
+	private final Map<Object, Long> recentChat = new HashMap<>();
+	private static final long CHAT_DEDUPE_NANOS = 100_000_000L;
+
+	/** Sends the fake's HUD packet to {@code watcher}, past the filter that drops the watcher's own. */
+	public static void mirror(Player watcher, Packet<?> packet) {
+		SpectatorPacketInterceptor interceptor = INSTANCES.get(watcher);
+		if(interceptor == null) return;
+		synchronized(interceptor.mirrors) {
+			interceptor.mirrors.addLast(packet);
+			if(interceptor.mirrors.size() > RECENT_SOUNDS) interceptor.mirrors.removeFirst();
+		}
+		((CraftPlayer) watcher).getHandle().connection.send(packet);
+	}
+
+	private boolean takeMirror(Object msg) {
+		synchronized(mirrors) {
+			for(Iterator<Object> it = mirrors.iterator(); it.hasNext(); ) {
+				if(it.next() == msg) {
+					it.remove();
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean isRepeatChat(ClientboundSystemChatPacket chat) {
+		long now = System.nanoTime();
+		synchronized(recentChat) {
+			recentChat.values().removeIf(t -> now - t > CHAT_DEDUPE_NANOS);
+			return recentChat.putIfAbsent(chat.content(), now) != null;
+		}
+	}
+
+	/** While spectating: HUD only from the fake; system chat from both, once. */
+	private boolean isUnwantedHud(Object msg) {
+		if(!Spectate.getSpectatorMap().containsKey(player) || !plugin.SpectatorSync.isHud(msg)) return false;
+		boolean mirrored = takeMirror(msg);
+		if(msg instanceof ClientboundSystemChatPacket chat && !chat.overlay()) return isRepeatChat(chat);
+		return !mirrored;
+	}
+
 	@Override
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-		if(isDuplicateSound(msg)) {
+		if(isDuplicateSound(msg) || isUnwantedHud(msg)) {
 			promise.trySuccess();
 			return;
 		}

@@ -7,6 +7,10 @@ commands:
   spawnfakes:
     description: Spawn the fake players
     usage: /spawnfakes
+  # Also M7's label; the bare form is claimed in onEnable (claimSetupLabel), M7's stays /m7:setup.
+  setup:
+    description: Reset the dungeon (/m7:setup) and spawn the fake players
+    usage: /setup
   kickallfakes:
     description: Kick all fake players
     usage: /kickallfakes

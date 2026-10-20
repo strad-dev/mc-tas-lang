@@ -11,16 +11,25 @@ public class Archer extends Actions {
 		super(player);
 	}
 
+	public void startPosition(String section) {
+		switch(section) {
+			case "all", "clear" -> startAt(-120.5, 71, -183.5, 0f, 0f);
+			case "maxor", "boss" -> startAt(73.5, 221, 14.5, 0f, 0f);
+			case "storm" -> startAt(65.087, 165, 69.329, 180f, -4f);
+			case "goldor" -> startAt(63.811, 127, 35.940, -74.5f, -46f);
+			case "necron" -> startAt(54.524, 64, 100.707, 180f, -6f);
+			case "witherking" -> startAt(22.3, 6, 59.408, 65.6f, 29.3f);
+		}
+	}
+
 	public void archerInstructions(String section) {
 		int start = TAS.startDelay(section);
 		switch(section) {
 			case "all", "clear" -> {
-				startAt(-120.5, 71, -183.5, 0f, 0f);
 				preClear();
 				TASUtils.scheduleTask(() -> clear(section.equals("all")), start);
 			}
 			case "maxor", "boss" -> {
-				startAt(73.5, 221, 14.5, 0f, 0f);
 				swapItems(1, 28);
 				swapItems(6, 33);
 				swapItems(7, 34);
@@ -33,7 +42,6 @@ public class Archer extends Actions {
 				}
 			}
 			case "storm" -> {
-				startAt(65.087, 165, 69.329, 180f, -4f);
 				swapItems(1, 28);
 				swapItems(6, 33);
 				swapItems(7, 34);
@@ -41,7 +49,6 @@ public class Archer extends Actions {
 				TASUtils.scheduleTask(() -> storm(false), start);
 			}
 			case "goldor" -> {
-				startAt(63.811, 127, 35.940, -74.5f, -46f);
 				swapItems(1, 28);
 				swapItems(5, 32);
 				swapItems(6, 33);
@@ -67,7 +74,6 @@ public class Archer extends Actions {
 				TASUtils.scheduleTask(() -> goldor(false), start);
 			}
 			case "necron" -> {
-				startAt(54.524, 64, 100.707, 180f, -6f);
 				swapItems(1, 28);
 				swapItems(5, 32);
 				swapItems(6, 33);
@@ -75,7 +81,6 @@ public class Archer extends Actions {
 				TASUtils.scheduleTask(() -> necron(false), start);
 			}
 			case "witherking" -> {
-				startAt(22.3, 6, 59.408, 65.6f, 29.3f);
 				swapItems(1, 28);
 				swapItems(6, 33);
 				swapItems(7, 34);
@@ -88,9 +93,9 @@ public class Archer extends Actions {
 
 	private void preClear() {
 		setHotbarSlot(1);
-		move("WPJ", 0);
-		at(13).move("WP", 15);
-		at(31).turnHead(-1f, -3.4f);
+		move("N");
+		rightClick(0f, 23f);
+		at(1).rightClick();
 	}
 
 	private void clear(boolean doContinue) {
@@ -102,138 +107,138 @@ public class Archer extends Actions {
 		 * ██████╔╝███████╗╚██████╔╝╚██████╔╝██████╔╝    ██║  ██║╚██████╔╝███████║██║  ██║
 		 * ╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝ ╚═════╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝
 		 */
-		at(20).move("N", 4);
-		at(21).rightClick(); // etherwarp into fairy
-		at(22).turnHead(4f, 24f);
-		at(23).rightClick(); // etherwarp to wither door
-		// Left-click the wither door to open it.  This requires the Wither Key from killing archaeologist I.
-		at(25).leftClick(); // opens tick 45
-		at(46).turnHead(10f, 6.5f).move("N", 0).setHotbarSlot(1); // mage leaps
-		at(47).rightClick(); // etherwarp into room
-		at(48).turnHead(-57.15f, 1.75f);
-		at(49).rightClick(); // etherwarp into Gravel
-		// Blood Rush: 49 ticks
-
-		/*
-		 *  ██████╗ ██████╗  █████╗ ██╗   ██╗███████╗██╗
-		 * ██╔════╝ ██╔══██╗██╔══██╗██║   ██║██╔════╝██║
-		 * ██║  ███╗██████╔╝███████║██║   ██║█████╗  ██║
-		 * ██║   ██║██╔══██╗██╔══██║╚██╗ ██╔╝██╔══╝  ██║
-		 * ╚██████╔╝██║  ██║██║  ██║ ╚████╔╝ ███████╗███████╗
-		 *  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝  ╚═══╝  ╚══════╝╚══════╝
-		 */
-		at(50).turnHead(0f, 0f).move("P", 0);
-		at(51).dropItem(true); // blow up crypt | arrows land in 4 ticks
-		at(52).turnHead(45.1f, 4.2f).move("N", 21);
-		at(53).rightClick(); // etherwarp into room
-		at(54).turnHead(-44f, 8.5f);
-		at(55).rightClick(); // reposition for secret
-		at(56).turnHead(-106f, 3.3f);
-		at(57).rightClick(); // etherwarp to secret
-		at(58).turnHead(-90f, 7f).setHotbarSlot(5);
-		at(59).leftClick();
-		at(60).setHotbarSlot(1).leftClick();
-		at(61).turnHead(28.7f, -56f);
-		at(62).rightClick(); // etherwarp up
-		at(63).turnHead(-99.7f, -53f).setHotbarSlot(0);
-		at(64).rightClick(); // wither impact, kill bat
-		at(65).turnHead(74f, 57.5f).setHotbarSlot(1);
-		at(66).rightClick(); // etherwarp down
-		at(67).turnHead(-86.5f, 2.7f);
-		at(68).rightClick(); // etherwarp to miniboss
-		at(69).turnHead(0f, 0f).setHotbarSlot(4);
-		at(70).rightClick(); // shoot and kill miniboss | arrows kill in 1 tick
-		at(71).turnHead(-85f, 2.25f).setHotbarSlot(1);
-		at(72).rightClick(); // etherwarp towards quiz
-		at(73).turnHead(0f, 0f);
-		at(74).rightClick(); // aotv into quiz
-		at(75).turnHead(180f, -12f).setHotbarSlot(7);
-		at(76).rightClick(); // pearl to dino | lands in 25 ticks
-		at(77).turnHead(180f, 2.2f).setHotbarSlot(1).move("N", 2);
-		at(78).rightClick(); // etherwarp towards secrets
-		at(79).turnHead(-90f, -38.5f);
-		at(80).rightClick(); // etherwarp into area
-		at(81).turnHead(0f, 58f);
-		at(82).rightClick(); // etherwarp to item
-		at(83).turnHead(-141f, 10f);
-		at(84).rightClick(); // etherwarp to wither essence
-		at(85).turnHead(180f, 55f);
-		at(86).leftClick();
-		at(87).turnHead(90f, -23.5f);
-		at(88).rightClick(); // aotv out
-		at(89).turnHead(52f, -25f).move("N", 2);
-		at(90).rightClick(); // etherwarp to final secrets
-		at(91).turnHead(42f, 50f);
-		at(92).rightClick(); // reposition
-		at(93).turnHead(90f, -90f);
-		at(94).move("WP", 1);
-		at(95).rightClick(); // aotv up
-		at(96).turnHead(90f, 75f);
-		at(97).rightClick(); // aotv down
-		at(98).turnHead(90f, 36f);
-		at(99).leftClick();
-		at(100).turnHead(180f, -5.5f).move("N", 2); // pearl lands
-		at(101).rightClick(); // etherwarp into dino
-		// Gravel: 52 ticks
-
-		/*
-		 * ██████╗ ██╗███╗   ██╗ ██████╗     ██████╗ ██╗ ██████╗     ███████╗██╗████████╗███████╗
-		 * ██╔══██╗██║████╗  ██║██╔═══██╗    ██╔══██╗██║██╔════╝     ██╔════╝██║╚══██╔══╝██╔════╝
-		 * ██║  ██║██║██╔██╗ ██║██║   ██║    ██║  ██║██║██║  ███╗    ███████╗██║   ██║   █████╗
-		 * ██║  ██║██║██║╚██╗██║██║   ██║    ██║  ██║██║██║   ██║    ╚════██║██║   ██║   ██╔══╝
-		 * ██████╔╝██║██║ ╚████║╚██████╔╝    ██████╔╝██║╚██████╔╝    ███████║██║   ██║   ███████╗
-		 * ╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝     ╚═════╝ ╚═╝ ╚═════╝     ╚══════╝╚═╝   ╚═╝   ╚══════╝
-		 */
-		at(102).turnHead(101f, 32f).setHotbarSlot(4);
-		at(103).rightClick(); // shoot at miniboss | arrows land in 5 ticks
-		at(104).turnHead(46f, -50f).setHotbarSlot(1).move("N", 2);
-		at(105).rightClick(); // etherwarp to secret
-		at(106).turnHead(-163f, 49f).setHotbarSlot(7);
-		at(107).rightClick(); // throw pearl | lands in 19 ticks
-		at(108).turnHead(13f, 9f).setHotbarSlot(3);
-		at(109).rightClick(); // blow up door
-		at(110).setHotbarSlot(1);
-		at(111).rightClick(); // aotv to chest
-		at(112).turnHead(0f, 13f);
-		at(113).leftClick();
-		at(114).turnHead(-180f, 24.8f);
-		at(115).rightClick(); // aotv out of secret
-		at(116).turnHead(96f, 59f).move("N", 2);
-		at(117).rightClick(); // etherwarp down
-		at(118).turnHead(18f, 2f);
-		at(119).rightClick(); // aotv to item
-		at(120).turnHead(135.1f, 30.7f).move("N", 2);
-		at(121).rightClick();
-		at(122).turnHead(-155f, -16f).setHotbarSlot(5);
-		at(123).leftClick();
-		at(124).setHotbarSlot(1).leftClick();
-		at(125).turnHead(-157f, 8f).setHotbarSlot(7);
-		// tick 126: pearl lands
-		at(127).rightClick(); // throw pearl | lands in 6 ticks
-		at(128).turnHead(-55f, 62f).setHotbarSlot(1).move("N", 2);
-		at(129).rightClick(); // etherwarp towards bat
-		at(130).turnHead(-8.2f, 7.3f).setHotbarSlot(0);
-		at(131).rightClick(); // kill bat
-		at(132).turnHead(0f, 1.8f).setHotbarSlot(1).move("N", 5);
-		// tick 133: pearl lands
-		at(134).rightClick(); // etherwarp back to gravel
-		at(135).turnHead(0f, 1.45f);
-		at(136).rightClick(); // etherwarp to quiz
-		// Dino Dig Site: 35 ticks
-
-		/*
-		 *  ██████╗ ██╗   ██╗██╗███████╗
-		 * ██╔═══██╗██║   ██║██║╚══███╔╝
-		 * ██║   ██║██║   ██║██║  ███╔╝
-		 * ██║▄▄ ██║██║   ██║██║ ███╔╝
-		 * ╚██████╔╝╚██████╔╝██║███████╗
-		 *  ╚══▀▀═╝  ╚═════╝ ╚═╝╚══════╝
-		 */
-		quiz();
-		// Quiz: 482 ticks | 543 ticks from open | puzzle solved 503 ticks from open
-
-		at(619).swapItems(1, 28).swapItems(6, 33).swapItems(7, 34).swapItems(11, 36).setHotbarSlot(5);
-		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
+		at(15).rightClick(-2f, -1.5f); // etherwarp into fairy
+		at(16).rightClick(7f, 17f); // etherwarp to wither door
+		at(17).leftClick(); // open wither door
+		at(27).move("JN");
+		at(28).move("N");
+		at(32).rightClick(0f, 12.9f); // go pick up key
+//		at(46).turnHead(10f, 6.5f).move("N", 0).setHotbarSlot(1); // mage leaps
+//		at(47).rightClick(); // etherwarp into room
+//		at(48).turnHead(-57.15f, 1.75f);
+//		at(49).rightClick(); // etherwarp into Gravel
+//		// Blood Rush: 49 ticks
+//
+//		/*
+//		 *  ██████╗ ██████╗  █████╗ ██╗   ██╗███████╗██╗
+//		 * ██╔════╝ ██╔══██╗██╔══██╗██║   ██║██╔════╝██║
+//		 * ██║  ███╗██████╔╝███████║██║   ██║█████╗  ██║
+//		 * ██║   ██║██╔══██╗██╔══██║╚██╗ ██╔╝██╔══╝  ██║
+//		 * ╚██████╔╝██║  ██║██║  ██║ ╚████╔╝ ███████╗███████╗
+//		 *  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝  ╚═══╝  ╚══════╝╚══════╝
+//		 */
+//		at(50).turnHead(0f, 0f).move("P", 0);
+//		at(51).dropItem(true); // blow up crypt | arrows land in 4 ticks
+//		at(52).turnHead(45.1f, 4.2f).move("N", 21);
+//		at(53).rightClick(); // etherwarp into room
+//		at(54).turnHead(-44f, 8.5f);
+//		at(55).rightClick(); // reposition for secret
+//		at(56).turnHead(-106f, 3.3f);
+//		at(57).rightClick(); // etherwarp to secret
+//		at(58).turnHead(-90f, 7f).setHotbarSlot(5);
+//		at(59).leftClick();
+//		at(60).setHotbarSlot(1).leftClick();
+//		at(61).turnHead(28.7f, -56f);
+//		at(62).rightClick(); // etherwarp up
+//		at(63).turnHead(-99.7f, -53f).setHotbarSlot(0);
+//		at(64).rightClick(); // wither impact, kill bat
+//		at(65).turnHead(74f, 57.5f).setHotbarSlot(1);
+//		at(66).rightClick(); // etherwarp down
+//		at(67).turnHead(-86.5f, 2.7f);
+//		at(68).rightClick(); // etherwarp to miniboss
+//		at(69).turnHead(0f, 0f).setHotbarSlot(4);
+//		at(70).rightClick(); // shoot and kill miniboss | arrows kill in 1 tick
+//		at(71).turnHead(-85f, 2.25f).setHotbarSlot(1);
+//		at(72).rightClick(); // etherwarp towards quiz
+//		at(73).turnHead(0f, 0f);
+//		at(74).rightClick(); // aotv into quiz
+//		at(75).turnHead(180f, -12f).setHotbarSlot(7);
+//		at(76).rightClick(); // pearl to dino | lands in 25 ticks
+//		at(77).turnHead(180f, 2.2f).setHotbarSlot(1).move("N", 2);
+//		at(78).rightClick(); // etherwarp towards secrets
+//		at(79).turnHead(-90f, -38.5f);
+//		at(80).rightClick(); // etherwarp into area
+//		at(81).turnHead(0f, 58f);
+//		at(82).rightClick(); // etherwarp to item
+//		at(83).turnHead(-141f, 10f);
+//		at(84).rightClick(); // etherwarp to wither essence
+//		at(85).turnHead(180f, 55f);
+//		at(86).leftClick();
+//		at(87).turnHead(90f, -23.5f);
+//		at(88).rightClick(); // aotv out
+//		at(89).turnHead(52f, -25f).move("N", 2);
+//		at(90).rightClick(); // etherwarp to final secrets
+//		at(91).turnHead(42f, 50f);
+//		at(92).rightClick(); // reposition
+//		at(93).turnHead(90f, -90f);
+//		at(94).move("WP", 1);
+//		at(95).rightClick(); // aotv up
+//		at(96).turnHead(90f, 75f);
+//		at(97).rightClick(); // aotv down
+//		at(98).turnHead(90f, 36f);
+//		at(99).leftClick();
+//		at(100).turnHead(180f, -5.5f).move("N", 2); // pearl lands
+//		at(101).rightClick(); // etherwarp into dino
+//		// Gravel: 52 ticks
+//
+//		/*
+//		 * ██████╗ ██╗███╗   ██╗ ██████╗     ██████╗ ██╗ ██████╗     ███████╗██╗████████╗███████╗
+//		 * ██╔══██╗██║████╗  ██║██╔═══██╗    ██╔══██╗██║██╔════╝     ██╔════╝██║╚══██╔══╝██╔════╝
+//		 * ██║  ██║██║██╔██╗ ██║██║   ██║    ██║  ██║██║██║  ███╗    ███████╗██║   ██║   █████╗
+//		 * ██║  ██║██║██║╚██╗██║██║   ██║    ██║  ██║██║██║   ██║    ╚════██║██║   ██║   ██╔══╝
+//		 * ██████╔╝██║██║ ╚████║╚██████╔╝    ██████╔╝██║╚██████╔╝    ███████║██║   ██║   ███████╗
+//		 * ╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝     ╚═════╝ ╚═╝ ╚═════╝     ╚══════╝╚═╝   ╚═╝   ╚══════╝
+//		 */
+//		at(102).turnHead(101f, 32f).setHotbarSlot(4);
+//		at(103).rightClick(); // shoot at miniboss | arrows land in 5 ticks
+//		at(104).turnHead(46f, -50f).setHotbarSlot(1).move("N", 2);
+//		at(105).rightClick(); // etherwarp to secret
+//		at(106).turnHead(-163f, 49f).setHotbarSlot(7);
+//		at(107).rightClick(); // throw pearl | lands in 19 ticks
+//		at(108).turnHead(13f, 9f).setHotbarSlot(3);
+//		at(109).rightClick(); // blow up door
+//		at(110).setHotbarSlot(1);
+//		at(111).rightClick(); // aotv to chest
+//		at(112).turnHead(0f, 13f);
+//		at(113).leftClick();
+//		at(114).turnHead(-180f, 24.8f);
+//		at(115).rightClick(); // aotv out of secret
+//		at(116).turnHead(96f, 59f).move("N", 2);
+//		at(117).rightClick(); // etherwarp down
+//		at(118).turnHead(18f, 2f);
+//		at(119).rightClick(); // aotv to item
+//		at(120).turnHead(135.1f, 30.7f).move("N", 2);
+//		at(121).rightClick();
+//		at(122).turnHead(-155f, -16f).setHotbarSlot(5);
+//		at(123).leftClick();
+//		at(124).setHotbarSlot(1).leftClick();
+//		at(125).turnHead(-157f, 8f).setHotbarSlot(7);
+//		// tick 126: pearl lands
+//		at(127).rightClick(); // throw pearl | lands in 6 ticks
+//		at(128).turnHead(-55f, 62f).setHotbarSlot(1).move("N", 2);
+//		at(129).rightClick(); // etherwarp towards bat
+//		at(130).turnHead(-8.2f, 7.3f).setHotbarSlot(0);
+//		at(131).rightClick(); // kill bat
+//		at(132).turnHead(0f, 1.8f).setHotbarSlot(1).move("N", 5);
+//		// tick 133: pearl lands
+//		at(134).rightClick(); // etherwarp back to gravel
+//		at(135).turnHead(0f, 1.45f);
+//		at(136).rightClick(); // etherwarp to quiz
+//		// Dino Dig Site: 35 ticks
+//
+//		/*
+//		 *  ██████╗ ██╗   ██╗██╗███████╗
+//		 * ██╔═══██╗██║   ██║██║╚══███╔╝
+//		 * ██║   ██║██║   ██║██║  ███╔╝
+//		 * ██║▄▄ ██║██║   ██║██║ ███╔╝
+//		 * ╚██████╔╝╚██████╔╝██║███████╗
+//		 *  ╚══▀▀═╝  ╚═════╝ ╚═╝╚══════╝
+//		 */
+//		quiz();
+//		// Quiz: 482 ticks | 543 ticks from open | puzzle solved 503 ticks from open
+//
+//		at(619).swapItems(1, 28).swapItems(6, 33).swapItems(7, 34).swapItems(11, 36).setHotbarSlot(5);
+//		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
 	public void maxor(boolean doContinue) {
@@ -416,7 +421,7 @@ public class Archer extends Actions {
 		at(156).rightClick();
 		// tick 157: terminal completes
 
-		at(158).leap(fake("Beethoven_"));
+		at(158).leap(fake("Beethoven"));
 
 		/*
 		 * ██╗  ██╗
@@ -438,7 +443,7 @@ public class Archer extends Actions {
 		at(190).rightClick(); // s4 2
 		// tick 191: terminal completes
 
-		at(192).leap(fake("Beethoven_"));
+		at(192).leap(fake("Beethoven"));
 
 		/*
 		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
@@ -469,7 +474,7 @@ public class Archer extends Actions {
 		at(285).turnHead(-180f, 90f);
 		at(298).leftClick();
 		at(299).setHotbarSlot(2);
-		at(300).leap(fake("Beethoven_"));
+		at(300).leap(fake("Beethoven"));
 		at(301).swapItems(5, 32).swapItems(12, 39);
 		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}
@@ -512,7 +517,7 @@ public class Archer extends Actions {
 			at(i + lbFor).stopRightClick();
 		}
 		at(394).setHotbarSlot(2);
-		at(490).leap(fake("Beethoven_"));
+		at(490).leap(fake("Beethoven"));
 		at(566).rightClick();
 		at(629).setHotbarSlot(5);
 		lbFor = 10;

@@ -22,8 +22,6 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
@@ -32,7 +30,6 @@ import commands.Spectate;
 
 import java.util.*;
 import java.util.function.Predicate;
-import plugin.mcTASLang;
 import plugin.FakePlayerManager;
 import plugin.SpectatorSync;
 
@@ -44,7 +41,6 @@ public class Actions {
 		this.player = player;
 	}
 
-	private static final Map<UUID, BukkitTask> jumpTasks = new HashMap<>();
 	private static final Map<UUID, String> activeInputs = new HashMap<>();
 	/** Bumped by {@link #cancelAllMovement()}; older move() cleanups must not zero the new run's inputs. */
 	private static int movementGeneration = 0;
@@ -76,12 +72,21 @@ public class Actions {
 		throw new IllegalStateException("LivingEntity.detectEquipmentUpdates[Public] not found on runtime");
 	}
 
+	/** Holds {@code input} (see {@link #move(String, int)} for the keys) until the next move; {@code ""} releases. */
+	@SuppressWarnings("deprecation")
+	public void move(String input) {
+		move(input, 0);
+	}
+
 	/**
 	 * Simulates a Player pressing movement input keys.  Only call this when the player changes which keys are pressed.
 	 *
 	 * @param input         The input keys being held down<br>Valid Input contains the following characters: W, A, S, D, J, P, N<br>WASD: movement<br>J: Jump<br>P: sPrint<br>N: sNeak
 	 * @param durationTicks How long the keys are held down for, or 0 for manual override
+	 * @deprecated use {@link #move(String)}: keys stay held until the next move ({@code ""} releases) or the server
+	 *             stops them
 	 */
+	@Deprecated
 	public void move(String input, int durationTicks) {
 		// only handle CraftLivingEntity/NMS and positive duration
 		TASUtils.debug(TASUtils.DebugType.CLIENT, player.getName() + " moving " + input + " for " + durationTicks);
@@ -113,30 +118,8 @@ public class Actions {
 			serverPlayer.zza *= 0.3F;
 		}
 
-		BukkitTask existingJump = jumpTasks.remove(player.getUniqueId());
-		if(existingJump != null) existingJump.cancel();
-
-		if(input.contains("J")) {
-			BukkitTask task = new BukkitRunnable() {
-				int ticks = 0;
-
-				@Override
-				public void run() {
-					if(isCancelled() || (durationTicks > 0 && ticks++ >= durationTicks) || serverPlayer.isRemoved()) {
-						jumpTasks.remove(player.getUniqueId());
-						cancel();
-						return;
-					}
-					if(serverPlayer.onGround()) {
-						serverPlayer.setJumping(true);
-						TASUtils.debug(TASUtils.DebugType.CLIENT, player.getName() + " jumped at " + TASUtils.round(serverPlayer.getX(), 3) + " " + TASUtils.round(serverPlayer.getY(), 5) + " " + TASUtils.round(serverPlayer.getZ(), 3));
-					}
-				}
-			}.runTaskTimer(mcTASLang.getInstance(), 0L, 1L);
-			jumpTasks.put(player.getUniqueId(), task);
-		} else {
-			serverPlayer.setJumping(false);
-		}
+		// A held J jumps from FakePlayerManager.tickFakes, the physics step right after this input.
+		if(!input.contains("J")) serverPlayer.setJumping(false);
 		if(durationTicks > 0) {
 			int generation = movementGeneration;
 			TASUtils.scheduleTask(() -> {
@@ -154,14 +137,12 @@ public class Actions {
 	}
 
 	/**
-	 * Hard-stops fake-player movement: keys, jump tasks, momentum. Older move() cleanups become no-ops.
+	 * Hard-stops fake-player movement: keys (jump included), momentum. Older move() cleanups become no-ops.
 	 * TAS start.
 	 */
 	public static void cancelAllMovement() {
 		movementGeneration++;
 
-		for(BukkitTask task : jumpTasks.values()) task.cancel();
-		jumpTasks.clear();
 		activeInputs.clear();
 
 		for(Player p : FakePlayerManager.getFakePlayers().values()) {
@@ -291,7 +272,7 @@ public class Actions {
 		Spectate.snapSpectatorsToFake(player);
 	}
 
-	/** Another fake by name ({@code akc0303}, {@code Beethoven_}, ...). */
+	/** Another fake by name ({@code akc0303}, {@code Beethoven}, ...). */
 	protected static Player fake(String name) {
 		return FakePlayerManager.getFakePlayers().get(name);
 	}
@@ -715,10 +696,8 @@ public class Actions {
 			Vec3 hitPos = new Vec3(entityRay.getHitPosition().getX(), entityRay.getHitPosition().getY(), entityRay.getHitPosition().getZ());
 			Vec3 localHit = hitPos.subtract(entityPos);
 
-			// 26.2: flat record. interact-at = hand + location (relative to entity); interact = hand, null location.
-			ServerboundInteractPacket interactAtPacket = new ServerboundInteractPacket(nmsEntity.getId(), InteractionHand.MAIN_HAND, localHit, serverPlayer.isShiftKeyDown());
-			send(interactAtPacket);
-			ServerboundInteractPacket interactPacket = new ServerboundInteractPacket(nmsEntity.getId(), InteractionHand.MAIN_HAND, null, serverPlayer.isShiftKeyDown());
+			// 26.2: ONE packet, location (relative to entity) required; it fires both the interact-at and interact events.
+			ServerboundInteractPacket interactPacket = new ServerboundInteractPacket(nmsEntity.getId(), InteractionHand.MAIN_HAND, localHit, serverPlayer.isShiftKeyDown());
 			send(interactPacket);
 			for(Player spectator : Spectate.getSpectatingPlayers(player)) spectator.swingMainHand();
 
@@ -781,7 +760,7 @@ public class Actions {
 	 */
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void send(Packet<?> packet) {
-		if(!(player instanceof CraftPlayer craftPlayer)) return;
+		if(!(player instanceof CraftPlayer craftPlayer) || !player.isOnline()) return;
 		// Paper's decoder stamps these and its spam limiter reads the stamp; left at 0, every use after the 8th is dropped.
 		if(packet instanceof ServerboundUseItemPacket use) use.timestamp = System.currentTimeMillis();
 		if(packet instanceof ServerboundUseItemOnPacket useOn) useOn.timestamp = System.currentTimeMillis();
@@ -804,6 +783,14 @@ public class Actions {
 			this.delay = delay;
 		}
 
+		public Later move(String input) {
+			TASUtils.scheduleTask(() -> Actions.this.move(input), delay);
+			return this;
+		}
+
+		/** @deprecated use {@link #move(String)} */
+		@Deprecated
+		@SuppressWarnings("deprecation")
 		public Later move(String input, int durationTicks) {
 			TASUtils.scheduleTask(() -> Actions.this.move(input, durationTicks), delay);
 			return this;

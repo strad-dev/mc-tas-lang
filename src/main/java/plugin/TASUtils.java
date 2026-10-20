@@ -12,7 +12,11 @@ import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 /** Copied from M7's {@code plugin.Utils}; M7 state read through {@link M7Link}. */
 public class TASUtils {
@@ -36,16 +40,41 @@ public class TASUtils {
 	}
 
 	/**
-	 * runTaskLater; delay in ticks. Dropped if the run changes in between ({@link #run()}), so choreography can't
-	 * bleed into the next run.
+	 * Runs {@code task} {@code delay} ticks from now (at least 1), at the END of that tick ({@link #runDue}). Dropped
+	 * if the run changes in between ({@link #run()}), so choreography can't bleed into the next run.
 	 */
 	public static void scheduleTask(Runnable task, long delay) {
 		if(!mcTASLang.getInstance().isEnabled()) return;
 		int queuedIn = run();
-		Bukkit.getScheduler().runTaskLater(mcTASLang.getInstance(), () -> {
+		int due = net.minecraft.server.MinecraftServer.getServer().getTickCount() + (int) Math.max(1, delay);
+		queued.computeIfAbsent(due, k -> new ArrayList<>()).add(() -> {
 			if(queuedIn != run()) return;
 			task.run();
-		}, delay);
+		});
+	}
+
+	/** Due tick (server tick count) -> tasks, in the order they were scheduled. */
+	private static final TreeMap<Integer, List<Runnable>> queued = new TreeMap<>();
+
+	/**
+	 * ServerTickEndEvent: this tick's inputs, after every server task, boss ticker and entity tick of the tick, where
+	 * a real client's packets land (the next tick's packet drain comes before anything else). As Bukkit tasks they
+	 * ran oldest-first among the plugin tasks, so one M7 scheduled mid-run (a door opening 15 ticks after the click)
+	 * ran after them on its own tick.
+	 */
+	public static void runDue() {
+		int now = net.minecraft.server.MinecraftServer.getServer().getTickCount();
+		while(!queued.isEmpty() && queued.firstKey() <= now) {
+			Map.Entry<Integer, List<Runnable>> batch = queued.pollFirstEntry();
+			for(Runnable task : batch.getValue()) {
+				try {
+					task.run();
+				} catch(Throwable t) {
+					mcTASLang.getInstance().getLogger().warning("TAS task on tick " + batch.getKey() + " threw: " + t);
+					t.printStackTrace();
+				}
+			}
+		}
 	}
 
 	private static int run;

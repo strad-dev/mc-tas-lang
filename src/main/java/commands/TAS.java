@@ -24,7 +24,7 @@ public class TAS implements CommandExecutor {
 	private static final List<String> SECTIONS = List.of("all", "clear", "boss", "maxor", "storm", "goldor", "necron", "witherking");
 	private static final int COUNTDOWN = 60;
 	/** Temporarily 126 (the routines' tick 0 is 26 before Mort's start button) until the clear is redone; then 100. */
-	private static final int CLEAR_COUNTDOWN = 126;
+	private static final int CLEAR_COUNTDOWN = 100;
 	// Difficulty, mayor, Fix Watcher Bug, Bad Bonzo, in /m7practice's own argument forms.
 	private static final String SETTINGS = "perfect_rng jerry_paul off badbonzo=off";
 
@@ -56,11 +56,13 @@ public class TAS implements CommandExecutor {
 		}
 		Map<String, Player> fakes = FakePlayerManager.getFakePlayers();
 		if(fakes.size() < 5) {
-			p.sendMessage(TASUtils.msg("<red>Could not run TAS!  Spawn the fakes first with /spawnfakes"));
+			p.sendMessage(TASUtils.msg("<red>Could not run TAS!  Spawn the fakes first with /setup"));
 			return true;
 		}
 
+		// Drops the last run's queued tasks; its held keys and jump timers aren't queued tasks, so stop those too.
 		TASUtils.endRun();
+		Actions.cancelAllMovement();
 		// M7 refuses a run while anyone lacks a class. The server queues a chat command to run after this tick, so the
 		// run starts next tick.
 		fakes.forEach((name, fake) -> {
@@ -69,6 +71,8 @@ public class TAS implements CommandExecutor {
 			if(((org.bukkit.craftbukkit.entity.CraftPlayer) fake).getHandle().containerMenu.containerId != 0) actions.closeGui();
 			actions.runCommand(name.equals("akc0303") ? "class archer" : "class mage");
 		});
+		// A tick before the run, so M7 never sees a fake off its start (out of bounds, aggro, plates).
+		startPositions(section, fakes);
 		TASUtils.scheduleTask(() -> start(p, section, fakes), 1);
 		return true;
 	}
@@ -91,9 +95,19 @@ public class TAS implements CommandExecutor {
 		return M7Link.getBoolean("commands.Practice", "isActive");
 	}
 
+	private static void startPositions(String section, Map<String, Player> fakes) {
+		// Setup like the teleport: a fake that died last run is still in spectator.
+		for(Player fake : fakes.values()) fake.setGameMode(org.bukkit.GameMode.ADVENTURE);
+		new Archer(fakes.get("akc0303")).startPosition(section);
+		new Mage(fakes.get("Beethoven")).startPosition(section);
+		new Tank(fakes.get("cookiethebald")).startPosition(section);
+		new Berserk(fakes.get("RedFish2471")).startPosition(section);
+		new Healer(fakes.get("NoseThe")).startPosition(section);
+	}
+
 	private static void startRoutines(String section, Map<String, Player> fakes) {
 		new Archer(fakes.get("akc0303")).archerInstructions(section);
-		new Mage(fakes.get("Beethoven_")).mageInstructions(section);
+		new Mage(fakes.get("Beethoven")).mageInstructions(section);
 		new Tank(fakes.get("cookiethebald")).tankInstructions(section);
 		new Berserk(fakes.get("RedFish2471")).berserkInstructions(section);
 		new Healer(fakes.get("NoseThe")).healerInstructions(section);
