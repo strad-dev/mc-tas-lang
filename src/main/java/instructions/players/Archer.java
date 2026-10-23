@@ -140,39 +140,26 @@ public class Archer extends Actions {
 		at(48).turnHead(-90f, 90f).leftClick();
 		at(49).leftClick();
 		at(50).setHotbarSlot(1).rightClick(-90f, 79f);
-//		at(75).turnHead(-90f, 0f);
-//		at(76).leftClick();
-//		at(77).turnHead(-90f, 72.5f).move("WP", 1).setHotbarSlot(5);
-//		at(78).leftClick();
-//		at(79).leftClick(); // stonk floor
-//		at(80).turnHead(-90f, 90f).move("N", 0).setHotbarSlot(1);
-//		at(81).rightClick(); // etherwarp to floor
-//		at(82).turnHead(-66f, 0f);
-//		at(83).leftClick();
-//		at(84).turnHead(75f, 0f);
-//		at(85).rightClick(); // etherwarp to wall
-//		at(86).turnHead(90f, 60f).move("WP", 2).setHotbarSlot(5);
-//		at(87).leftClick(); // break wall
-//		at(88).turnHead(30f, 19f).setHotbarSlot(7);
-//		at(89).rightClick(); // throw pearl towards market | lands in 7 ticks
-//		at(90).turnHead(66f, 66f).setHotbarSlot(4);
-//		at(91).rightClick(); // blow up floor
-//		at(92).turnHead(41f, 51f).move("N", 0).setHotbarSlot(1);
-//		at(93).rightClick(); // etherwarp down
-//		at(94).turnHead(165f, 0f);
-//		at(95).leftClick();
-//		at(96).turnHead(27f, 7f); // pearl lands
-//		at(97).rightClick(); // etherwarp into market
-//		// Museum: 46 ticks
-//
-//		/*
-//		 * ███╗   ███╗ █████╗ ██████╗ ██╗  ██╗███████╗████████╗
-//		 * ████╗ ████║██╔══██╗██╔══██╗██║ ██╔╝██╔════╝╚══██╔══╝
-//		 * ██╔████╔██║███████║██████╔╝█████╔╝ █████╗     ██║
-//		 * ██║╚██╔╝██║██╔══██║██╔══██╗██╔═██╗ ██╔══╝     ██║
-//		 * ██║ ╚═╝ ██║██║  ██║██║  ██║██║  ██╗███████╗   ██║
-//		 * ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝   ╚═╝
-//		 */
+		at(51).setHotbarSlot(4).rightClick(-45f, 0f); // museum 4/5
+		at(52).rightClick(); // kill mimic
+		at(53).setHotbarSlot(1).rightClick(80f, 0f);
+		at(54).setHotbarSlot(5).turnHead(70f, 30f).leftClick(); // break wall
+		at(55).setHotbarSlot(1).rightClick(); // etherwarp towards secret
+		at(56).setHotbarSlot(3).rightClick(18f, 65f); // blow up floor
+		at(57).setHotbarSlot(1).rightClick(); // etherwarp down
+		at(58).rightClick(125f, 0f); // museum 5/5
+		at(59).rightClick(180f, -68f); // etherwarp out
+		at(60).rightClick(20f, 1.1f); // etherwarp into market
+		// Museum: 28 ticks (-18 | -37)
+
+		/*
+		 * ███╗   ███╗ █████╗ ██████╗ ██╗  ██╗███████╗████████╗
+		 * ████╗ ████║██╔══██╗██╔══██╗██║ ██╔╝██╔════╝╚══██╔══╝
+		 * ██╔████╔██║███████║██████╔╝█████╔╝ █████╗     ██║
+		 * ██║╚██╔╝██║██╔══██║██╔══██╗██╔═██╗ ██╔══╝     ██║
+		 * ██║ ╚═╝ ██║██║  ██║██║  ██║██║  ██╗███████╗   ██║
+		 * ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝   ╚═╝
+		 */
 //		at(98).turnHead(-10f, 0f).setHotbarSlot(7);
 //		at(99).rightClick(); // throw pearl to reposition | lands in 9 ticks
 //		at(100).turnHead(54.2f, 63.9f).setHotbarSlot(4);

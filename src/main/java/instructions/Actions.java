@@ -313,7 +313,11 @@ public class Actions {
 		ServerPlayer serverPlayer = ((CraftPlayer) player).getHandle();
 		TASUtils.debug(TASUtils.DebugType.CLIENT, player.getName() + " turning head to " + yaw + " " + pitch);
 		if(FakePlayerManager.getFakePlayers().containsValue(player)) FakePlayerManager.syncReportedPosition(serverPlayer);
-		send(new ServerboundMovePlayerPacket.Rot(yaw, pitch, serverPlayer.onGround(), serverPlayer.horizontalCollision));
+		boolean groundBefore = serverPlayer.onGround();
+		send(new ServerboundMovePlayerPacket.Rot(yaw, pitch, groundBefore, serverPlayer.horizontalCollision));
+		if(TASUtils.isSuperVerbose()) {
+			TASUtils.debug(TASUtils.DebugType.CLIENT, player.getName() + " onGround " + groundBefore + " -> " + serverPlayer.onGround());
+		}
 
 		for (Player spectator : Spectate.getSpectatingPlayers(player)) {
 			if (spectator instanceof CraftPlayer craftSpectator) {

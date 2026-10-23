@@ -424,6 +424,9 @@ public class FakePlayerManager {
 			}
 			// 26.2 folded the water/lava push into Entity.updateFluidInteraction (protected)
 			net.minecraft.world.phys.Vec3 before = npc.position();
+			if(TASUtils.isSuperVerbose() && !input.isEmpty()) {
+				TASUtils.debug(TASUtils.DebugType.CLIENT, fake.getName() + " stepping with onGround " + npc.onGround());
+			}
 			steppingPhysics = true;
 			try {
 				updateFluidInteraction.invoke(npc);
