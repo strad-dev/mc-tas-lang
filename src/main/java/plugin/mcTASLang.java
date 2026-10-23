@@ -50,12 +50,19 @@ public class mcTASLang extends JavaPlugin {
 		}
 		// Load order decides who gets a shared bare label, so take /setup from M7 once every plugin is enabled.
 		getServer().getScheduler().runTask(this, this::claimSetupLabel);
-		// MONITOR: last of everything at tick end: inputs, then movement (TASUtils.runDue, FakePlayerManager.tickFakes).
+		// MONITOR: last of everything at tick end: replies, inputs, then movement (FakePlayerManager.flushReplies,
+		// TASUtils.runDue, FakePlayerManager.tickFakes).
 		getServer().getPluginManager().registerEvent(com.destroystokyo.paper.event.server.ServerTickEndEvent.class,
 				new org.bukkit.event.Listener() {}, org.bukkit.event.EventPriority.MONITOR, (listener, event) -> {
+					FakePlayerManager.flushReplies();
 					TASUtils.runDue();
+					instructions.Actions.closeOpenInventories();
 					FakePlayerManager.tickFakes();
 				}, this);
+		nms.TeleportRotation.install();
+		getServer().getPluginManager().registerEvent(io.papermc.paper.event.server.ServerResourcesReloadedEvent.class,
+				new org.bukkit.event.Listener() {}, org.bukkit.event.EventPriority.MONITOR,
+				(listener, event) -> nms.TeleportRotation.reinstall(), this);
 		getServer().getPluginManager().registerEvents(new SpectatorListener(), this);
 		getServer().getPluginManager().registerEvents(new listeners.FakeJoinListener(), this);
 		SpectatorSync.startInventorySync();

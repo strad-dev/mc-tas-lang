@@ -42,7 +42,9 @@ import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -198,11 +200,21 @@ public class FakePlayerManager {
 		}
 	}
 
-	// Next tick, as a client's reply would be; never re-enters the listener mid-send.
+	private record Reply(ServerPlayer fake, Packet<?> packet) {}
+
+	private static List<Reply> replies = new ArrayList<>();
+
+	// Never re-enters the listener mid-send; flushReplies sends it at the start of the fake's next client tick.
 	private static void reply(ServerPlayer fake, Packet<?> packet) {
-		Bukkit.getScheduler().runTask(mcTASLang.getInstance(), () -> {
-			if(!fake.isRemoved()) receive(fake.getBukkitEntity(), packet);
-		});
+		replies.add(new Reply(fake, packet));
+	}
+
+	public static void flushReplies() {
+		List<Reply> due = replies;
+		replies = new ArrayList<>();
+		for(Reply r : due) {
+			if(!r.fake().isRemoved()) receive(r.fake().getBukkitEntity(), r.packet());
+		}
 	}
 
 	/**
@@ -331,6 +343,35 @@ public class FakePlayerManager {
 	}
 
 	private static Method updateFluidInteraction;
+	private static java.lang.reflect.Field[] reportedPosition;
+
+	public static void syncReportedPosition(ServerPlayer fake) {
+		try {
+			if(reportedPosition == null) {
+				String[] names = {"lastPosX", "lastPosY", "lastPosZ", "lastYRot", "lastXRot",
+						"firstGoodX", "firstGoodY", "firstGoodZ", "lastGoodX", "lastGoodY", "lastGoodZ"};
+				java.lang.reflect.Field[] fields = new java.lang.reflect.Field[names.length];
+				for(int i = 0; i < names.length; i++) {
+					fields[i] = net.minecraft.server.network.ServerGamePacketListenerImpl.class.getDeclaredField(names[i]);
+					fields[i].setAccessible(true);
+				}
+				reportedPosition = fields;
+			}
+			var listener = fake.connection;
+			reportedPosition[0].setDouble(listener, fake.getX());
+			reportedPosition[1].setDouble(listener, fake.getY());
+			reportedPosition[2].setDouble(listener, fake.getZ());
+			reportedPosition[3].setFloat(listener, fake.getYRot());
+			reportedPosition[4].setFloat(listener, fake.getXRot());
+			for(int i = 5; i < 11; i += 3) {
+				reportedPosition[i].setDouble(listener, fake.getX());
+				reportedPosition[i + 1].setDouble(listener, fake.getY());
+				reportedPosition[i + 2].setDouble(listener, fake.getZ());
+			}
+		} catch(ReflectiveOperationException e) {
+			throw new RuntimeException("Failed to sync reported position", e);
+		}
+	}
 
 	private static void startFakePlayerTicker() {
 		if(updateFluidInteraction != null) return;
@@ -382,6 +423,7 @@ public class FakePlayerManager {
 				}
 			}
 			// 26.2 folded the water/lava push into Entity.updateFluidInteraction (protected)
+			net.minecraft.world.phys.Vec3 before = npc.position();
 			steppingPhysics = true;
 			try {
 				updateFluidInteraction.invoke(npc);
@@ -391,6 +433,23 @@ public class FakePlayerManager {
 			} finally {
 				steppingPhysics = false;
 			}
+			if(TASUtils.isSuperVerbose()) logMove(fake, npc, input, before);
 		}
+	}
+
+	// Minecraft zeroes a horizontal velocity component below this (LivingEntity.aiStep), so no slide is left to report.
+	private static final double RESIDUAL_EPSILON = 0.003;
+
+	private static void logMove(Player fake, ServerPlayer npc, String input, net.minecraft.world.phys.Vec3 before) {
+		if(fake.isFlying()) return;
+		net.minecraft.world.phys.Vec3 pos = npc.position();
+		double dx = pos.x - before.x, dy = pos.y - before.y, dz = pos.z - before.z;
+		if(dx == 0 && dy == 0 && dz == 0) return;
+		boolean hasInput = !input.isEmpty();
+		if(!hasInput && Math.abs(dx) < RESIDUAL_EPSILON && Math.abs(dz) < RESIDUAL_EPSILON) return;
+		TASUtils.debug(TASUtils.DebugType.CLIENT, fake.getName() + " " + (hasInput ? "moved" : "drifted") + " "
+				+ TASUtils.round(dx, 4) + " " + TASUtils.round(dy, 4) + " " + TASUtils.round(dz, 4)
+				+ (npc.isSprinting() ? " sprinting" : npc.isShiftKeyDown() ? " sneaking" : "") + (npc.onGround() ? " on ground" : "")
+				+ " @ " + TASUtils.round(pos.x, 3) + " " + TASUtils.round(pos.y, 5) + " " + TASUtils.round(pos.z, 3));
 	}
 }

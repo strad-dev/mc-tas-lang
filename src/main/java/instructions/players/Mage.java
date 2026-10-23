@@ -100,6 +100,7 @@ public class Mage extends Actions {
 		// door opens tick 32
 		at(32).setHotbarSlot(1).rightClick(0f, 2.3f);
 		at(33).leftClick(); // open blood
+		// Blood Rush: 33 ticks
 
 //		/*
 //		 * ██████╗ ███████╗ █████╗ ████████╗██╗  ██╗███╗   ███╗██╗████████╗███████╗

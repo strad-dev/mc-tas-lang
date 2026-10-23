@@ -26,7 +26,7 @@ public class TAS implements CommandExecutor {
 	/** Temporarily 126 (the routines' tick 0 is 26 before Mort's start button) until the clear is redone; then 100. */
 	private static final int CLEAR_COUNTDOWN = 100;
 	// Difficulty, mayor, Fix Watcher Bug, Bad Bonzo, in /m7practice's own argument forms.
-	private static final String SETTINGS = "perfect_rng jerry_paul off badbonzo=off";
+	private static final String SETTINGS = "perfect_rng jerry_paul off badbonzo=off batbug=on";
 
 	/** Chained run (all, boss): ticks from a segment's start to the next's. A routine may pass its own instead. */
 	public static final int CLEAR_TICKS = 742;

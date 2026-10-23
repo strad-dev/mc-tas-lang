@@ -42,6 +42,8 @@ public class Actions {
 	}
 
 	private static final Map<UUID, String> activeInputs = new HashMap<>();
+	/** Fakes whose own inventory (E) is open from a swapItems this tick; closed by {@link #closeInventory}. */
+	private static final java.util.Set<UUID> inventoryOpen = new java.util.HashSet<>();
 	/** Bumped by {@link #cancelAllMovement()}; older move() cleanups must not zero the new run's inputs. */
 	private static int movementGeneration = 0;
 	/** Mob claimed by an in-flight Terminator arrow → server tick it should land. */
@@ -89,7 +91,7 @@ public class Actions {
 	@Deprecated
 	public void move(String input, int durationTicks) {
 		// only handle CraftLivingEntity/NMS and positive duration
-		TASUtils.debug(TASUtils.DebugType.CLIENT, player.getName() + " moving " + input + " for " + durationTicks);
+		TASUtils.debug(TASUtils.DebugType.CLIENT, player.getName() + (input.isEmpty() ? " stopped moving" : " moving " + input));
 		if(!(player instanceof CraftLivingEntity craftEntity)) return;
 		activeInputs.put(player.getUniqueId(), input);
 
@@ -190,7 +192,10 @@ public class Actions {
 	 */
 	public void swapItems(int slotA, int slotB) {
 		if(!(player instanceof CraftPlayer cp)) return;
-		if(cp.getHandle().containerMenu.containerId != 0) closeGui();
+		if(!inventoryOpen.contains(player.getUniqueId())) {
+			if(cp.getHandle().containerMenu.containerId != 0) closeGui();
+			inventoryOpen.add(player.getUniqueId());
+		}
 		if(slotB < 9 || slotB == 40) {
 			int t = slotA;
 			slotA = slotB;
@@ -203,7 +208,21 @@ public class Actions {
 			clickSlot(0, menuSlot(slotB), 0, ContainerInput.PICKUP);
 			clickSlot(0, menuSlot(slotA), 0, ContainerInput.PICKUP);
 		}
-		send(new ServerboundContainerClosePacket(0));
+	}
+
+	/**
+	 * Sends the close for an inventory {@link #swapItems} left open. Every swap on one tick shares one open: the close
+	 * goes out before this fake's next packet that isn't an inventory click ({@link #send}), as a client must close E
+	 * to act, or at the end of the tick's inputs ({@link #closeOpenInventories}).
+	 */
+	private void closeInventory() {
+		if(inventoryOpen.remove(player.getUniqueId())) send(new ServerboundContainerClosePacket(0));
+	}
+
+	/** Tick end, after the inputs and before the fakes move. */
+	public static void closeOpenInventories() {
+		for(Player fake : FakePlayerManager.getFakePlayers().values()) new Actions(fake).closeInventory();
+		inventoryOpen.clear();
 	}
 
 	/** Player-inventory index (0-8 hotbar, 9-35 main, 36-39 boots..helmet, 40 off-hand) to InventoryMenu slot. */
@@ -269,6 +288,7 @@ public class Actions {
 	/** Puts this player on its section start. Setup before the run, not a client action (/tas passes --no-teleport). */
 	protected void startAt(double x, double y, double z, float yaw, float pitch) {
 		player.teleport(new Location(player.getWorld(), x, y, z, yaw, pitch), PlayerTeleportEvent.TeleportCause.PLUGIN);
+		((CraftPlayer) player).getHandle().updatePlayerPose();
 		Spectate.snapSpectatorsToFake(player);
 	}
 
@@ -291,12 +311,9 @@ public class Actions {
 	 */
 	public void turnHead(float yaw, float pitch) {
 		ServerPlayer serverPlayer = ((CraftPlayer) player).getHandle();
-		serverPlayer.setYRot(yaw);
-		serverPlayer.setYBodyRot(yaw);
-		serverPlayer.setYHeadRot(yaw);
-		serverPlayer.setXRot(pitch);
-		serverPlayer.refreshDimensions();
 		TASUtils.debug(TASUtils.DebugType.CLIENT, player.getName() + " turning head to " + yaw + " " + pitch);
+		if(FakePlayerManager.getFakePlayers().containsValue(player)) FakePlayerManager.syncReportedPosition(serverPlayer);
+		send(new ServerboundMovePlayerPacket.Rot(yaw, pitch, serverPlayer.onGround(), serverPlayer.horizontalCollision));
 
 		for (Player spectator : Spectate.getSpectatingPlayers(player)) {
 			if (spectator instanceof CraftPlayer craftSpectator) {
@@ -701,9 +718,11 @@ public class Actions {
 			send(interactPacket);
 			for(Player spectator : Spectate.getSpectatingPlayers(player)) spectator.swingMainHand();
 
-			// Vanilla sends no UseItem after a consumed entity interaction: item frames and Interaction entities
-			// consume it.
-			if(entityRay.getHitEntity() instanceof ItemFrame || entityRay.getHitEntity() instanceof Interaction) {
+			// Vanilla sends no UseItem after a consumed entity interaction: item frames, Interaction entities and
+			// villagers (Villager.mobInteract) consume it.
+			Entity hit = entityRay.getHitEntity();
+			if(hit instanceof ItemFrame || hit instanceof Interaction
+					|| (hit instanceof Villager v && !v.isSleeping() && player.getInventory().getItemInMainHand().getType() != Material.VILLAGER_SPAWN_EGG)) {
 				return;
 			}
 		}
@@ -720,8 +739,11 @@ public class Actions {
 
 				ServerboundUseItemOnPacket useOnBlockPacket = new ServerboundUseItemOnPacket(InteractionHand.MAIN_HAND, blockHit, 0);
 				send(useOnBlockPacket);
-				// The client follows with UseItem unless the block took the click.
-				if(block.getType().isInteractable()) {
+				// The client follows with UseItem unless the block took the click. Sneaking with an item in either hand
+				// skips the block (MultiPlayerGameMode.performUseItemOn), so it never takes it.
+				boolean skipsBlock = serverPlayer.isShiftKeyDown()
+						&& (!serverPlayer.getMainHandItem().isEmpty() || !serverPlayer.getOffhandItem().isEmpty());
+				if(block.getType().isInteractable() && !skipsBlock) {
 					for(Player spectator : Spectate.getSpectatingPlayers(player)) spectator.swingMainHand();
 					return;
 				}
@@ -761,6 +783,7 @@ public class Actions {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void send(Packet<?> packet) {
 		if(!(player instanceof CraftPlayer craftPlayer) || !player.isOnline()) return;
+		if(!(packet instanceof ServerboundContainerClickPacket click && click.containerId() == 0)) closeInventory();
 		// Paper's decoder stamps these and its spam limiter reads the stamp; left at 0, every use after the 8th is dropped.
 		if(packet instanceof ServerboundUseItemPacket use) use.timestamp = System.currentTimeMillis();
 		if(packet instanceof ServerboundUseItemOnPacket useOn) useOn.timestamp = System.currentTimeMillis();
@@ -906,6 +929,10 @@ public class Actions {
 		public Later send(Packet<?> packet) {
 			TASUtils.scheduleTask(() -> Actions.this.send(packet), delay);
 			return this;
+		}
+
+		public Object rogj(float v, float v1) {
+			return null;
 		}
 	}
 }
