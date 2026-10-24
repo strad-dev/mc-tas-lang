@@ -127,11 +127,11 @@ public class Mage extends Actions {
 		at(48).rightClick(110.2f, 0.97f); // etherwarp to next secret
 		at(49).setHotbarSlot(7).rightClick(-108f, 10f); // throw reposition pearl, lands in 4 ticks
 		at(50).setHotbarSlot(1).rightClick(-138f, -60f); // etherwarp to secrets
-		at(51).setHotbarSlot(0).rightClick(-180f, 90f); // deathmite 4/6
-		at(52).setHotbarSlot(1).rightClick(-180f, 20f); // deathmite 5/6
+		at(51).setHotbarSlot(0).rightClick(180f, 90f); // deathmite 4/6
+		at(52).setHotbarSlot(1).rightClick(180f, 20f); // deathmite 5/6
 		at(53).rightClick(-90f, -4f); // etherwarp towards crypts
 		at(54).rightClick(-90f, 5.5f); // etherwarp to crypts
-		at(55).setHotbarSlot(4).rightClick(-180f, 45f); // blow up crypts
+		at(55).setHotbarSlot(4).rightClick(180f, 45f); // blow up crypts
 		at(56).setHotbarSlot(0).rightClick(180f, 90f).move(""); // crypt 2/5, crypt 3/5 (wither impact)
 		at(57).setHotbarSlot(1).rightClick(-5f, 16f).move("N"); // aotv over cliff
 		at(58).rightClick(-109f, 65f); // etherwarp down

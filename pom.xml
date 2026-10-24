@@ -49,11 +49,11 @@
                     <useIncrementalCompilation>false</useIncrementalCompilation>
                     <compilerArgs>
                         <arg>-Xlint:deprecation</arg>
-                        <!-- src/lint/java (compiled by antrun's compile-lint): warns on two at(n) for one tick in a method. -->
+                        <!-- src/lint/java (compiled by antrun's compile-lint): warns on two at(n) for one tick in a method, bad or repeated head angles. -->
                         <arg>-processorpath</arg>
                         <arg>${project.build.directory}/lint-classes</arg>
                         <arg>-processor</arg>
-                        <arg>lint.DuplicateAt</arg>
+                        <arg>lint.DuplicateAt,lint.HeadAngles</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>

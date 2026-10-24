@@ -82,6 +82,7 @@ public class Berserk extends Actions {
 	}
 
 	private void preClear() {
+		swapItems(4, 31);
 		setHotbarSlot(1);
 		move("N");
 		at(1).rightClick(0f, 23f);
@@ -97,149 +98,167 @@ public class Berserk extends Actions {
 		 * ╚███╔███╔╝██║███████╗██║  ██║██║  ██║██████╔╝
 		 * ╚══╝╚══╝ ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝
 		 */
-		at(15).rightClick(-2f, -1.5f);
-		at(16).rightClick(-90f, 13f);
-		at(17).setHotbarSlot(0).rightClick();
-//		// tick 2: tac tp back, sneak
-//		at(2).move("N", 2);
-//		at(3).rightClick();
-//		at(4).rightClick();
-//		at(5).turnHead(110f, -72f).setHotbarSlot(7);
-//		at(6).rightClick(); // throw pearl towards wizard crystal | lands in 8 ticks
-//		at(7).turnHead(159.5f, -15.5f);
-//		at(8).rightClick(); // throw pearl towards lower part | lands in 19 ticks
-//		at(13).move("N", 1).setHotbarSlot(1);
-//		at(14).rightClick(); // pearl lands, etherwarp into compartment with crystal
-//		at(15).turnHead(28f, 7f);
-//		at(16).rightClick(); // teleport to crystal
-//		at(17).turnHead(45f, 45f);
-//		at(18).leftClick(); // pick up crystal
-//		at(19).turnHead(180f, -25f).move("N", 0);
-//		at(20).rightClick(); // etherwarp up
-//		at(21).turnHead(-161f, -72f);
-//		at(22).rightClick(); // etherwarp to secret compartment
-//		at(23).turnHead(0f, -32f);
-//		at(24).rightClick(); // etherwarp to secret
-//		at(25).turnHead(0f, 0f);
-//		at(26).leftClick(); // obtain secret 1/4
-//		at(27).turnHead(-139f, 0f); // pearl lands
-//		at(28).rightClick(); // etherwarp towards bat
-//		at(29).turnHead(-149.7f, 17.5f).setHotbarSlot(1);
-//		at(30).rightClick(); // etherwarp into bat area
-//		at(31).turnHead(145f, 6f).setHotbarSlot(0);
-//		at(32).rightClick(); // kill bat
-//		at(33).turnHead(-23f, -20f).setHotbarSlot(1);
-//		at(34).rightClick(); // etherwarp out
-//		at(35).turnHead(50f, -25f);
-//		at(36).rightClick(); // etherwarp up
-//		at(37).setHotbarSlot(7).turnHead(-180f, -15.5f).move("S", 1);
-//		at(38).rightClick(); // pearl to correct spot for well | lands in 28 ticks
-//		at(39).setHotbarSlot(1).turnHead(180f, 0.97f).move("N", 0);
-//		at(40).rightClick(); // etherwarp to position
-//		at(41).turnHead(91f, -68f).setHotbarSlot(7);
-//		at(42).rightClick(); // pearl to dig spot | lands in 4 ticks
-//		at(43).turnHead(90f, 90f);
-//		// tick 46: pearl lands
-//		at(47).rightClick(); // pearl to reposition | lands in 1 tick
-//		at(48).turnHead(90f, 0f).setHotbarSlot(5); // pearl lands
-//		at(49).leftClick().move("WP", 0);
-//		at(50).leftClick(); // stonk through wall
-//		at(51).turnHead(-90f, -90f).setHotbarSlot(1).move("N", 0);
-//		at(52).rightClick(); // etherwarp up
-//		at(53).turnHead(-76f, -21f);
-//		at(54).rightClick(); // etherwarp to wizard
-//		at(55).turnHead(180f, 0f);
-//		at(56).move("WP", 1); // walk forward 1 tick to be in range
-//		at(57).leftClick();
-//		at(58).turnHead(102f, 1f).move("N", 24);
-//		at(59).rightClick(); // etherwarp to wall
-//		at(60).turnHead(41f, 1.21f).setHotbarSlot(4);
-//		at(61).rightClick(); // blow up wall
-//		at(62).setHotbarSlot(1);
-//		at(63).rightClick(); // etherwarp to secret
-//		at(64).turnHead(-10f, 13f);
-//		at(65).leftClick();
-//		at(66).turnHead(-90f, 1f); // pearl lands
-//		at(67).rightClick(); // etherwarp into well
-//		// Wizard: 67 ticks
-//
-//		/*
-//		 * ██╗    ██╗███████╗██╗     ██╗
-//		 * ██║    ██║██╔════╝██║     ██║
-//		 * ██║ █╗ ██║█████╗  ██║     ██║
-//		 * ██║███╗██║██╔══╝  ██║     ██║
-//		 * ╚███╔███╔╝███████╗███████╗███████╗
-//		 *  ╚══╝╚══╝ ╚══════╝╚══════╝╚══════╝
-//		 */
-//		at(68).turnHead(90f, -60.1f);
-//		at(69).rightClick(); // etherwarp up to secret
-//		at(70).turnHead(90f, -36f);
-//		at(71).leftClick();
-//		at(72).turnHead(-67f, -18f);
-//		at(73).rightClick(); // reposition for next secret
-//		at(74).turnHead(85f, 17.5f);
-//		at(75).rightClick(); // etherwarp to secret
-//		at(76).turnHead(-96.3f, 3.1f);
-//		at(77).rightClick(); // etherwarp out
-//		at(78).turnHead(-158f, 24f);
-//		at(79).rightClick(); // etherwarp down
-//		at(80).turnHead(-98f, 1.5f);
-//		at(81).rightClick(); // etherwarp to secret
-//		at(82).turnHead(-90f, 20f).setHotbarSlot(5);
-//		at(83).leftClick();
-//		at(84).setHotbarSlot(7).leftClick();
-//		at(84).turnHead(30f, 0f).setHotbarSlot(7);
-//		at(85).rightClick(); // pearl to upper secret | lands in 13 ticks
-//		at(86).setHotbarSlot(1).move("N", 2).turnHead(180f, 0f);
-//		at(87).rightClick(); // reposition for wither essence + pearl
-//		at(88).turnHead(16f, 66f).setHotbarSlot(7);
-//		at(89).rightClick(); // pearl to mini | lands in 16 ticks
-//		at(90).turnHead(-93f, 12.5f).move("N", 4).setHotbarSlot(1);
-//		at(91).rightClick(); // etherwarp into wither essence chamber
-//		at(92).turnHead(180f, -75f);
-//		at(93).rightClick(); // etherwarp up to wither essence
-//		at(94).turnHead(-117f, 31f).setHotbarSlot(1);
-//		at(95).leftClick();
-//		at(96).turnHead(56f, 22f);
-//		at(97).leftClick();
-//		at(98).turnHead(-11f, 8f).move("N", 2); // pearl lands
-//		at(99).rightClick(); // etherwarp to wall
-//		at(100).turnHead(-90f, -50f).setHotbarSlot(5);
-//		at(101).leftClick();
-//		at(102).leftClick();
-//		at(103).leftClick(); // stonk to secret
-//		at(104).setHotbarSlot(3).leftClick();
-//		at(105).turnHead(-45f, 0f); // pearl lands
-//		at(106).leftClick();
-//		at(107).turnHead(-4, 1f).move("N", 2).setHotbarSlot(1);
-//		at(108).rightClick(); // etherwarp to item
-//		at(109).turnHead(59f, 7f).setHotbarSlot(7);
-//		at(110).rightClick(); // throw pearl to ice fill | lands in 9 ticks
-//		at(111).turnHead(0f, 68f).move("N", 0).setHotbarSlot(1);
-//		at(112).rightClick(); // etherwarp down
-//		at(113).turnHead(180f, 90f).setHotbarSlot(5);
-//		at(114).leftClick(); // stonk block
-//		at(115).setHotbarSlot(1);
-//		at(116).rightClick(); // etherwarp down
-//		at(117).move("WP", 0);
-//		at(118).move("N", 3);
-//		at(119).turnHead(105.5f, 5f); // pearl lands
-//		at(120).rightClick(); // etherwarp into ice fill
-//		// Well: 53 ticks
-//
-//		/*
-//		 * ██╗ ██████╗███████╗    ███████╗██╗██╗     ██╗
-//		 * ██║██╔════╝██╔════╝    ██╔════╝██║██║     ██║
-//		 * ██║██║     █████╗      █████╗  ██║██║     ██║
-//		 * ██║██║     ██╔══╝      ██╔══╝  ██║██║     ██║
-//		 * ██║╚██████╗███████╗    ██║     ██║███████╗███████╗
-//		 * ╚═╝ ╚═════╝╚══════╝    ╚═╝     ╚═╝╚══════╝╚══════╝
-//		 */
-//		iceFill();
-//		// Ice Fill: 127 ticks
-//
-//		at(251).swapItems(1, 28).swapItems(3, 30).swapItems(4, 31).swapItems(6, 33).swapItems(7, 34).setHotbarSlot(5);
-//		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
+		at(15).rightClick(-2f, -1.5f); // etherwarp into fairy
+		at(16).rightClick(-90f, 13f); // etherwarp into wizard
+		at(17).setHotbarSlot(0).rightClick(); // kill 1st group of mobs
+		at(18).setHotbarSlot(7).rightClick(11f, 9f); // throw reposition pearl, lands in 4 ticks
+		at(19).setHotbarSlot(1).rightClick(90f, -73f); // etherwarp up
+		at(20).rightClick(0f, -39f); // etherwarp to chest
+		at(21).rightClick(0f, 0f); // wizard 1/4
+		at(22).setHotbarSlot(5).turnHead(45f, 75f).leftClick(); // break floor
+		at(23).setHotbarSlot(1).rightClick(); // etherwarp down
+		at(24).rightClick(45f, 15f); // pick up crystal
+		at(25).rightClick(-160f, -24f); // etherwarp up
+		at(26).setHotbarSlot(0).rightClick(-80f, 0f); // kill 2nd group of mobs
+		at(27).rightClick(145f, 0f); // kill 3rd group of mobs
+		at(28).rightClick(173f, 0f); // continue killing mobs down the hallway
+		at(29).rightClick(-175f, 0f);
+		at(30).rightClick(-170f, 0f);
+		at(31).rightClick();
+		at(32).setHotbarSlot(1).rightClick(180f, 9f); // etherwarp to dig spot for bat
+		at(33).setHotbarSlot(7).rightClick(158f, 10f); // throw reposition pearl, lands in 4 ticks
+		at(34).setHotbarSlot(5).turnHead(180f, 90f).leftClick();
+		at(35).leftClick(); // dig down to bat
+		at(36).setHotbarSlot(0).rightClick(); // wizard 2/4
+		at(37).rightClick(160f, 25f); // kill last group of mobs
+		at(38).setHotbarSlot(7).rightClick(-90f, -5f); // throw pearl into well, lands 14 ticks
+		at(39).setHotbarSlot(1).rightClick(120f, 8f); // etherwarp to wall
+		at(40).setHotbarSlot(4).rightClick(180f, -65f); // blow up wall
+		at(41).setHotbarSlot(5).leftClick(); // break block
+		at(42).setHotbarSlot(1).rightClick(); // etherwarp up
+		at(43).rightClick(-170f, 15f); // wizard 3/4
+		at(44).rightClick(-90f, -70f); // etherwarp up
+		at(45).rightClick(-84f, -36.5f); // etherwarp towards wizard
+		at(46).rightClick(-102f, 30f); // etherwarp to wizard
+		at(47).turnHead(-90f, 0f).leftClick(); // give crystal to wizard
+		at(48).rightClick(90f, 1.1f).rightClick(); // etherwarp to secret
+		at(49).setHotbarSlot(4).rightClick(41f, 1.1f); // blow up next wall
+		at(50).setHotbarSlot(1).rightClick(); // etherwarp towards secret
+		at(51).rightClick(-45f, 15f); // wizard 4/4
+		// Wizard: 35 ticks (-32 | -16)
+
+		/*
+		 * ██╗    ██╗███████╗██╗     ██╗
+		 * ██║    ██║██╔════╝██║     ██║
+		 * ██║ █╗ ██║█████╗  ██║     ██║
+		 * ██║███╗██║██╔══╝  ██║     ██║
+		 * ╚███╔███╔╝███████╗███████╗███████╗
+		 *  ╚══╝╚══╝ ╚══════╝╚══════╝╚══════╝
+		 */
+		at(52).rightClick(-124f, -79.3f); // etherwarp up
+		at(53).rightClick(60f, -30f); // well 1/7
+		at(54).rightClick(-65f, -17f); // reposition for next secret
+		at(55).rightClick(85f, 17.5f); // well 2/7
+		at(56).rightClick(-96.3f, 3.1f); // etherwarp out
+		at(57).rightClick(-158f, 24f); // etherwarp down
+		at(58).rightClick(-93f, 1.8f); // etherwarp to secret
+		at(59).setHotbarSlot(5).turnHead(-107f, 31f).leftClick(); // break wall
+		at(60).rightClick(); // well 3/7
+		at(61).setHotbarSlot(7).rightClick(-7f, 52f); // throw 2nd reposition pearl, lands in 12 ticks
+		at(62).rightClick(90f, 5f); // throw 1st reposition pearl, lands in 6 ticks
+		at(63).setHotbarSlot(1).rightClick(160f, -2f); // reposition etherwarp
+		at(64).rightClick(-97.5f, 10.5f); // etherwarp towards secrets
+		at(65).rightClick(180f, -75f); // etherwarp up
+		at(66).rightClick(-115f, 25f); // well 4/7
+		at(67).rightClick(56f, 15f); // well 5/7
+		at(68).rightClick(39f, 14f); // reposition etherwarp
+		at(69).rightClick(-19f, 4f); // etherwarp to secret
+		at(70).setHotbarSlot(5).turnHead(-90f, -50f).leftClick();
+		at(71).leftClick(); // break wall
+		at(72).rightClick(); // well 6/7
+		at(73).setHotbarSlot(1).rightClick(90f, 70f); // etherwarp to floor
+		at(74).setHotbarSlot(3).turnHead(-171f, 0f).leftClick(); // kill miniboss
+		at(75).setHotbarSlot(1).rightClick(-3.7f, 0.65f); // etherwarp to next secret
+		at(76).setHotbarSlot(7).rightClick(135f, 10f); // throw reposition pearl, lands in 4 ticks
+		at(77).setHotbarSlot(1).rightClick(180f, 67f); // etherwarp down
+		at(78).setHotbarSlot(5).turnHead(180f, 90f).leftClick(); // break block
+		at(79).setHotbarSlot(1).rightClick(); // well 7/7
+		at(80).rightClick(87f, 3.5f); // begin ice fill
+		// Well: 29 ticks (-24 | -40)
+
+		/*
+		 * ██╗ ██████╗███████╗    ███████╗██╗██╗     ██╗
+		 * ██║██╔════╝██╔════╝    ██╔════╝██║██║     ██║
+		 * ██║██║     █████╗      █████╗  ██║██║     ██║
+		 * ██║██║     ██╔══╝      ██╔══╝  ██║██║     ██║
+		 * ██║╚██████╗███████╗    ██║     ██║███████╗███████╗
+		 * ╚═╝ ╚═════╝╚══════╝    ╚═╝     ╚═╝╚══════╝╚══════╝
+		 */
+		at(81).rightClick(90f, 60f);
+		at(82).rightClick(0f, 60f);
+		at(83).rightClick(90f, 60f);
+		at(84).rightClick(180f, 60f);
+		at(85).rightClick(90f, 60f); // layer 1 complete
+
+		at(86).rightClick(90f, 10f);
+		at(87).rightClick(0f, 60f);
+		at(88).rightClick();
+		at(89).rightClick(90f, 60f);
+		at(90).rightClick();
+		at(91).rightClick();
+		at(92).rightClick();
+		at(93).rightClick(180f, 60f);
+		at(94).rightClick(-90f, 60f);
+		at(95).rightClick();
+		at(96).rightClick(180f, 60f);
+		at(97).rightClick();
+		at(98).rightClick(-90f, 60f);
+		at(99).rightClick();
+		at(100).rightClick(-180f, 60f);
+		at(101).rightClick(90f, 60f);
+		at(102).rightClick();
+		at(103).rightClick();
+		at(104).rightClick();
+		at(105).rightClick(0f, 60f);
+		at(106).rightClick();
+		at(107).rightClick(90f, 60f); // layer 2 complete
+
+		at(108).rightClick(90f, 10f);
+		at(109).rightClick(0f, 60f);
+		at(110).rightClick();
+		at(111).rightClick();
+		at(112).rightClick(90f, 60f);
+		at(113).rightClick(180f, 60f);
+		at(114).rightClick();
+		at(115).rightClick(90f, 60f);
+		at(116).rightClick(0f, 60f);
+		at(117).rightClick();
+		at(118).rightClick(90f, 60f);
+		at(119).rightClick();
+		at(120).rightClick();
+		at(121).rightClick();
+		at(122).rightClick(180f, 60f);
+		at(123).rightClick(-90f, 60f);
+		at(124).rightClick();
+		at(125).rightClick(180f, 60f);
+		at(126).rightClick(90f, 60f);
+		at(127).rightClick(180f, 60f);
+		at(128).rightClick();
+		at(129).rightClick(-90f, 60f);
+		at(130).rightClick(180f, 60f);
+		at(131).rightClick(-90f, 60f);
+		at(132).rightClick();
+		at(133).rightClick(0f, 60f);
+		at(134).rightClick(-90f, 60f);
+		at(135).rightClick();
+		at(136).rightClick(180f, 60f);
+		at(137).rightClick();
+		at(138).rightClick(90f, 60f);
+		at(139).rightClick();
+		at(140).rightClick();
+		at(141).rightClick();
+		at(142).rightClick();
+		at(143).rightClick(0f, 60f);
+		at(144).rightClick(90f, 60f);
+		at(145).rightClick(0f, 60f);
+		at(146).rightClick();
+		at(147).rightClick(90f, 60f); // finish layer 3
+
+		at(168).rightClick(70f, -38f);
+		at(169).rightClick(110f, -38f);
+		// Ice Fill: 88 ticks (-39 | -79)
+		at(170).swapItems(1, 28).swapItems(3, 30).swapItems(4, 31).swapItems(6, 33).swapItems(7, 34).setHotbarSlot(5);
+		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
 	public void maxor(boolean doContinue) {
@@ -522,123 +541,5 @@ public class Berserk extends Actions {
 		}
 		at(927).setHotbarSlot(3);
 		at(928).leftClick();
-	}
-
-	@SuppressWarnings("unused")
-
-	private void iceFill() {
-		at(121).turnHead(90f, 60f);
-		at(122).rightClick();
-		at(123).rightClick();
-		at(124).rightClick();
-		at(125).turnHead(0f, 60f);
-		at(126).rightClick();
-		at(127).turnHead(90f, 60f);
-		at(128).rightClick();
-		at(129).turnHead(180f, 60f);
-		at(130).rightClick();
-		at(131).turnHead(90f, 60f);
-		at(132).rightClick();
-		at(133).rightClick();
-		at(134).rightClick();
-		at(135).turnHead(0f, 60f);
-		at(136).rightClick();
-		at(137).rightClick();
-		at(138).turnHead(90f, 60f);
-		at(139).rightClick();
-		at(140).rightClick();
-		at(141).rightClick();
-		at(142).rightClick();
-		at(143).turnHead(180f, 60f);
-		at(144).rightClick();
-		at(145).turnHead(-90f, 60f);
-		at(146).rightClick();
-		at(147).rightClick();
-		at(148).turnHead(180f, 60f);
-		at(149).rightClick();
-		at(150).rightClick();
-		at(151).turnHead(-90f, 60f);
-		at(152).rightClick();
-		at(153).rightClick();
-		at(154).turnHead(180f, 60f);
-		at(155).rightClick();
-		at(156).turnHead(90f, 60f);
-		at(157).rightClick();
-		at(158).rightClick();
-		at(159).rightClick();
-		at(160).rightClick();
-		at(161).turnHead(0f, 60f);
-		at(162).rightClick();
-		at(163).rightClick();
-		at(164).turnHead(90f, 60f);
-		at(165).rightClick();
-		at(166).rightClick();
-		at(167).rightClick();
-		at(168).turnHead(0f, 60f);
-		at(169).rightClick();
-		at(170).turnHead(90f, 60f);
-		at(171).rightClick();
-		at(172).rightClick();
-		at(173).turnHead(0f, 60f);
-		at(174).rightClick();
-		at(175).turnHead(-90f, 60f);
-		at(176).rightClick();
-		at(177).rightClick();
-		at(178).turnHead(0f, 60f);
-		at(179).rightClick();
-		at(180).turnHead(90f, 60f);
-		at(181).rightClick();
-		at(182).rightClick();
-		at(183).rightClick();
-		at(184).rightClick();
-		at(185).rightClick();
-		at(186).rightClick();
-		at(187).turnHead(180f, 60f);
-		at(188).rightClick();
-		at(189).turnHead(-90f, 60f);
-		at(190).rightClick();
-		at(191).rightClick();
-		at(192).turnHead(180f, 60f);
-		at(193).rightClick();
-		at(194).turnHead(90f, 60f);
-		at(195).rightClick();
-		at(196).turnHead(180f, 60f);
-		at(197).rightClick();
-		at(198).rightClick();
-		at(199).turnHead(-90f, 60f);
-		at(200).rightClick();
-		at(201).turnHead(180f, 60f);
-		at(202).rightClick();
-		at(203).turnHead(-90f, 60f);
-		at(204).rightClick();
-		at(205).rightClick();
-		at(206).turnHead(0f, 60f);
-		at(207).rightClick();
-		at(208).turnHead(-90f, 60f);
-		at(209).rightClick();
-		at(210).rightClick();
-		at(211).turnHead(180f, 60f);
-		at(212).rightClick();
-		at(213).rightClick();
-		at(214).turnHead(90f, 60f);
-		at(215).rightClick();
-		at(216).rightClick();
-		at(217).rightClick();
-		at(218).rightClick();
-		at(219).rightClick();
-		at(220).turnHead(0f, 60f);
-		at(221).rightClick();
-		at(222).turnHead(90f, 60f);
-		at(223).rightClick();
-		at(224).turnHead(0f, 60f);
-		at(225).rightClick();
-		at(226).rightClick();
-		at(227).turnHead(90f, 60f);
-		at(228).rightClick();
-		at(229).move("WP", 1);
-		at(230).turnHead(68f, -33f);
-		at(248).leftClick();
-		at(249).turnHead(112f, -33f);
-		at(250).leftClick();
 	}
 }
