@@ -193,6 +193,9 @@ public class FakePlayerManager {
 			if(SpectatorSync.opensScreen(packet) && !instructions.Actions.getActiveInput(fake.getUUID()).isEmpty()) {
 				new instructions.Actions(fake.getBukkitEntity()).move("");
 			}
+			if(packet instanceof ClientboundOpenScreenPacket open) {
+				TASUtils.debug(TASUtils.DebugType.CLIENT, fake.getBukkitEntity(), fake.getPlainTextName() + " opened " + open.getTitle().getString());
+			}
 			SpectatorSync.mirrorScreen(fake, packet);
 			SpectatorSync.mirrorSound(fake, packet);
 			SpectatorSync.mirrorHud(fake, packet);
@@ -394,25 +397,22 @@ public class FakePlayerManager {
 			if(!(fake instanceof CraftPlayer)) continue;
 			ServerPlayer npc = ((CraftPlayer) fake).getHandle();
 			npc.setNoGravity(false);
+			new Actions(fake).sendHeldInput();
 			npc.updatePlayerPose();
 			// Re-assert movement fields before aiStep() - zza/xxa decay by 0.98x/tick otherwise
 			String input = Actions.getActiveInput(fake.getUniqueId());
-			if(!input.isEmpty()) {
-				npc.xxa = (input.contains("A") && !input.contains("D")) ? 1.0F : (!input.contains("A") && input.contains("D")) ? -1.0F : 0.0F;
-				npc.zza = (input.contains("W") && !input.contains("S")) ? 1.0F : (!input.contains("W") && input.contains("S")) ? -1.0F : 0.0F;
-				if(input.contains("N")) {
-					npc.xxa *= 0.3F;
-					npc.zza *= 0.3F;
-				}
+			npc.xxa = (input.contains("A") && !input.contains("D")) ? 1.0F : (!input.contains("A") && input.contains("D")) ? -1.0F : 0.0F;
+			npc.zza = (input.contains("W") && !input.contains("S")) ? 1.0F : (!input.contains("W") && input.contains("S")) ? -1.0F : 0.0F;
+			if(input.contains("N")) {
+				npc.xxa *= 0.3F;
+				npc.zza *= 0.3F;
 			}
-			if(input.contains("P") && npc.zza > 0 && !npc.isShiftKeyDown()) {
-				npc.setSprinting(true);
-			}
+			if(!input.contains("J")) npc.setJumping(false);
 			// Was a Bukkit timer started by move(): at tick end it first ran next tick, after the next input could
 			// already have released J, so a one-tick "JN" never jumped.
 			if(input.contains("J") && npc.onGround()) {
 				npc.setJumping(true);
-				TASUtils.debug(TASUtils.DebugType.CLIENT, fake.getName() + " jumped at " + TASUtils.round(npc.getX(), 3) + " " + TASUtils.round(npc.getY(), 5) + " " + TASUtils.round(npc.getZ(), 3));
+				TASUtils.debug(TASUtils.DebugType.CLIENT, fake, fake.getName() + " jumped at " + TASUtils.round(npc.getX(), 3) + " " + TASUtils.round(npc.getY(), 5) + " " + TASUtils.round(npc.getZ(), 3));
 			}
 			if(npc.isUsingItem()) {
 				int remaining = npc.useItemRemaining;
@@ -424,9 +424,6 @@ public class FakePlayerManager {
 			}
 			// 26.2 folded the water/lava push into Entity.updateFluidInteraction (protected)
 			net.minecraft.world.phys.Vec3 before = npc.position();
-			if(TASUtils.isSuperVerbose() && !input.isEmpty()) {
-				TASUtils.debug(TASUtils.DebugType.CLIENT, fake.getName() + " stepping with onGround " + npc.onGround());
-			}
 			steppingPhysics = true;
 			try {
 				updateFluidInteraction.invoke(npc);
@@ -450,7 +447,7 @@ public class FakePlayerManager {
 		if(dx == 0 && dy == 0 && dz == 0) return;
 		boolean hasInput = !input.isEmpty();
 		if(!hasInput && Math.abs(dx) < RESIDUAL_EPSILON && Math.abs(dz) < RESIDUAL_EPSILON) return;
-		TASUtils.debug(TASUtils.DebugType.CLIENT, fake.getName() + " " + (hasInput ? "moved" : "drifted") + " "
+		TASUtils.debug(TASUtils.DebugType.CLIENT, fake, fake.getName() + " " + (hasInput ? "moved" : "drifted") + " "
 				+ TASUtils.round(dx, 4) + " " + TASUtils.round(dy, 4) + " " + TASUtils.round(dz, 4)
 				+ (npc.isSprinting() ? " sprinting" : npc.isShiftKeyDown() ? " sneaking" : "") + (npc.onGround() ? " on ground" : "")
 				+ " @ " + TASUtils.round(pos.x, 3) + " " + TASUtils.round(pos.y, 5) + " " + TASUtils.round(pos.z, 3));

@@ -131,6 +131,16 @@ public class TASUtils {
 		return M7Link.getInt("plugin.Utils", "phaseTick", 0);
 	}
 
+	public static String getVerboseFilter() {
+		return M7Link.get("plugin.Utils", "getVerboseFilter") instanceof String name ? name : null;
+	}
+
+	public static void debug(DebugType type, Player who, String message) {
+		String filter = getVerboseFilter();
+		if(type != DebugType.ERROR && filter != null && !who.getName().equalsIgnoreCase(filter)) return;
+		debug(type, message);
+	}
+
 	public static void debug(DebugType type, String message) {
 		// Unparsed so a stray '<' in the payload can't break parsing or inject tags.
 		TagResolver m = Placeholder.unparsed("m", message);
@@ -140,7 +150,7 @@ public class TASUtils {
 			return;
 		}
 		if(!isVerbose()) return;
-		String prefix = isSuperVerbose() ? "<gray>[tick: " + phaseTick() + "] " : "";
+		String prefix = "<gray>[tick: " + phaseTick() + "] ";
 		switch(type) {
 			case CLIENT -> Bukkit.broadcast(msg(prefix + "<dark_aqua>[Client] <m>", m));
 			case SERVER -> Bukkit.broadcast(msg(prefix + "<green>[Server] <m>", m));

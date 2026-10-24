@@ -91,50 +91,28 @@ public class Actions {
 	@Deprecated
 	public void move(String input, int durationTicks) {
 		// only handle CraftLivingEntity/NMS and positive duration
-		TASUtils.debug(TASUtils.DebugType.CLIENT, player.getName() + (input.isEmpty() ? " stopped moving" : " moving " + input));
-		if(!(player instanceof CraftLivingEntity craftEntity)) return;
+		TASUtils.debug(TASUtils.DebugType.CLIENT, player, player.getName() + (input.isEmpty() ? " stopped moving" : " moving " + input));
+		if(!(player instanceof CraftLivingEntity)) return;
 		activeInputs.put(player.getUniqueId(), input);
-
-		net.minecraft.world.entity.LivingEntity serverPlayer = craftEntity.getHandle();
-		if(input.contains("A") && input.contains("D")) {
-			serverPlayer.xxa = 0.0F;
-		} else {
-			serverPlayer.xxa = input.contains("A") ? 1.0F : (input.contains("D") ? -1.0F : 0.0F);
-		}
-
-		if(input.contains("W") && input.contains("S")) {
-			serverPlayer.zza = 0.0F;
-		} else {
-			serverPlayer.zza = input.contains("W") ? 1.0F : (input.contains("S") ? -1.0F : 0.0F);
-		}
-
-		if(input.contains("W") && !input.contains("S") && !input.contains("N")) {
-			serverPlayer.setSprinting(input.contains("P"));
-		} else {
-			serverPlayer.setSprinting(false);
-		}
-
-		serverPlayer.setShiftKeyDown(input.contains("N"));
-		if(input.contains("N")) {
-			serverPlayer.xxa *= 0.3F;
-			serverPlayer.zza *= 0.3F;
-		}
-
-		// A held J jumps from FakePlayerManager.tickFakes, the physics step right after this input.
-		if(!input.contains("J")) serverPlayer.setJumping(false);
 		if(durationTicks > 0) {
 			int generation = movementGeneration;
 			TASUtils.scheduleTask(() -> {
 				if(generation != movementGeneration) return; // stale cleanup from a cancelled run
-				if(player.isValid()) {
-					serverPlayer.xxa = 0.0F;
-					serverPlayer.zza = 0.0F;
-					serverPlayer.setSprinting(false);
-					serverPlayer.setShiftKeyDown(false);
-					serverPlayer.setJumping(false);
-				}
 				activeInputs.remove(player.getUniqueId());
 			}, durationTicks);
+		}
+	}
+
+	public void sendHeldInput() {
+		if(!(player instanceof CraftPlayer cp)) return;
+		ServerPlayer sp = cp.getHandle();
+		String keys = getActiveInput(player.getUniqueId());
+		net.minecraft.world.entity.player.Input input = new net.minecraft.world.entity.player.Input(keys.contains("W"),
+				keys.contains("S"), keys.contains("A"), keys.contains("D"), keys.contains("J"), keys.contains("N"), keys.contains("P"));
+		if(!input.equals(sp.getLastClientInput())) send(new ServerboundPlayerInputPacket(input));
+		boolean sprint = input.sprint() && input.forward() && !input.backward() && !input.shift();
+		if(sprint != sp.isSprinting()) {
+			send(new ServerboundPlayerCommandPacket(sp, sprint ? ServerboundPlayerCommandPacket.Action.START_SPRINTING : ServerboundPlayerCommandPacket.Action.STOP_SPRINTING));
 		}
 	}
 
@@ -150,10 +128,9 @@ public class Actions {
 		for(Player p : FakePlayerManager.getFakePlayers().values()) {
 			if(!(p instanceof CraftPlayer craftPlayer)) continue;
 			ServerPlayer serverPlayer = craftPlayer.getHandle();
+			new Actions(p).sendHeldInput();
 			serverPlayer.xxa = 0.0F;
 			serverPlayer.zza = 0.0F;
-			serverPlayer.setSprinting(false);
-			serverPlayer.setShiftKeyDown(false);
 			serverPlayer.setJumping(false);
 			serverPlayer.setDeltaMovement(Vec3.ZERO);
 			serverPlayer.hurtMarked = true;
@@ -311,13 +288,9 @@ public class Actions {
 	 */
 	public void turnHead(float yaw, float pitch) {
 		ServerPlayer serverPlayer = ((CraftPlayer) player).getHandle();
-		TASUtils.debug(TASUtils.DebugType.CLIENT, player.getName() + " turning head to " + yaw + " " + pitch);
+		TASUtils.debug(TASUtils.DebugType.CLIENT, player, player.getName() + " turning head to " + yaw + " " + pitch);
 		if(FakePlayerManager.getFakePlayers().containsValue(player)) FakePlayerManager.syncReportedPosition(serverPlayer);
-		boolean groundBefore = serverPlayer.onGround();
-		send(new ServerboundMovePlayerPacket.Rot(yaw, pitch, groundBefore, serverPlayer.horizontalCollision));
-		if(TASUtils.isSuperVerbose()) {
-			TASUtils.debug(TASUtils.DebugType.CLIENT, player.getName() + " onGround " + groundBefore + " -> " + serverPlayer.onGround());
-		}
+		send(new ServerboundMovePlayerPacket.Rot(yaw, pitch, serverPlayer.onGround(), serverPlayer.horizontalCollision));
 
 		for (Player spectator : Spectate.getSpectatingPlayers(player)) {
 			if (spectator instanceof CraftPlayer craftSpectator) {
@@ -792,9 +765,27 @@ public class Actions {
 		if(packet instanceof ServerboundUseItemPacket use) use.timestamp = System.currentTimeMillis();
 		if(packet instanceof ServerboundUseItemOnPacket useOn) useOn.timestamp = System.currentTimeMillis();
 
-		TASUtils.debug(TASUtils.DebugType.CLIENT, player.getName() + " Sending Packet " + packet.getClass().getSimpleName() + (TASUtils.isSuperVerbose() ? (" at " + TASUtils.round(player.getLocation().getX(), 3) + " " + TASUtils.round(player.getLocation().getY(), 5) + " " + TASUtils.round(player.getLocation().getZ(), 3) + " " + player.getLocation().getYaw() + " " + player.getLocation().getPitch()) : ""));
+		TASUtils.debug(TASUtils.DebugType.CLIENT, player, player.getName() + " " + describe(packet) + (TASUtils.isSuperVerbose() ? (" at " + TASUtils.round(player.getLocation().getX(), 3) + " " + TASUtils.round(player.getLocation().getY(), 5) + " " + TASUtils.round(player.getLocation().getZ(), 3) + " " + player.getLocation().getYaw() + " " + player.getLocation().getPitch()) : ""));
 		if(FakePlayerManager.receive(player, packet)) return;
 		((Packet) packet).handle(craftPlayer.getHandle().connection);
+	}
+
+	private String describe(Packet<?> packet) {
+		ServerPlayer sp = ((CraftPlayer) player).getHandle();
+		if(packet instanceof ServerboundContainerClickPacket click) {
+			var menu = click.containerId() == 0 ? sp.inventoryMenu : sp.containerMenu;
+			int slot = click.slotNum();
+			var item = slot >= 0 && slot < menu.slots.size() ? menu.getSlot(slot).getItem() : net.minecraft.world.item.ItemStack.EMPTY;
+			return "clicked slot " + slot + " (" + click.containerInput() + " " + click.buttonNum() + ")"
+					+ (item.isEmpty() ? "" : " on " + item.getHoverName().getString()) + " in " + screen(click.containerId());
+		}
+		if(packet instanceof ServerboundContainerClosePacket close) return "closed " + screen(close.getContainerId());
+		if(packet instanceof ServerboundPlayerCommandPacket command) return "Sending Packet " + command.getAction();
+		return "Sending Packet " + packet.getClass().getSimpleName();
+	}
+
+	private String screen(int containerId) {
+		return containerId == 0 ? "inventory" : TASUtils.plain(player.getOpenInventory().title());
 	}
 
 	/** {@code at(20).rightClick()} = {@code rightClick()} 20 ticks from now. Chained calls run on that tick, in order. */

@@ -79,9 +79,9 @@ public class Mage extends Actions {
 	private void preClear() {
 		setHotbarSlot(1);
 		move("N");
-		rightClick(0f, 23f);
-		at(1).rightClick();
-		at(2).setHotbarSlot(3).turnHead(0f, 0f);
+		at(1).rightClick(0f, 23f);
+		at(2).rightClick();
+		at(3).setHotbarSlot(3).turnHead(0f, 0f);
 	}
 
 	private void clear(boolean doContinue) {
@@ -96,130 +96,86 @@ public class Mage extends Actions {
 		at(15).leftClick(); // immediately kill miniboss
 		at(16).setHotbarSlot(4).rightClick();
 		at(18).clickGui(0); // wait one tick so that archer can actually open the door
-		at(19).move("N"); // must re-sneak after using leap
+		at(19).swapItems(4, 31).move("N"); // swap tnt with infinileap, must re-sneak after using leap
 		// door opens tick 32
 		at(32).setHotbarSlot(1).rightClick(0f, 2.3f);
 		at(33).leftClick(); // open blood
 		// Blood Rush: 33 ticks
 
-//		/*
-//		 * ██████╗ ███████╗ █████╗ ████████╗██╗  ██╗███╗   ███╗██╗████████╗███████╗
-//		 * ██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██║  ██║████╗ ████║██║╚══██╔══╝██╔════╝
-//		 * ██║  ██║█████╗  ███████║   ██║   ███████║██╔████╔██║██║   ██║   █████╗
-//		 * ██║  ██║██╔══╝  ██╔══██║   ██║   ██╔══██║██║╚██╔╝██║██║   ██║   ██╔══╝
-//		 * ██████╔╝███████╗██║  ██║   ██║   ██║  ██║██║ ╚═╝ ██║██║   ██║   ███████╗
-//		 * ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝     ╚═╝╚═╝   ╚═╝   ╚══════╝
-//		 */
-//		// tick 1: tac TP back
-//		at(2).rightClick();
-//		at(4).setHotbarSlot(4);
-//		at(50).leap(fake("cookiethebald"));
-//		at(51).turnHead(-65f, 3f).setHotbarSlot(7);
-//		at(52).rightClick(); // pearl to next secret | lands in 8 ticks
-//		at(53).turnHead(72f, -3f).setHotbarSlot(1);
-//		at(54).rightClick(); // aotv to secret
-//		at(55).turnHead(0f, 0f);
-//		at(56).move("WP", 3).dropItem(true); // blow up wall with Guided Sheep | cooldown for 300 ticks
-//		at(59).swapItems(4, 31);
-//		at(60).turnHead(162f, -66.2f).setHotbarSlot(7); // pearl lands
-//		at(61).rightClick(); // pearl to top | lands in 11 ticks
-//		at(62).turnHead(0f, 90f).setHotbarSlot(5);
-//		at(63).leftClick(); // stonk down
-//		at(64).leftClick();
-//		at(65).leftClick();
-//		at(66).setHotbarSlot(1);
-//		at(67).rightClick(); // aotv down
-//		at(68).leftClick();
-//		// tick 72: pearl lands
-//		at(73).rightClick(); // reposition
-//		at(74).turnHead(-90f, 0f);
-//		at(75).leftClick();
-//		at(76).turnHead(110.2f, 0.97f).move("N", 2);
-//		at(77).rightClick(); // etherwarp to next secret
-//		at(78).setHotbarSlot(7).turnHead(-105.5f, 4.5f);
-//		at(79).rightClick(); // pearl towards crypts | lands in 7 ticks
-//		at(80).turnHead(-138f, -60f).setHotbarSlot(1).move("N", 2);
-//		at(81).rightClick(); // etherwarp to top compartment
-//		at(82).turnHead(-180f, 90f).setHotbarSlot(0);
-//		at(83).rightClick(); // kill bat
-//		at(84).turnHead(-180f, 30f);
-//		at(85).leftClick();
-//		at(86).turnHead(-90f, -6.5f).setHotbarSlot(1).move("N", 2); // pearl lands
-//		at(87).rightClick(); // etherwarp to crypts
-//		at(88).turnHead(-90f, 30f);
-//		at(89).rightClick(); // aotv to correct spot
-//		at(90).turnHead(-125f, 10f).setHotbarSlot(4);
-//		at(91).rightClick(); // blow up crypt #1
-//		at(92).setHotbarSlot(3);
-//		at(93).leftClick();
-//		at(94).turnHead(120f, 10f).setHotbarSlot(4);
-//		// infinityboom technically has a 20-tick cooldown with dupe player
-//		// but let's assume normal superboom is being used (which has no cooldown)
-//		at(95).rightClick(); // blow up crypt #2
-//		at(96).setHotbarSlot(3);
-//		at(98).leftClick(); // player beam cooldown is 5 ticks with max attack speed
-//		at(98).turnHead(-5f, 16f).setHotbarSlot(1);
-//		at(99).rightClick(); // aotv towards secret
-//		at(100).turnHead(-110f, 67f).move("N", 2);
-//		at(101).rightClick(); // etherwarp to gate
-//		at(102).turnHead(60f, -20f).setHotbarSlot(7);
-//		at(103).rightClick(); // throw pearl back towards blood | lands in 13 ticks
-//		at(104).turnHead(-90f, 36f).setHotbarSlot(5);
-//		at(105).leftClick();
-//		at(106).leftClick(); // stonk gate
-//		at(107).turnHead(-90f, -12f).setHotbarSlot(1).move("N", 0);
-//		at(108).rightClick(); // etherwarp towards chest
-//		at(109).turnHead(-90f, 18f).setHotbarSlot(3).move("WP", 1); // walk forward to reposition
-//		at(110).leftClick();
-//		at(111).leftClick(); // kill mimic
-//		at(116).turnHead(68f, 11.5f).setHotbarSlot(1).move("N", 6); // pearl lands
-//		at(117).rightClick(); // etherwarp back towards blood
-//		at(118).turnHead(124f, 3f);
-//		at(119).rightClick(); // etherwarp opposite of blood (positioning)
-//		at(120).turnHead(-2f, 3.5f);
-//		at(121).rightClick(); // etherwarp to blood
-//		at(122).turnHead(0f, 0f).setHotbarSlot(3);
-//		// Deathmite: 72 ticks
-//
-//		/*
-//		 * ██████╗ ██╗      ██████╗  ██████╗ ██████╗      ██████╗ █████╗ ███╗   ███╗██████╗
-//		 * ██╔══██╗██║     ██╔═══██╗██╔═══██╗██╔══██╗    ██╔════╝██╔══██╗████╗ ████║██╔══██╗
-//		 * ██████╔╝██║     ██║   ██║██║   ██║██║  ██║    ██║     ███████║██╔████╔██║██████╔╝
-//		 * ██╔══██╗██║     ██║   ██║██║   ██║██║  ██║    ██║     ██╔══██║██║╚██╔╝██║██╔═══╝
-//		 * ██████╔╝███████╗╚██████╔╝╚██████╔╝██████╔╝    ╚██████╗██║  ██║██║ ╚═╝ ██║██║
-//		 * ╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝ ╚═════╝      ╚═════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝
-//		 */
-//		// Left-click the blood door to open it.  This requires the Blood Key, and is handled by
-//		// Actions.leftClick's door detection; the old hard openBloodDoor() call is gone.
-//		at(350).leftClick();
-//		at(371).snapHeadAtNearestNamed("Diamante Giant");
-//		at(372).leftClick();
-//		at(373).snapHeadAtNearestNamed("Bonzo");
-//		at(377).leftClick();
-//		at(378).snapHeadAtNearestNamed("Nucleararmadillo");
-//		at(382).leftClick();
-//		at(383).snapHeadAtNearestNamed("Jamie_2013");
-//		at(387).leftClick();
-//		at(388).move("WP", 10).turnHead(0f, -35f);
-//		at(430).leftClick();
-//		at(447).leftClick();
-//		at(472).leftClick();
-//		at(486).leftClick();
-//		at(503).leftClick();
-//		at(516).leftClick();
-//		at(529).leftClick();
-//		at(542).leftClick();
-//		at(559).leftClick();
-//		at(575).leftClick();
-//		at(600).leftClick();
-//		at(614).leftClick();
-//		at(631).leftClick();
-//		at(644).leftClick();
-//		at(658).leftClick();
-//		at(659).turnHead(0f, 3.5f).setHotbarSlot(1).move("N", 2);
-//		at(660).rightClick(); // etherwarp to portal
-//		at(661).swapItems(1, 28).swapItems(3, 30).swapItems(4, 31).swapItems(6, 33).swapItems(7, 34).swapItems(11, 36).setHotbarSlot(5);
-//		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
+		/*
+		 * ██████╗ ███████╗ █████╗ ████████╗██╗  ██╗███╗   ███╗██╗████████╗███████╗
+		 * ██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██║  ██║████╗ ████║██║╚══██╔══╝██╔════╝
+		 * ██║  ██║█████╗  ███████║   ██║   ███████║██╔████╔██║██║   ██║   █████╗
+		 * ██║  ██║██╔══╝  ██╔══██║   ██║   ██╔══██║██║╚██╔╝██║██║   ██║   ██╔══╝
+		 * ██████╔╝███████╗██║  ██║   ██║   ██║  ██║██║ ╚═╝ ██║██║   ██║   ███████╗
+		 * ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝     ╚═╝╚═╝   ╚═╝   ╚══════╝
+		 */
+		at(34).rightClick(180f, 5f); // reposition
+		at(35).setHotbarSlot(7).rightClick(0f, 40f); // throw reposition pearl, lands in 4 ticks
+		at(36).setHotbarSlot(1).rightClick(42f, 5f); // etherwarp to secret
+		at(37).setHotbarSlot(4).rightClick(0f, 16f); // blow up wall
+		at(38).setHotbarSlot(1).rightClick(); // deathmite 1/6
+		at(39).rightClick(-52f, 4f); // etherwarp to next secret
+		at(40).setHotbarSlot(5).turnHead(0f, 90f).leftClick();
+		at(41).leftClick();
+		at(42).leftClick(); // break to secret
+		at(43).setHotbarSlot(1).rightClick(); // etherwarp down
+		at(44).rightClick(); // deathmite 2/6
+		at(45).rightClick(180f, -83.5f); // etherwarp up
+		at(46).rightClick(157.5f, -69.5f); // etherwarp to next secret
+		at(47).rightClick(-90f, 0f); // deathmite 3/6
+		at(48).rightClick(110.2f, 0.97f); // etherwarp to next secret
+		at(49).setHotbarSlot(7).rightClick(-108f, 10f); // throw reposition pearl, lands in 4 ticks
+		at(50).setHotbarSlot(1).rightClick(-138f, -60f); // etherwarp to secrets
+		at(51).setHotbarSlot(0).rightClick(-180f, 90f); // deathmite 4/6
+		at(52).setHotbarSlot(1).rightClick(-180f, 20f); // deathmite 5/6
+		at(53).rightClick(-90f, -4f); // etherwarp towards crypts
+		at(54).rightClick(-90f, 5.5f); // etherwarp to crypts
+		at(55).setHotbarSlot(4).rightClick(-180f, 45f); // blow up crypts
+		at(56).setHotbarSlot(0).rightClick(180f, 90f).move(""); // crypt 2/5, crypt 3/5 (wither impact)
+		at(57).setHotbarSlot(1).rightClick(-5f, 16f).move("N"); // aotv over cliff
+		at(58).rightClick(-109f, 65f); // etherwarp down
+		at(59).setHotbarSlot(7).rightClick(90f, 8f); // throw reposition pearl, lands in 5 ticks
+		at(60).setHotbarSlot(5).turnHead(-90f, -7f).leftClick(); // break block
+		at(61).setHotbarSlot(1).rightClick(); // etherwarp in
+		at(62).rightClick(-90f, 9f); // reposition etherwarp
+		at(63).rightClick(); // deathmite 6/6
+		at(64).rightClick(-11.5f, -43f); // reposition etherwarp
+		at(65).rightClick(80f, 14.5f); // etherwarp towards blood
+		at(66).rightClick(140f, 10f);
+		at(67).turnHead(63f, 4f); // prepare blood etherwarp, do not execute to avoid "aggro" (even though it doesn't exist here)
+		// Deathmite: 34 ticks (-38 | -55)
+
+		/*
+		 * ██████╗ ██╗      ██████╗  ██████╗ ██████╗      ██████╗ █████╗ ███╗   ███╗██████╗
+		 * ██╔══██╗██║     ██╔═══██╗██╔═══██╗██╔══██╗    ██╔════╝██╔══██╗████╗ ████║██╔══██╗
+		 * ██████╔╝██║     ██║   ██║██║   ██║██║  ██║    ██║     ███████║██╔████╔██║██████╔╝
+		 * ██╔══██╗██║     ██║   ██║██║   ██║██║  ██║    ██║     ██╔══██║██║╚██╔╝██║██╔═══╝
+		 * ██████╔╝███████╗╚██████╔╝╚██████╔╝██████╔╝    ╚██████╗██║  ██║██║ ╚═╝ ██║██║
+		 * ╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝ ╚═════╝      ╚═════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝
+		 */
+		at(453).rightClick(); // execute the prepared etherwarp to blood
+		at(454).rightClick(0f, 4f); // etherwarp into blood
+		at(455).setHotbarSlot(3).snapHeadAtNearestNamed("Diamante Giant").leftClick();
+		at(460).snapHeadAtNearestNamed("Bonzo").leftClick();
+		at(465).snapHeadAtNearestNamed("BeansBeans13").leftClick();
+		at(470).snapHeadAtNearestNamed("valej").leftClick();
+		at(471).rightClick(0f, -35f).move("");
+		at(510).leftClick();
+		at(525).leftClick();
+		at(537).leftClick();
+		at(551).leftClick();
+		at(574).leftClick();
+		at(585).leftClick();
+		at(599).leftClick();
+		at(610).leftClick();
+		at(622).leftClick();
+		at(633).leftClick();
+		at(647).leftClick().move("N");
+		at(648).turnHead(0f, 3.5f).setHotbarSlot(1);
+		at(649).rightClick(); // etherwarp to portal
+		at(650).swapItems(1, 28).swapItems(3, 30).swapItems(4, 31).swapItems(6, 33).swapItems(7, 34).setHotbarSlot(5);
+		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
 	public void maxor(boolean doContinue) {

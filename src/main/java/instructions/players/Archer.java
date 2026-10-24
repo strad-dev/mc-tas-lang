@@ -93,8 +93,10 @@ public class Archer extends Actions {
 	private void preClear() {
 		setHotbarSlot(1);
 		move("N");
-		rightClick(0f, 23f);
-		at(1).rightClick();
+		at(1).rightClick(0f, 23f);
+		at(2).rightClick();
+		at(3).swapItems(6, 33).setHotbarSlot(6).rightClick().move("N"); // charge rag to do more damage, idk if this will actually help
+		at(64).setHotbarSlot(1);
 	}
 
 	private void clear(boolean doContinue) {
@@ -160,96 +162,60 @@ public class Archer extends Actions {
 		 * ██║ ╚═╝ ██║██║  ██║██║  ██║██║  ██╗███████╗   ██║
 		 * ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝   ╚═╝
 		 */
-//		at(98).turnHead(-10f, 0f).setHotbarSlot(7);
-//		at(99).rightClick(); // throw pearl to reposition | lands in 9 ticks
-//		at(100).turnHead(54.2f, 63.9f).setHotbarSlot(4);
-//		at(101).rightClick(); // blow up floor
-//		at(102).setHotbarSlot(1);
-//		at(103).rightClick(); // etherwarp down
-//		at(104).turnHead(-72f, 5f).setHotbarSlot(0);
-//		at(105).rightClick();
-//		at(106).turnHead(180f, 20f).setHotbarSlot(7);
-//		at(107).leftClick();
-//		at(108).turnHead(-12f, -3.5f);
-//		at(109).rightClick(); // throw pearl | lands in 10 ticks
-//		at(110).turnHead(53f, -78.5f).setHotbarSlot(1);
-//		at(111).rightClick(); // etherwarp up
-//		at(112).turnHead(90f, 35f).move("WP", 5).setHotbarSlot(5);
-//		at(113).leftClick();
-//		at(114).leftClick();
-//		at(115).leftClick();
-//		at(116).leftClick(); // break through wall
-//		at(117).turnHead(124f, 16f).setHotbarSlot(7);
-//		at(118).leftClick();
-//		at(119).turnHead(15f, 6f); // pearl lands
-//		at(120).rightClick(); // throw pearl to reposition | lands in 9 ticks
-//		at(121).turnHead(-90f, 73f).setHotbarSlot(1);
-//		at(122).rightClick(); // aotv down
-//		at(123).turnHead(-90f, 90f).setHotbarSlot(5);
-//		at(124).leftClick(); // break block
-//		at(125).setHotbarSlot(1);
-//		at(126).rightClick(); // aotv down
-//		at(127).turnHead(66f, -8f);
-//		at(128).leftClick();
-//		at(129).turnHead(-45f, 0f).setHotbarSlot(3); // pearl lands
-//		at(130).leftClick(); // kill miniboss
-//		at(131).turnHead(-10f, 4f).setHotbarSlot(4);
-//		at(132).rightClick(); // blow up crypt
-//		at(133).setHotbarSlot(3);
-//		at(134).leftClick();
-//		at(135).turnHead(-45f, -70f).setHotbarSlot(1).move("N", 13);
-//		at(136).rightClick(); // etherwarp up
-//		at(137).turnHead(20f, -46f).setHotbarSlot(5);
-//		at(138).leftClick(); // break block
-//		at(139).setHotbarSlot(1).leftClick();
-//		at(140).turnHead(-71.5f, 23f);
-//		at(141).rightClick(); // etherwarp into hallway
-//		// Market: 44 ticks
-//
-//		/*
-//		 * ██╗  ██╗ █████╗ ██╗     ██╗     ██╗    ██╗ █████╗ ██╗   ██╗
-//		 * ██║  ██║██╔══██╗██║     ██║     ██║    ██║██╔══██╗╚██╗ ██╔╝
-//		 * ███████║███████║██║     ██║     ██║ █╗ ██║███████║ ╚████╔╝
-//		 * ██╔══██║██╔══██║██║     ██║     ██║███╗██║██╔══██║  ╚██╔╝
-//		 * ██║  ██║██║  ██║███████╗███████╗╚███╔███╔╝██║  ██║   ██║
-//		 * ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝ ╚══╝╚══╝ ╚═╝  ╚═╝   ╚═╝
-//		 */
-//		at(142).turnHead(-97f, 0f);
-//		at(143).rightClick(); // etherwarp towards miniboss
-//		at(144).turnHead(-90f, 9f).setHotbarSlot(0);
-//		at(145).leftClick();
-//		at(146).turnHead(-99f, 8f).setHotbarSlot(1);
-//		at(147).rightClick(); // etherwarp towards chest
-//		at(148).turnHead(-57f, 6f).setHotbarSlot(7);
-//		at(149).rightClick(); // throw pearl for reposiiton | lands in 6 ticks
-//		at(150).turnHead(-180f, 40f).setHotbarSlot(5).move("WP", 4);
-//		at(151).leftClick();
-//		at(152).leftClick(); // stonk iron bars
-//		at(153).setHotbarSlot(1); // move for 2 more ticks
-//		at(154).turnHead(166f, 15f);
-//		at(155).leftClick();
-//		at(156).turnHead(-122.5f, 2f).move("N", 2); // pearl lands
-//		at(157).rightClick(); // etherwarp to next secret
-//		at(158).turnHead(-90f, 30f).setHotbarSlot(5);
-//		at(159).leftClick().move("WP", 4);
-//		at(160).leftClick();
-//		at(161).leftClick();
-//		at(162).leftClick();
-//		at(163).turnHead(-150f, 43f).setHotbarSlot(1);
-//		at(164).leftClick();
-//		at(165).turnHead(-75f, -55f).move("N", 10);
-//		at(166).rightClick(); // etherwarp up
-//		at(167).turnHead(-104.5f, -5f);
-//		at(168).rightClick(); // etherwarp to next secret
-//		at(169).turnHead(-90f, -81f);
-//		at(170).rightClick(); // etherwarp up
-//		at(171).turnHead(-22.5f, 17f);
-//		at(172).rightClick(); // etherwarp to secret
-//		at(173).leftClick();
-//		// Hallway: 32 ticks
-//
-//		at(619).swapItems(1, 28).swapItems(6, 33).swapItems(7, 34).swapItems(11, 36).setHotbarSlot(5);
-//		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
+		at(61).setHotbarSlot(7).rightClick(-36f, 6f); // pearl for exit, lands in 5 ticks
+		at(62).setHotbarSlot(3).rightClick(54f, 63f); // blow up floor
+		at(63).setHotbarSlot(1).rightClick(); // etherwarp down
+		at(64).setHotbarSlot(0).rightClick(-90f, 2f); // market 1/5
+		at(65).setHotbarSlot(5).rightClick(135f, 50f); // market 2/5
+		at(66).setHotbarSlot(7).rightClick(-50f, 0f); // throw reposition pearl, lands in 6 ticks
+		at(67).setHotbarSlot(1).rightClick(32f, -60.5f); // etherwarp up
+		at(68).setHotbarSlot(5).turnHead(116f, 23f).leftClick().move("WN");
+		at(69).leftClick();
+		at(70).turnHead(110f, 6f).leftClick();
+		at(71).leftClick().move("N"); // break through wall, reposition self
+		at(72).rightClick(); // market 3/5
+		at(73).setHotbarSlot(1).rightClick(20f, 17f); // etherwarp to next secret
+		at(74).setHotbarSlot(5).turnHead(90f, 90f).leftClick(); // break floor
+		at(75).setHotbarSlot(1).rightClick(); // etherwarp down
+		at(76).rightClick(64f, -14f).move(""); // market 4/5, pre-unsneak
+		at(77).rightClick(90f, -90f).move("N"); // aotv up, pre-sneak
+		at(78).rightClick(18.5f, 17f); // etherwarp towards miniboss
+		at(79).turnHead(0f, 9f).dropItem(true); // use ability to kill miniboss + get a crypt 4/5
+		at(80).setHotbarSlot(4).rightClick(); // still need to fire an arrow to kill off miniboss
+		at(81).setHotbarSlot(1).rightClick(0f, -55f); // etherwarp up
+		at(82).setHotbarSlot(5).turnHead(18.5f, -47f).leftClick(); // stonk block
+		at(83).rightClick(); // market 5/5
+		at(84).setHotbarSlot(1).rightClick(-71.5f, 23f); // etherwarp into hallway
+		// Market: 24 ticks (-20 | -57)
+
+		/*
+		 * ██╗  ██╗ █████╗ ██╗     ██╗     ██╗    ██╗ █████╗ ██╗   ██╗
+		 * ██║  ██║██╔══██╗██║     ██║     ██║    ██║██╔══██╗╚██╗ ██╔╝
+		 * ███████║███████║██║     ██║     ██║ █╗ ██║███████║ ╚████╔╝
+		 * ██╔══██║██╔══██║██║     ██║     ██║███╗██║██╔══██║  ╚██╔╝
+		 * ██║  ██║██║  ██║███████╗███████╗╚███╔███╔╝██║  ██║   ██║
+		 * ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝ ╚══╝╚══╝ ╚═╝  ╚═╝   ╚═╝
+		 */
+		at(85).rightClick(-97f, 0f); // etherwarp for miniboss
+		at(86).setHotbarSlot(4).rightClick(-90f, 11f); // kill miniboss
+		at(87).setHotbarSlot(1).rightClick(-99f, 8f).move(""); // etherwarp towards chest
+		at(88).setHotbarSlot(5).turnHead(180f, 12f).leftClick(); // break iron bar
+		at(89).setHotbarSlot(1).rightClick(); // aotv in
+		at(90).rightClick(134f, 45f); // hallway 1/3
+		at(91).rightClick(0f, 0f).move("N"); // aotv out (faster than pearl, and better position)
+		at(92).rightClick(-102f, 2f); // etherwarp to next secret
+		at(93).setHotbarSlot(5).turnHead(-170f, 13f).leftClick(); // break wall
+		at(94).setHotbarSlot(1).rightClick(); // etherwarp to chest
+		at(95).rightClick(-90f, 90f); // hallway 2/3
+		at(96).rightClick(0f, -45f); // etherwarp out
+		at(97).rightClick(-106f, -4f); // etherwarp to next secret
+		at(98).rightClick(-90f, -81f); // etherwarp up
+		at(99).rightClick(-23f, 24f); // reposition
+		at(100).rightClick(); // hallway 3/3
+		// Hallway: 16 ticks (-16 | -73)
+
+		at(101).swapItems(1, 28).swapItems(7, 34).swapItems(11, 36).setHotbarSlot(5);
+		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
 	public void maxor(boolean doContinue) {

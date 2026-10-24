@@ -84,8 +84,8 @@ public class Berserk extends Actions {
 	private void preClear() {
 		setHotbarSlot(1);
 		move("N");
-		rightClick(0f, 23f);
-		at(1).rightClick();
+		at(1).rightClick(0f, 23f);
+		at(2).rightClick();
 	}
 
 	private void clear(boolean doContinue) {

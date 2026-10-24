@@ -7,6 +7,8 @@ import instructions.players.Healer;
 import instructions.players.Mage;
 import instructions.players.Tank;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.title.Title;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -29,7 +31,7 @@ public class TAS implements CommandExecutor {
 	private static final String SETTINGS = "perfect_rng jerry_paul off badbonzo=off batbug=on";
 
 	/** Chained run (all, boss): ticks from a segment's start to the next's. A routine may pass its own instead. */
-	public static final int CLEAR_TICKS = 742;
+	public static final int CLEAR_TICKS = 727;
 	public static final int MAXOR_TICKS = 496;
 	public static final int STORM_TICKS = 881;
 	public static final int GOLDOR_TICKS = 350;
@@ -82,8 +84,17 @@ public class TAS implements CommandExecutor {
 		boolean clear = section.equals("all") || section.equals("clear");
 		ScriptWatchers.watch();
 		// Before the routines: it hands out the kits their first inputs use.
-		if(practice(p, section, clear ? CLEAR_COUNTDOWN : COUNTDOWN)) startRoutines(section, fakes);
-		else ScriptWatchers.release();
+		if(practice(p, section, clear ? CLEAR_COUNTDOWN : COUNTDOWN)) {
+			warnFiltered(p);
+			startRoutines(section, fakes);
+		} else ScriptWatchers.release();
+	}
+
+	private static void warnFiltered(Player p) {
+		String filter = TASUtils.getVerboseFilter();
+		if(filter == null || !TASUtils.isVerbose()) return;
+		p.showTitle(Title.title(TASUtils.msg("<red>Verbose Filtered"), TASUtils.msg("<gray>Only logging <n>", Placeholder.unparsed("n", filter))));
+		p.playSound(p, Sound.BLOCK_NOTE_BLOCK_BASS, 1f, 0.5f);
 	}
 
 	/**
