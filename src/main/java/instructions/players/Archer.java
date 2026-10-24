@@ -518,11 +518,4 @@ public class Archer extends Actions {
 			at(i + lbFor).stopRightClick();
 		}
 	}
-
-	private void quiz() {
-		at(137).turnHead(0f, 5f).setHotbarSlot(5);
-		at(296).rightClick();
-		at(437).rightClick();
-		at(578).rightClick();
-	}
 }

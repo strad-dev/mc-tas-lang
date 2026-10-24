@@ -95,7 +95,7 @@ public class Tank extends Actions {
 		at(15).rightClick(0f, 4f); // etherwarp to key spot
 		at(16).setHotbarSlot(4).rightClick();
 		at(18).clickGui(0); // wait one tick so that archer can actually open the door
-		at(19).turnHead(0f, 6f).move("N"); // must re-sneak after using leap
+		at(19).turnHead(0f, 6f).swapItems(4, 31).move("N"); // must re-sneak after using leap
 		at(32).setHotbarSlot(3).leftClick();
 		// Blood Rush: 32 ticks (-19)
 
@@ -107,119 +107,91 @@ public class Tank extends Actions {
 		 * ╚██████╔╝██║  ██║██║  ██║ ╚████╔╝ ███████╗███████╗
 		 *  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝  ╚═══╝  ╚══════╝╚══════╝
 		 */
-		at(33).setHotbarSlot(1).rightClick(11f, 6.7f);
-//		at(50).turnHead(0f, 0f).move("P", 0);
-//		at(51).dropItem(true); // blow up crypt | arrows land in 4 ticks
-//		at(52).turnHead(45.1f, 4.2f).move("N", 21);
-//		at(53).rightClick(); // etherwarp into room
-//		at(54).turnHead(-44f, 8.5f);
-//		at(55).rightClick(); // reposition for secret
-//		at(56).turnHead(-106f, 3.3f);
-//		at(57).rightClick(); // etherwarp to secret
-//		at(58).turnHead(-90f, 7f).setHotbarSlot(5);
-//		at(59).leftClick();
-//		at(60).setHotbarSlot(1).leftClick();
-//		at(61).turnHead(28.7f, -56f);
-//		at(62).rightClick(); // etherwarp up
-//		at(63).turnHead(-99.7f, -53f).setHotbarSlot(0);
-//		at(64).rightClick(); // wither impact, kill bat
-//		at(65).turnHead(74f, 57.5f).setHotbarSlot(1);
-//		at(66).rightClick(); // etherwarp down
-//		at(67).turnHead(-86.5f, 2.7f);
-//		at(68).rightClick(); // etherwarp to miniboss
-//		at(69).turnHead(0f, 0f).setHotbarSlot(4);
-//		at(70).rightClick(); // shoot and kill miniboss | arrows kill in 1 tick
-//		at(71).turnHead(-85f, 2.25f).setHotbarSlot(1);
-//		at(72).rightClick(); // etherwarp towards quiz
-//		at(73).turnHead(0f, 0f);
-//		at(74).rightClick(); // aotv into quiz
-//		at(75).turnHead(180f, -12f).setHotbarSlot(7);
-//		at(76).rightClick(); // pearl to dino | lands in 25 ticks
-//		at(77).turnHead(180f, 2.2f).setHotbarSlot(1).move("N", 2);
-//		at(78).rightClick(); // etherwarp towards secrets
-//		at(79).turnHead(-90f, -38.5f);
-//		at(80).rightClick(); // etherwarp into area
-//		at(81).turnHead(0f, 58f);
-//		at(82).rightClick(); // etherwarp to item
-//		at(83).turnHead(-141f, 10f);
-//		at(84).rightClick(); // etherwarp to wither essence
-//		at(85).turnHead(180f, 55f);
-//		at(86).leftClick();
-//		at(87).turnHead(90f, -23.5f);
-//		at(88).rightClick(); // aotv out
-//		at(89).turnHead(52f, -25f).move("N", 2);
-//		at(90).rightClick(); // etherwarp to final secrets
-//		at(91).turnHead(42f, 50f);
-//		at(92).rightClick(); // reposition
-//		at(93).turnHead(90f, -90f);
-//		at(94).move("WP", 1);
-//		at(95).rightClick(); // aotv up
-//		at(96).turnHead(90f, 75f);
-//		at(97).rightClick(); // aotv down
-//		at(98).turnHead(90f, 36f);
-//		at(99).leftClick();
-//		at(100).turnHead(180f, -5.5f).move("N", 2); // pearl lands
-//		at(101).rightClick(); // etherwarp into dino
-//		// Gravel: 52 ticks
-//
-//		/*
-//		 * ██████╗ ██╗███╗   ██╗ ██████╗     ██████╗ ██╗ ██████╗     ███████╗██╗████████╗███████╗
-//		 * ██╔══██╗██║████╗  ██║██╔═══██╗    ██╔══██╗██║██╔════╝     ██╔════╝██║╚══██╔══╝██╔════╝
-//		 * ██║  ██║██║██╔██╗ ██║██║   ██║    ██║  ██║██║██║  ███╗    ███████╗██║   ██║   █████╗
-//		 * ██║  ██║██║██║╚██╗██║██║   ██║    ██║  ██║██║██║   ██║    ╚════██║██║   ██║   ██╔══╝
-//		 * ██████╔╝██║██║ ╚████║╚██████╔╝    ██████╔╝██║╚██████╔╝    ███████║██║   ██║   ███████╗
-//		 * ╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝     ╚═════╝ ╚═╝ ╚═════╝     ╚══════╝╚═╝   ╚═╝   ╚══════╝
-//		 */
-//		at(102).turnHead(101f, 32f).setHotbarSlot(4);
-//		at(103).rightClick(); // shoot at miniboss | arrows land in 5 ticks
-//		at(104).turnHead(46f, -50f).setHotbarSlot(1).move("N", 2);
-//		at(105).rightClick(); // etherwarp to secret
-//		at(106).turnHead(-163f, 49f).setHotbarSlot(7);
-//		at(107).rightClick(); // throw pearl | lands in 19 ticks
-//		at(108).turnHead(13f, 9f).setHotbarSlot(3);
-//		at(109).rightClick(); // blow up door
-//		at(110).setHotbarSlot(1);
-//		at(111).rightClick(); // aotv to chest
-//		at(112).turnHead(0f, 13f);
-//		at(113).leftClick();
-//		at(114).turnHead(-180f, 24.8f);
-//		at(115).rightClick(); // aotv out of secret
-//		at(116).turnHead(96f, 59f).move("N", 2);
-//		at(117).rightClick(); // etherwarp down
-//		at(118).turnHead(18f, 2f);
-//		at(119).rightClick(); // aotv to item
-//		at(120).turnHead(135.1f, 30.7f).move("N", 2);
-//		at(121).rightClick();
-//		at(122).turnHead(-155f, -16f).setHotbarSlot(5);
-//		at(123).leftClick();
-//		at(124).setHotbarSlot(1).leftClick();
-//		at(125).turnHead(-157f, 8f).setHotbarSlot(7);
-//		// tick 126: pearl lands
-//		at(127).rightClick(); // throw pearl | lands in 6 ticks
-//		at(128).turnHead(-55f, 62f).setHotbarSlot(1).move("N", 2);
-//		at(129).rightClick(); // etherwarp towards bat
-//		at(130).turnHead(-8.2f, 7.3f).setHotbarSlot(0);
-//		at(131).rightClick(); // kill bat
-//		at(132).turnHead(0f, 1.8f).setHotbarSlot(1).move("N", 5);
-//		// tick 133: pearl lands
-//		at(134).rightClick(); // etherwarp back to gravel
-//		at(135).turnHead(0f, 1.45f);
-//		at(136).rightClick(); // etherwarp to quiz
-//		// Dino Dig Site: 35 ticks
-//
-//		/*
-//		 *  ██████╗ ██╗   ██╗██╗███████╗
-//		 * ██╔═══██╗██║   ██║██║╚══███╔╝
-//		 * ██║   ██║██║   ██║██║  ███╔╝
-//		 * ██║▄▄ ██║██║   ██║██║ ███╔╝
-//		 * ╚██████╔╝╚██████╔╝██║███████╗
-//		 *  ╚══▀▀═╝  ╚═════╝ ╚═╝╚══════╝
-//		 */
-//		quiz();
-//		// Quiz: 482 ticks | 543 ticks from open | puzzle solved 503 ticks from open
-//
-//		at(174).swapItems(1, 28).swapItems(3, 30).swapItems(4, 31).swapItems(6, 33).swapItems(7, 34).setHotbarSlot(3);
-//		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
+		at(33).setHotbarSlot(1).rightClick(11f, 6.7f); //
+		at(34).rightClick(-57.15f, 1.75f); // etherwarp to gravel
+		at(35).rightClick(45.2f, 4.2f); // etherwarp to opening
+		at(36).rightClick(-59f, 4f); // etherwarp to middle
+		at(37).setHotbarSlot(7).rightClick(-90f, 4f); // throw reposition pearl, lands in 6 ticks
+		at(38).setHotbarSlot(1).rightClick(-129f, 5f); // etherwarp to secret
+		at(39).setHotbarSlot(5).turnHead(-90f, 6f).leftClick(); // break iron bar
+		at(40).setHotbarSlot(1).rightClick(); // gravel 1/6
+		at(41).rightClick(28.7f, -56f); // etherwarp up
+		at(42).setHotbarSlot(0).rightClick(-99.7f, -53f); // gravel 2/6
+		at(43).setHotbarSlot(1).rightClick(-85f, 2.5f); // etherwarp to miniboss
+		at(44).setHotbarSlot(3).turnHead(90f, 0f).leftClick(); // kill miniboss
+		at(45).setHotbarSlot(1).rightClick(-90f, 3.3f); // etherwarp towards quiz
+		at(46).rightClick(0f, 6.5f); // open quiz
+		at(47).rightClick(179f, -2.2f); // etherwarp into dino
+		// Gravel (Part 1): 15 ticks
+
+		/*
+		 * ██████╗ ██╗███╗   ██╗ ██████╗     ██████╗ ██╗ ██████╗     ███████╗██╗████████╗███████╗
+		 * ██╔══██╗██║████╗  ██║██╔═══██╗    ██╔══██╗██║██╔════╝     ██╔════╝██║╚══██╔══╝██╔════╝
+		 * ██║  ██║██║██╔██╗ ██║██║   ██║    ██║  ██║██║██║  ███╗    ███████╗██║   ██║   █████╗
+		 * ██║  ██║██║██║╚██╗██║██║   ██║    ██║  ██║██║██║   ██║    ╚════██║██║   ██║   ██╔══╝
+		 * ██████╔╝██║██║ ╚████║╚██████╔╝    ██████╔╝██║╚██████╔╝    ███████║██║   ██║   ███████╗
+		 * ╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝     ╚═════╝ ╚═╝ ╚═════╝     ╚══════╝╚═╝   ╚═╝   ╚══════╝
+		 */
+		at(48).rightClick(161.8f, 9.5f); // etherwarp to miniboss
+		at(49).setHotbarSlot(3).turnHead(0f, 0f).leftClick(); // kill miniboss
+		at(50).setHotbarSlot(4).rightClick(55f, 0f); // blow up crypt
+		at(51).setHotbarSlot(0).rightClick(0f, 90f); // crypt 1/5, use wither impact due to beam on cooldown
+		at(52).setHotbarSlot(7).rightClick(90f, 6f); // throw reposition pearl, lands in 5 ticks
+		at(53).setHotbarSlot(1).rightClick(-9.5f, -60f); // etherwarp up
+		at(54).setHotbarSlot(4).rightClick(0f, 2f); // blow up wall
+		at(55).setHotbarSlot(1).rightClick(); // etherwarp into secret
+		at(56).rightClick(0f, 40f); // dino 1/4
+		at(57).rightClick(83f, 56f); // etherwarp down
+		at(58).setHotbarSlot(7).rightClick(-100f, 14f); // throw reposition pearl, lands in 5 ticks
+		at(59).setHotbarSlot(1).rightClick(20f, 7.5f); // dino 2/4
+		at(60).rightClick(135.1f, 30.8f); // etherwarp down
+		at(61).setHotbarSlot(5).turnHead(-155f, -26f).leftClick(); // stonk block
+		at(62).setHotbarSlot(1).rightClick(); // dino 3/4
+		at(63).rightClick(-86.5f, 10.5f); // etherwarp across
+		at(64).setHotbarSlot(0).rightClick(-10f, -3f); // dino 3/4
+		at(65).setHotbarSlot(1).rightClick(90f, -75f); // etherwarp up
+		at(66).rightClick(28f, -9f); // etherwarp back towards gravel
+		at(67).rightClick(-25f, -6f); // etherwarp back into gravel
+		// Dino Dig Site: 20 ticks (-15)
+
+		/*
+		 *  ██████╗ ██████╗  █████╗ ██╗   ██╗███████╗██╗
+		 * ██╔════╝ ██╔══██╗██╔══██╗██║   ██║██╔════╝██║
+		 * ██║  ███╗██████╔╝███████║██║   ██║█████╗  ██║
+		 * ██║   ██║██╔══██╗██╔══██║╚██╗ ██╔╝██╔══╝  ██║
+		 * ╚██████╔╝██║  ██║██║  ██║ ╚████╔╝ ███████╗███████╗
+		 *  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝  ╚═══╝  ╚══════╝╚══════╝
+		 */
+		at(68).setHotbarSlot(7).rightClick(90f, 65f).move(""); // throw reposition pearl, lands in 4 ticks
+		at(69).setHotbarSlot(1).rightClick(-80f, 20f).move("N"); // aotv in
+		at(70).rightClick(160f, 45f); // gravel 3/6
+		at(71).rightClick(65f, 30f); // gravel 4/6
+		at(72).setHotbarSlot(7).rightClick(0f, 5f); // throw reposition pearl, lands in 6 ticks
+		at(73).setHotbarSlot(1).rightClick(46f, -40f); // etherwarp up
+		at(74).rightClick(44f, 45f); // reposition
+		at(75).setHotbarSlot(5).turnHead(90f, -70f).leftClick(); // break block
+		at(76).setHotbarSlot(1).rightClick(); // etherwarp up, gravel 5/6
+		at(77).rightClick(90f, 16.5f); // gravel 6/6
+		at(78).rightClick(2f, 1f); // etherwarp into quiz
+		// Gravel (Part 2): 11 ticks
+		// Gravel: 26 ticks (-26 | -58)
+
+		/*
+		 *  ██████╗ ██╗   ██╗██╗███████╗
+		 * ██╔═══██╗██║   ██║██║╚══███╔╝
+		 * ██║   ██║██║   ██║██║  ███╔╝
+		 * ██║▄▄ ██║██║   ██║██║ ███╔╝
+		 * ╚██████╔╝╚██████╔╝██║███████╗
+		 *  ╚══▀▀═╝  ╚═════╝ ╚═╝╚══════╝
+		 */
+		at(79).setHotbarSlot(5).turnHead(0f, 60f);
+		at(267).rightClick();
+		at(407).rightClick();
+		at(547).rightClick();
+		// Quiz: 469 ticks | 501 ticks from open
+
+		at(548).swapItems(1, 28).swapItems(3, 30).swapItems(4, 31).swapItems(6, 33).swapItems(7, 34).setHotbarSlot(3);
+		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
 	public void maxor(boolean doContinue) {
