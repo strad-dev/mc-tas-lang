@@ -204,7 +204,7 @@ public class Berserk extends Actions {
 		at(97).rightClick();
 		at(98).rightClick(-90f, 60f);
 		at(99).rightClick();
-		at(100).rightClick(-180f, 60f);
+		at(100).rightClick(180f, 60f);
 		at(101).rightClick(90f, 60f);
 		at(102).rightClick();
 		at(103).rightClick();
