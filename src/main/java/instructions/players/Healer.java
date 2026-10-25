@@ -35,7 +35,7 @@ public class Healer extends Actions {
 				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
-				swapItems(12, 39);
+				useSpeedLoadout();
 				setHotbarSlot(5);
 				if(section.equals("maxor")) {
 					TASUtils.scheduleTask(() -> maxor(false), start);
@@ -182,81 +182,12 @@ public class Healer extends Actions {
 		at(138).setHotbarSlot(3).leftClick(); // kill miniboss
 		// Yellow: 2 ticks (-3 | -36)
 
-		at(139).swapItems(1, 28).swapItems(3, 30).swapItems(6, 33).swapItems(7, 34).swapItems(12, 39).runCommand("pet");
-		at(140).clickGui(14);
+		at(139).swapItems(1, 28).swapItems(3, 30).swapItems(6, 33).swapItems(7, 34).useSpeedLoadout().setHotbarSlot(5); // swap out boss items
 		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
 	public void maxor(boolean doContinue) {
-		at(1).turnHead(-14.5f, 37.5f);
-		at(2).move("WP", 11);
-		at(12).leftClick();
-		at(13).leftClick(); // stonk maxor floor
-		at(14).turnHead(-55f, 0f);
-		at(16).move("WP", 0); // fall to storm floor
-		at(62).turnHead(-90f, 30f);
-		at(63).move("W", 11).leftClick(); // walk forward + fall to goldor floor
-		at(64).leftClick();
-		at(65).leftClick();
-		at(66).leftClick();
-		at(67).leftClick();
-		at(68).leftClick();
-		at(69).leftClick();
-		at(70).leftClick();
-		at(71).leftClick();
-		at(72).leftClick(); // stonk into goldor
-		at(74).turnHead(15f, 0f).setHotbarSlot(1); // adjust movement angle
-		at(75).move("WP", 0);
-		at(116).move("WPJ", 0);
-		at(118).move("WP", 0);
-		at(128).turnHead(0f, 0f);
-		at(137).turnHead(-4f, 80f);
-		at(138).rightClick(); // bonzo 1 of 3
-		// tick 139: propelled forward for 10 ticks
-		at(140).turnHead(0f, 80f);
-		at(150).move("WPJ", 0); // jump to gain slightly more distance
-		at(151).move("WP", 0);
-		at(152).rightClick(); // bonzo 2 of 3
-		// tick 154: propelled forward for 11 ticks
-		at(166).rightClick(); // bonzo 3 of 3
-		// tick 167: propelled forward for 10 ticks
-		at(168).turnHead(0f, 45f).setHotbarSlot(5);
-		// tick 177: walk forward and fall for 7 ticks
-		at(184).leftClick();
-		at(185).leftClick();
-		at(186).leftClick();
-		at(187).leftClick();
-		at(188).leftClick();
-		at(189).leftClick().move("W", 0);
-		// tick 191: start falling for 13 ticks
-		at(193).turnHead(75f, 90f);
-		// tick 204: reach ground
-		at(205).move("WP", 0);
-		at(220).turnHead(90f, 90f).setHotbarSlot(7);
-		at(222).move("WPJ", 0);
-		at(224).move("WP", 49);
-		at(237).rightClick(); // soul sand to lava jump higher
-		at(238).turnHead(16f, 0f).setHotbarSlot(5);
-		at(271).turnHead(85f, 0f);
-		at(273).turnHead(-12f, -16f);
-		at(274).rightClick();
-		at(275).turnHead(-34f, -63f);
-		at(276).rightClick();
-		at(277).turnHead(34f, -30f);
-		at(278).rightClick();
-		at(279).turnHead(33f, -53f);
-		at(280).rightClick();
-		at(281).turnHead(66f, 3f);
-		at(282).rightClick();
-		at(283).turnHead(66f, -43f);
-		at(284).rightClick();
-		at(285).setHotbarSlot(4);
-		at(286).leap(fake("RedFish2471")); // leap to bers
-		at(403).setHotbarSlot(1).move("WP", 0);
-		at(408).move("WPJ", 0).turnHead(34f, 80f);
-		at(410).rightClick(); // bonzo to yellow pad
-		at(411).turnHead(34f, 0f).move("WP", 19).setHotbarSlot(0);
-		at(431).turnHead(-155f, 0f).swapItems(12, 39).setHotbarSlot(3); // rod swap off of black cat, remove racing helmet -> speed auto-set to 400
+
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 

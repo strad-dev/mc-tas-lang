@@ -35,7 +35,8 @@ public class Tank extends Actions {
 				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
-				setHotbarSlot(3);
+				useSpeedLoadout();
+				setHotbarSlot(5);
 				if(section.equals("maxor")) {
 					TASUtils.scheduleTask(() -> maxor(false), start);
 				} else {
@@ -190,37 +191,12 @@ public class Tank extends Actions {
 		at(547).rightClick();
 		// Quiz: 469 ticks | 501 ticks from open
 
-		at(548).swapItems(1, 28).swapItems(3, 30).swapItems(4, 31).swapItems(6, 33).swapItems(7, 34).setHotbarSlot(3);
+		at(548).swapItems(1, 28).swapItems(3, 30).swapItems(4, 31).swapItems(6, 33).swapItems(7, 34).useSpeedLoadout().setHotbarSlot(5);
 		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
 	public void maxor(boolean doContinue) {
-		at(1).move("WP", 0); // move to aggro spot
-		at(50).move("WPJ", 0);
-		at(52).move("WP", 0);
-		at(63).move("N", 10).turnHead(180f, -5f);
-		for(int i = 65; i <= 160; i += 5) {
-			at(i).leftClick();
-		}
-		at(161).rightClick(); // Wither Impact has a 3-tick cooldown
-		at(164).rightClick();
-		at(167).rightClick();
-		at(170).rightClick(); // clear out wither miners
-		at(171).setHotbarSlot(6);
-		at(172).turnHead(180f, -20f).rightClick();
-		at(199).stopRightClick();
-		at(200).rightClick();
-		at(207).stopRightClick();
-		at(208).rightClick();
-		at(215).stopRightClick(); // debuff
-		at(216).setHotbarSlot(3);
-		at(217).leftClick(); // hit 1, avoid insta-enrage
-		at(400).leftClick(); // hit 2 to kill
-		at(401).setHotbarSlot(4);
-		at(402).leap(fake("NoseThe"));
-		at(403).turnHead(156f, 0f).setHotbarSlot(0);
-		at(404).move("WP", 12);
-		at(416).turnHead(-90f, 0f);
+
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 

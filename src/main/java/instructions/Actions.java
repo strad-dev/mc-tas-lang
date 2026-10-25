@@ -279,6 +279,22 @@ public class Actions {
 		send(new ServerboundChatCommandPacket(command.startsWith("/") ? command.substring(1) : command));
 	}
 
+	public void useSpeedLoadout() {
+		useLoadout(true, 14);
+	}
+
+	public void useDpsLoadout() {
+		useLoadout(false, 10);
+	}
+
+	private void useLoadout(boolean racingHelmet, int petSlot) {
+		org.bukkit.inventory.ItemStack helmet = player.getInventory().getHelmet();
+		boolean wearingRacing = helmet != null && helmet.hasItemMeta() && TASUtils.plain(helmet.getItemMeta().displayName()).contains("Racing Helmet");
+		if(wearingRacing != racingHelmet) swapItems(12, 39);
+		runCommand("pet");
+		at(1).clickGui(petSlot);
+	}
+
 	/**
 	 * Rotates a player’s body & head to the given yaw/pitch
 	 * and broadcasts that new orientation to every real client.
@@ -918,6 +934,16 @@ public class Actions {
 
 		public Later dropItem(boolean dropAll) {
 			TASUtils.scheduleTask(() -> Actions.this.dropItem(dropAll), delay);
+			return this;
+		}
+
+		public Later useSpeedLoadout() {
+			TASUtils.scheduleTask(Actions.this::useSpeedLoadout, delay);
+			return this;
+		}
+
+		public Later useDpsLoadout() {
+			TASUtils.scheduleTask(Actions.this::useDpsLoadout, delay);
 			return this;
 		}
 

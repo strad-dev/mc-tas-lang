@@ -35,6 +35,8 @@ public class Berserk extends Actions {
 				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
+				swapItems(11, 36);
+				useSpeedLoadout();
 				setHotbarSlot(5);
 				if(section.equals("maxor")) {
 					TASUtils.scheduleTask(() -> maxor(false), start);
@@ -257,24 +259,12 @@ public class Berserk extends Actions {
 		at(168).rightClick(70f, -38f);
 		at(169).rightClick(110f, -38f);
 		// Ice Fill: 88 ticks (-39 | -79)
-		at(170).swapItems(1, 28).swapItems(3, 30).swapItems(4, 31).swapItems(6, 33).swapItems(7, 34).setHotbarSlot(5);
+		at(170).swapItems(1, 28).swapItems(3, 30).swapItems(4, 31).swapItems(6, 33).swapItems(7, 34).swapItems(11, 36).useSpeedLoadout().setHotbarSlot(5); // swap out boss items
 		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
 	public void maxor(boolean doContinue) {
-		at(3).turnHead(0f, 30f).move("WP", 17);
-		at(18).leftClick();
-		at(19).leftClick();
-		at(21).turnHead(34f, 0f);
-		at(22).move("WP", 70); // move to leap spot for healer
-		at(287).turnHead(-145f, 0f);
-		at(288).move("WP", 0); // move to leap spot for mage1
-		at(297).turnHead(-90f, 0f);
-		at(337).turnHead(-32f, 0f);
-		at(354).turnHead(-32f, 80f).move("WPJ", 0).setHotbarSlot(1);
-		at(355).rightClick(); // bonzo to purple pad
-		at(356).turnHead(-32f, 0f).move("WP", 21);
-		at(377).turnHead(154f, 0f).setHotbarSlot(3);
+
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 

@@ -33,8 +33,7 @@ public class Mage extends Actions {
 				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
-				swapItems(11, 36);
-				setHotbarSlot(5);
+				setHotbarSlot(3);
 				if(section.equals("maxor")) {
 					TASUtils.scheduleTask(() -> maxor(false), start);
 				} else {
@@ -174,37 +173,16 @@ public class Mage extends Actions {
 		at(647).leftClick().move("N");
 		at(648).turnHead(0f, 3.5f).setHotbarSlot(1);
 		at(649).rightClick(); // etherwarp to portal
-		at(650).swapItems(1, 28).swapItems(3, 30).swapItems(4, 31).swapItems(6, 33).swapItems(7, 34).setHotbarSlot(5);
+		at(650).swapItems(1, 28).swapItems(3, 30).swapItems(4, 31).swapItems(6, 33).swapItems(7, 34).setHotbarSlot(3);
 		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
 	public void maxor(boolean doContinue) {
-		at(1).turnHead(-13f, 0f);
-		at(2).move("WP", 0);
-		at(25).move("WN", 0); // spring boots to left crystal
-		at(38).move("WP", 0);
-		at(60).rightClick();
-		at(61).turnHead(-90f, 0f);
-		at(63).turnHead(-135f, 0f);
-		at(67).turnHead(-132f, 45f); // minor repositioning to avoid bonking
-		at(68).leftClick(); // stonk block to avoid bonking
-		at(69).turnHead(-132f, 0f);
-		at(86).swapItems(11, 36); // temporarily remove spring boots so that pos readjustment doesnt trigger ability
-		at(87).move("WN", 1);
-		at(88).turnHead(52f, 0f);
-		at(89).swapItems(11, 36);
-		at(161).move("WP", 0);
-		at(162).move("WN", 0); // spring boots to left crystal
-		at(173).move("WP", 22);
-		at(200).swapItems(11, 36);
-		at(240).rightClick();
-		at(241).turnHead(-128f, 0f);
-		at(242).move("WP", 24);
-		at(243).setHotbarSlot(4);
-		at(339).leap(fake("RedFish2471"));
-		at(340).turnHead(-121f, 0f).setHotbarSlot(0);
-		at(341).move("WP", 9); // move to storm clear spot
-		at(350).turnHead(90f, 0f);
+		move("WP"); // move to aggro spot
+		at(44).move("WPJ"); // make the jump
+		at(52).move("WP");
+		at(60).turnHead(180f, 0f).move("");
+
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 

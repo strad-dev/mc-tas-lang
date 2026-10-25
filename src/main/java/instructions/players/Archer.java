@@ -33,6 +33,7 @@ public class Archer extends Actions {
 				swapItems(6, 33);
 				swapItems(7, 34);
 				swapItems(11, 36);
+				useSpeedLoadout();
 				setHotbarSlot(5);
 				if(section.equals("maxor")) {
 					TASUtils.scheduleTask(() -> maxor(false), start);
@@ -214,31 +215,12 @@ public class Archer extends Actions {
 		at(100).rightClick(); // hallway 3/3
 		// Hallway: 16 ticks (-16 | -73)
 
-		at(101).swapItems(1, 28).swapItems(7, 34).swapItems(11, 36).setHotbarSlot(5);
+		at(101).swapItems(1, 28).swapItems(7, 34).swapItems(11, 36).useSpeedLoadout().setHotbarSlot(5); // swap out boss items
 		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
 	public void maxor(boolean doContinue) {
-		at(1).turnHead(13f, 0f);
-		at(2).move("WP", 0);
-		at(25).move("WN", 0); // spring boots to right crystal
-		at(38).move("WP", 49);
-		at(60).rightClick();
-		at(61).turnHead(90f, 0f);
-		at(63).turnHead(133f, 0f);
-		at(88).turnHead(-52f, 0f); // land on pad
-		at(161).move("WP", 0); // spring boots again to right crystal
-		at(162).move("WN", 0);
-		at(173).move("WP", 22);
-		at(200).swapItems(11, 36);
-		at(240).rightClick();
-		at(241).turnHead(128f, 0f);
-		at(242).move("WP", 24);
-		at(243).setHotbarSlot(2);
-		at(339).leap(fake("NoseThe"));
-		at(340).turnHead(-76f, 0f).setHotbarSlot(4);
-		at(341).move("WP", 9); // move to storm clear spot
-		at(350).turnHead(-180f, 0f);
+
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 

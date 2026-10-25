@@ -8,11 +8,14 @@ import instructions.players.Mage;
 import instructions.players.Tank;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.title.Title;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jspecify.annotations.NonNull;
 import plugin.FakePlayerManager;
 import plugin.M7Link;
@@ -86,6 +89,7 @@ public class TAS implements CommandExecutor {
 		// Before the routines: it hands out the kits their first inputs use.
 		if(practice(p, section, clear ? CLEAR_COUNTDOWN : COUNTDOWN)) {
 			warnFiltered(p);
+			teleportWatchers(p, section);
 			startRoutines(section, fakes);
 		} else ScriptWatchers.release();
 	}
@@ -104,6 +108,16 @@ public class TAS implements CommandExecutor {
 	private static boolean practice(Player p, String section, int countdown) {
 		TASUtils.dispatchInRun(p, "m7:m7practice " + section + " " + countdown + " " + SETTINGS + " --no-teleport");
 		return M7Link.getBoolean("commands.Practice", "isActive");
+	}
+
+	private static void teleportWatchers(Player sender, String section) {
+		if(!(M7Link.get("commands.Practice", "DEFAULT_LOCATIONS") instanceof Map<?, ?> spawns) || !(spawns.get(section) instanceof double[] loc)) return;
+		Location spawn = new Location(sender.getWorld(), loc[0], loc[1], loc[2], (float) loc[3], (float) loc[4]);
+		for(Player watcher : Bukkit.getOnlinePlayers()) {
+			if(!watcher.getScoreboardTags().contains(TASUtils.WATCHING_TAG) || FakePlayerManager.getFakePlayers().containsValue(watcher)
+					|| Spectate.getSpectatorMap().containsKey(watcher)) continue;
+			watcher.teleport(spawn, PlayerTeleportEvent.TeleportCause.PLUGIN);
+		}
 	}
 
 	private static void startPositions(String section, Map<String, Player> fakes) {
