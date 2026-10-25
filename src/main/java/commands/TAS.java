@@ -68,6 +68,7 @@ public class TAS implements CommandExecutor {
 		// Drops the last run's queued tasks; its held keys and jump timers aren't queued tasks, so stop those too.
 		TASUtils.endRun();
 		Actions.cancelAllMovement();
+		if(M7Link.getBoolean("instructions.Server", "isRunStarted")) TASUtils.dispatchInRun(p, "m7:setup");
 		// M7 refuses a run while anyone lacks a class. The server queues a chat command to run after this tick, so the
 		// run starts next tick.
 		fakes.forEach((name, fake) -> {
@@ -113,9 +114,11 @@ public class TAS implements CommandExecutor {
 	private static void teleportWatchers(Player sender, String section) {
 		if(!(M7Link.get("commands.Practice", "DEFAULT_LOCATIONS") instanceof Map<?, ?> spawns) || !(spawns.get(section) instanceof double[] loc)) return;
 		Location spawn = new Location(sender.getWorld(), loc[0], loc[1], loc[2], (float) loc[3], (float) loc[4]);
+		boolean boss = !section.equals("all") && !section.equals("clear");
 		for(Player watcher : Bukkit.getOnlinePlayers()) {
 			if(!watcher.getScoreboardTags().contains(TASUtils.WATCHING_TAG) || FakePlayerManager.getFakePlayers().containsValue(watcher)
 					|| Spectate.getSpectatorMap().containsKey(watcher)) continue;
+			if(M7Link.call("listeners.LavaJump", "isInBossArena", Location.class, watcher.getLocation()) instanceof Boolean inBoss && inBoss == boss) continue;
 			watcher.teleport(spawn, PlayerTeleportEvent.TeleportCause.PLUGIN);
 		}
 	}

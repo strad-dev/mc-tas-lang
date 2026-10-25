@@ -346,6 +346,7 @@ public class FakePlayerManager {
 	}
 
 	private static Method updateFluidInteraction;
+	private static java.lang.reflect.Field noJumpDelay;
 	private static java.lang.reflect.Field[] reportedPosition;
 
 	public static void syncReportedPosition(ServerPlayer fake) {
@@ -381,7 +382,9 @@ public class FakePlayerManager {
 		try {
 			updateFluidInteraction = net.minecraft.world.entity.Entity.class.getDeclaredMethod("updateFluidInteraction");
 			updateFluidInteraction.setAccessible(true);
-		} catch(NoSuchMethodException e) {
+			noJumpDelay = net.minecraft.world.entity.LivingEntity.class.getDeclaredField("noJumpDelay");
+			noJumpDelay.setAccessible(true);
+		} catch(NoSuchMethodException | NoSuchFieldException e) {
 			throw new RuntimeException("Failed to find updateFluidInteraction", e);
 		}
 	}
@@ -410,9 +413,13 @@ public class FakePlayerManager {
 			if(!input.contains("J")) npc.setJumping(false);
 			// Was a Bukkit timer started by move(): at tick end it first ran next tick, after the next input could
 			// already have released J, so a one-tick "JN" never jumped.
-			if(input.contains("J") && npc.onGround()) {
-				npc.setJumping(true);
-				TASUtils.debug(TASUtils.DebugType.CLIENT, fake, fake.getName() + " jumped at " + TASUtils.round(npc.getX(), 3) + " " + TASUtils.round(npc.getY(), 5) + " " + TASUtils.round(npc.getZ(), 3));
+			if(input.contains("J") && npc.onGround()) npc.setJumping(true);
+			if(input.contains("J") && !npc.onGround() && !npc.isInWater() && !npc.isInLava() && !npc.onClimbable() && !npc.getAbilities().flying) {
+				try {
+					noJumpDelay.setInt(npc, 0);
+				} catch(IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
 			}
 			if(npc.isUsingItem()) {
 				int remaining = npc.useItemRemaining;
@@ -428,6 +435,9 @@ public class FakePlayerManager {
 			try {
 				updateFluidInteraction.invoke(npc);
 				npc.aiStep();
+				if(input.contains("J") && noJumpDelay.getInt(npc) == 10) {
+					TASUtils.debug(TASUtils.DebugType.CLIENT, fake, fake.getName() + " jumped at " + TASUtils.round(before.x, 3) + " " + TASUtils.round(before.y, 5) + " " + TASUtils.round(before.z, 3));
+				}
 			} catch(Exception e) {
 				e.printStackTrace();
 			} finally {

@@ -180,9 +180,18 @@ public class Mage extends Actions {
 	public void maxor(boolean doContinue) {
 		move("WP"); // move to aggro spot
 		at(44).move("WPJ"); // make the jump
-		at(52).move("WP");
-		at(60).turnHead(180f, 0f).move("");
-
+		at(52).move("WP"); // sneak at end of conveyor belt
+		at(56).turnHead(180f, -5).move("SN");
+		at(60).leftClick();
+		at(65).leftClick();
+		at(70).leftClick();
+		at(75).leftClick();
+		at(80).leftClick(); // aggro
+		at(81).setHotbarSlot(0).rightClick();
+		at(82).setHotbarSlot(0).rightClick(); // clear wither skellies
+		for(int i = 85; i <= 190; i += 5) {
+			at(i).leftClick(); // keep aggro/dps
+		}
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 

@@ -32,6 +32,25 @@ public class M7Link {
 		}
 	}
 
+	public static Object call(String className, String method, Class<?> argType, Object arg) {
+		Plugin m7 = Bukkit.getPluginManager().getPlugin("m7");
+		if(m7 == null) return null;
+		ClassLoader loader = m7.getClass().getClassLoader();
+		String key = className + "#" + method + "(" + argType.getName() + ")";
+		try {
+			Member m = members.get(key);
+			if(m == null || m.getDeclaringClass().getClassLoader() != loader) {
+				Method found = Class.forName(className, true, loader).getDeclaredMethod(method, argType);
+				found.setAccessible(true);
+				m = found;
+				members.put(key, m);
+			}
+			return ((Method) m).invoke(null, arg);
+		} catch(ReflectiveOperationException e) {
+			return null;
+		}
+	}
+
 	/** M7's class {@code className}, or null without M7. */
 	public static Class<?> loadClass(String className) {
 		Plugin m7 = Bukkit.getPluginManager().getPlugin("m7");

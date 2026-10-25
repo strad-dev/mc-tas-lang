@@ -187,7 +187,13 @@ public class Healer extends Actions {
 	}
 
 	public void maxor(boolean doContinue) {
-
+		turnHead(20f, 0f);
+		move("WP");
+		at(12).move("WPJ");
+		at(15).turnHead(90f, 0f).move("WP");
+		at(20).move("WPJ");
+		at(26).turnHead(85f, 0f);
+		at(39).turnHead(-54f, 0f).move("");
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 
