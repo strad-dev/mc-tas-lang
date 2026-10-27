@@ -7,6 +7,11 @@ import org.bukkit.entity.Player;
 import plugin.TASUtils;
 
 public class Tank extends Actions {
+	private static final int LEAP_ARCH = 0;
+	private static final int LEAP_BERS = 44;
+	private static final int LEAP_HEAL = 36;
+	private static final int LEAP_MAGE = 8;
+
 	public Tank(Player player) {
 		super(player);
 	}
@@ -95,7 +100,7 @@ public class Tank extends Actions {
 		 */
 		at(15).rightClick(0f, 4f); // etherwarp to key spot
 		at(16).setHotbarSlot(4).rightClick();
-		at(18).clickGui(0); // wait one tick so that archer can actually open the door
+		at(18).clickGui(LEAP_ARCH); // wait one tick so that archer can actually open the door
 		at(19).turnHead(0f, 6f).swapItems(4, 31).move("N"); // must re-sneak after using leap
 		at(32).setHotbarSlot(3).leftClick();
 		// Blood Rush: 32 ticks (-19)
@@ -196,7 +201,18 @@ public class Tank extends Actions {
 	}
 
 	public void maxor(boolean doContinue) {
-
+		turnHead(-20f, 0f);
+		move("WP");
+		at(14).turnHead(-85f, 10f);
+		at(17).move("WPJ");
+		at(19).leftClick();
+		at(20).turnHead(-85f, 0f).leftClick();
+		at(21).leftClick();
+		at(40).turnHead(-130f, 0f).setHotbarSlot(4);
+		at(44).move("WN");
+		at(46).turnHead(50f, 0f).move("");
+		at(179).rightClick();
+		at(180).clickGui(LEAP_BERS);
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 

@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import plugin.FakePlayerManager;
 import plugin.SpectatorSync;
@@ -27,6 +28,11 @@ public class SpectatorListener implements Listener {
 		if(command.equals("/pets") || command.equals("/pet") || command.equals("/m7:pets") || command.equals("/m7:pet")) {
 			event.setMessage("/m7:pets " + fake.getName());
 		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		plugin.ScriptWatchers.join(event.getPlayer());
 	}
 
 	@EventHandler

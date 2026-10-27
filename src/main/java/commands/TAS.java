@@ -28,10 +28,9 @@ import java.util.Map;
 public class TAS implements CommandExecutor {
 	private static final List<String> SECTIONS = List.of("all", "clear", "boss", "maxor", "storm", "goldor", "necron", "witherking");
 	private static final int COUNTDOWN = 60;
-	/** Temporarily 126 (the routines' tick 0 is 26 before Mort's start button) until the clear is redone; then 100. */
 	private static final int CLEAR_COUNTDOWN = 100;
-	// Difficulty, mayor, Fix Watcher Bug, Bad Bonzo, in /m7practice's own argument forms.
-	private static final String SETTINGS = "perfect_rng jerry_paul off badbonzo=off batbug=on";
+	// Difficulty, mayor, Fix Watcher Bug, Bad Bonzo, Bat Bug, Alpha GDrag Damage, in /m7practice's own argument forms.
+	private static final String SETTINGS = "perfect_rng jerry_paul off badbonzo=off batbug=on alphagdrag=on";
 
 	/** Chained run (all, boss): ticks from a segment's start to the next's. A routine may pass its own instead. */
 	public static final int CLEAR_TICKS = 727;

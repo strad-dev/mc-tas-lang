@@ -7,6 +7,11 @@ import org.bukkit.entity.Player;
 import plugin.TASUtils;
 
 public class Berserk extends Actions {
+	private static final int LEAP_ARCH = 0;
+	private static final int LEAP_HEAL = 44;
+	private static final int LEAP_MAGE = 8;
+	private static final int LEAP_TANK = 36;
+
 	public Berserk(Player player) {
 		super(player);
 	}
@@ -264,7 +269,26 @@ public class Berserk extends Actions {
 	}
 
 	public void maxor(boolean doContinue) {
-
+		turnHead(13f, 0f);
+		move("WP");
+		at(10).move("WN");
+		at(23).move("WP");
+		at(45).rightClick();
+		at(46).setHotbarSlot(4).rightClick();
+		at(47).clickGui(LEAP_HEAL);
+		at(80).move("WN");
+		at(91).move("WP");
+		at(114).swapItems(11, 36);
+		at(120).rightClick();
+		at(160).clickGui(LEAP_HEAL);
+		at(161).turnHead(-91.5f, 36f).move("WP").setHotbarSlot(5);
+		at(170).leftClick();
+		at(171).setHotbarSlot(0).rightClick(-91.5f, 42f);
+		at(172).rightClick();
+		at(173).rightClick();
+		at(174).setHotbarSlot(5).leftClick();
+		at(175).leftClick();
+		at(177).move("");
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 

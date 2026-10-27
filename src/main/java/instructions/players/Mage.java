@@ -6,6 +6,11 @@ import org.bukkit.entity.Player;
 import plugin.TASUtils;
 
 public class Mage extends Actions {
+	private static final int LEAP_ARCH = 0;
+	private static final int LEAP_BERS = 44;
+	private static final int LEAP_HEAL = 36;
+	private static final int LEAP_TANK = 8;
+
 	public Mage(Player player) {
 		super(player);
 	}
@@ -94,7 +99,7 @@ public class Mage extends Actions {
 		 */
 		at(15).leftClick(); // immediately kill miniboss
 		at(16).setHotbarSlot(4).rightClick();
-		at(18).clickGui(0); // wait one tick so that archer can actually open the door
+		at(18).clickGui(LEAP_ARCH); // wait one tick so that archer can actually open the door
 		at(19).swapItems(4, 31).move("N"); // swap tnt with infinileap, must re-sneak after using leap
 		// door opens tick 32
 		at(32).setHotbarSlot(1).rightClick(0f, 2.3f);
@@ -182,9 +187,9 @@ public class Mage extends Actions {
 		at(44).move("WPJ"); // make the jump
 		at(52).move("WP"); // sneak at end of conveyor belt
 		at(56).turnHead(180f, -5).move("SN");
-		at(60).leftClick();
+		at(60).leftClick().move("N");
 		at(65).leftClick();
-		at(70).leftClick();
+		at(70).leftClick().move("");
 		at(75).leftClick();
 		at(80).leftClick(); // aggro
 		at(81).setHotbarSlot(0).rightClick();
@@ -192,6 +197,8 @@ public class Mage extends Actions {
 		for(int i = 85; i <= 190; i += 5) {
 			at(i).leftClick(); // keep aggro/dps
 		}
+		at(191).setHotbarSlot(4).rightClick();
+		at(192).clickGui(LEAP_BERS);
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 

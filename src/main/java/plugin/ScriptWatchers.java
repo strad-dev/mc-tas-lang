@@ -22,17 +22,23 @@ public class ScriptWatchers {
 	/** Tags every real player not already watching, until {@link #release}. Call before the script's /m7practice. */
 	public static void watch() {
 		release();
-		for(Player p : Bukkit.getOnlinePlayers()) {
-			if(FakePlayerManager.getFakePlayers().containsValue(p) || p.getScoreboardTags().contains(TASUtils.WATCHING_TAG)) continue;
-			p.addScoreboardTag(TASUtils.WATCHING_TAG);
-			tagged.add(p.getUniqueId());
-		}
+		for(Player p : Bukkit.getOnlinePlayers()) tag(p);
 		listenForRunEnd();
 		// A run torn down or replaced without an ending of its own never fires RunCompleteEvent, but the run moves on.
 		int run = TASUtils.currentRun();
 		endCheck = Bukkit.getScheduler().runTaskTimer(mcTASLang.getInstance(), () -> {
 			if(TASUtils.currentRun() != run) release();
 		}, 20L, 20L);
+	}
+
+	private static void tag(Player p) {
+		if(FakePlayerManager.getFakePlayers().containsValue(p) || p.getScoreboardTags().contains(TASUtils.WATCHING_TAG)) return;
+		p.addScoreboardTag(TASUtils.WATCHING_TAG);
+		tagged.add(p.getUniqueId());
+	}
+
+	public static void join(Player p) {
+		if(endCheck != null) tag(p);
 	}
 
 	/** M7 fires its RunCompleteEvent for every ending, won or not. Registered by name: M7 isn't a dependency. */

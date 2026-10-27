@@ -161,7 +161,7 @@ public class Actions {
 
 	/**
 	 * Swaps two inventory slots in one tick, as a client would: open the inventory (E; closes any chest GUI first,
-	 * opening sends nothing), a number key (SWAP) when one side is the hotbar or off-hand, else pick up / put down /
+	 * opening sends nothing but lets go of every key, so move() again after), a number key (SWAP) when one side is the hotbar or off-hand, else pick up / put down /
 	 * put back, then close it.
 	 *
 	 * @param slotA any slot index (0-8 hotbar, 9-35 main inv, 36-39 armor, 40 offhand)
@@ -172,6 +172,7 @@ public class Actions {
 		if(!inventoryOpen.contains(player.getUniqueId())) {
 			if(cp.getHandle().containerMenu.containerId != 0) closeGui();
 			inventoryOpen.add(player.getUniqueId());
+			if(!getActiveInput(player.getUniqueId()).isEmpty()) move("");
 		}
 		if(slotB < 9 || slotB == 40) {
 			int t = slotA;

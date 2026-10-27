@@ -6,6 +6,11 @@ import org.bukkit.entity.Player;
 import plugin.TASUtils;
 
 public class Healer extends Actions {
+	private static final int LEAP_ARCH = 0;
+	private static final int LEAP_BERS = 44;
+	private static final int LEAP_MAGE = 8;
+	private static final int LEAP_TANK = 36;
+
 	public Healer(Player player) {
 		super(player);
 	}
@@ -36,7 +41,7 @@ public class Healer extends Actions {
 				swapItems(6, 33);
 				swapItems(7, 34);
 				useSpeedLoadout();
-				setHotbarSlot(5);
+				setHotbarSlot(4);
 				if(section.equals("maxor")) {
 					TASUtils.scheduleTask(() -> maxor(false), start);
 				} else {
@@ -182,7 +187,7 @@ public class Healer extends Actions {
 		at(138).setHotbarSlot(3).leftClick(); // kill miniboss
 		// Yellow: 2 ticks (-3 | -36)
 
-		at(139).swapItems(1, 28).swapItems(3, 30).swapItems(6, 33).swapItems(7, 34).useSpeedLoadout().setHotbarSlot(5); // swap out boss items
+		at(139).swapItems(1, 28).swapItems(3, 30).swapItems(6, 33).swapItems(7, 34).useSpeedLoadout().setHotbarSlot(4); // swap out boss items
 		if(doContinue) TASUtils.scheduleTask(() -> maxor(true), TAS.CLEAR_TICKS);
 	}
 
@@ -192,8 +197,19 @@ public class Healer extends Actions {
 		at(12).move("WPJ");
 		at(15).turnHead(90f, 0f).move("WP");
 		at(20).move("WPJ");
-		at(26).turnHead(85f, 0f);
-		at(39).turnHead(-54f, 0f).move("");
+		at(26).turnHead(88.5f, 0f);
+		at(31).move("WP");
+		at(40).move("WN");
+		at(41).turnHead(-50f, 0f).move("");
+		at(179).rightClick();
+		at(180).clickGui(LEAP_BERS);
+		at(181).turnHead(40f, 0f).move("WP").setHotbarSlot(1);
+		at(245).turnHead(20f, 75f).rightClick(); // bonzo to pad
+		at(246).setHotbarSlot(5);
+		// there is no good place to place the player before the transition tick, so storm start will place the player at dig spot, and maxor will handle the loose ends
+		// this is done in a way where it is still deterministic
+		at(258).turnHead(2.5f, 45f); // storm tick 8
+		// tick 268: stopped by block, can dig on tick 269 / storm tick 19
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 

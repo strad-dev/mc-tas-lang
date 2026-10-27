@@ -61,10 +61,10 @@ public class FakePlayerManager {
 
 	private static final Map<String, String> SKIN_DATA = Map.of(
 			"akc0303", "0b0fa6bc-69ee-4f6c-a4f8-7cac79f1871a", // Archer, 1st
-			"RedFish2471", "2abb218f-ada3-49be-a6d1-81a2872941e2", // Berserk 5th
-			"NoseThe", "43c561aa-ed1b-4f8b-8fa6-f28a8aaafaad", // Healer 4th
 			"Beethoven", "cdb9e9c6-c096-4f58-9c49-35395d7b897c", // Mage 2nd
-			"cookiethebald", "5d142c3a-bdf1-418b-b907-797bbaaed188"); // Tank 3rd
+			"cookiethebald", "5d142c3a-bdf1-418b-b907-797bbaaed188", // Tank 3rd
+			"NoseThe", "43c561aa-ed1b-4f8b-8fa6-f28a8aaafaad", // Healer 4th
+			"RedFish2471", "2abb218f-ada3-49be-a6d1-81a2872941e2"); // Berserk 5th
 
 	// leap spots: 0, 8, 36, 44
 
@@ -456,7 +456,7 @@ public class FakePlayerManager {
 		double dx = pos.x - before.x, dy = pos.y - before.y, dz = pos.z - before.z;
 		if(dx == 0 && dy == 0 && dz == 0) return;
 		boolean hasInput = !input.isEmpty();
-		if(!hasInput && Math.abs(dx) < RESIDUAL_EPSILON && Math.abs(dz) < RESIDUAL_EPSILON) return;
+		if(!hasInput && dy == 0 && Math.abs(dx) < RESIDUAL_EPSILON && Math.abs(dz) < RESIDUAL_EPSILON) return;
 		TASUtils.debug(TASUtils.DebugType.CLIENT, fake, fake.getName() + " " + (hasInput ? "moved" : "drifted") + " "
 				+ TASUtils.round(dx, 4) + " " + TASUtils.round(dy, 4) + " " + TASUtils.round(dz, 4)
 				+ (npc.isSprinting() ? " sprinting" : npc.isShiftKeyDown() ? " sneaking" : "") + (npc.onGround() ? " on ground" : "")

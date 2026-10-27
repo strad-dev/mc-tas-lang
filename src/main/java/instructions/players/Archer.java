@@ -6,6 +6,11 @@ import org.bukkit.entity.Player;
 import plugin.TASUtils;
 
 public class Archer extends Actions {
+	private static final int LEAP_BERS = 44;
+	private static final int LEAP_HEAL = 8;
+	private static final int LEAP_MAGE = 36;
+	private static final int LEAP_TANK = 0;
+
 	public Archer(Player player) {
 		super(player);
 	}
@@ -220,7 +225,20 @@ public class Archer extends Actions {
 	}
 
 	public void maxor(boolean doContinue) {
-
+		turnHead(-13f, 0f);
+		move("WP");
+		at(10).move("WN");
+		at(23).move("WP");
+		at(45).rightClick();
+		at(46).setHotbarSlot(2).rightClick();
+		at(47).clickGui(LEAP_TANK);
+		at(80).move("WN");
+		at(91).move("WP");
+		at(114).move("").swapItems(11, 36);
+		at(120).rightClick();
+		at(160).clickGui(LEAP_TANK);
+		at(179).rightClick();
+		at(180).clickGui(LEAP_BERS);
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 
