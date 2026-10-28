@@ -236,9 +236,45 @@ public class Tank extends Actions {
 		at(180).turnHead(-155f, 75f).setHotbarSlot(1).move("WP");
 		at(187).rightClick();
 		at(208).move("").setHotbarSlot(3);
-		for(int i = 210; i <= 525; i += 5) {
+		for(int i = 210; i <= 520; i += 5) {
 			at(i).snapHeadToNearestEnemy().leftClick();
 		}
+		at(521).setHotbarSlot(5).useSpeedLoadout();
+		at(526).turnHead(77.5f, 0f).move("WP");
+		at(534).move("WPJ");
+		at(535).move("WP");
+		at(553).turnHead(90f, 90f);
+		at(559).leftClick();
+		at(560).leftClick();
+		at(561).leftClick();
+		at(562).leftClick();
+		at(563).leftClick();
+		at(564).leftClick();
+		at(565).leftClick();
+		at(566).leftClick();
+		at(567).leftClick();
+		at(568).leftClick();
+		at(569).leftClick();
+		at(570).leftClick();
+		at(571).leftClick();
+		at(572).leftClick();
+		at(573).leftClick();
+		at(574).leftClick();
+		at(575).leftClick();
+		at(576).leftClick();
+		at(577).leftClick();
+		at(578).leftClick();
+		at(579).leftClick();
+		at(580).leftClick();
+		at(581).leftClick();
+		at(582).leftClick();
+		at(583).move("WAP");
+		at(594).move("WP");
+		at(597).move("WAP");
+		at(602).move("WP");
+		at(610).move("");
+		at(625).move("WAP");
+		at(626).move("");
 		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 

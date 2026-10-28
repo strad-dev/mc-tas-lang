@@ -342,7 +342,7 @@ public class Actions {
 	public void snapHeadAtNearestNamed(String nameContains) {
 		LivingEntity nearest = null;
 		double nearestDistance = Double.MAX_VALUE;
-		for(Entity entity : player.getNearbyEntities(32, 32, 32)) {
+		for(Entity entity : player.getNearbyEntities(50, 50, 50)) {
 			if(!(entity instanceof LivingEntity living)) continue;
 			String livingName = TASUtils.plain(living.customName());
 			if(livingName.isEmpty() || !livingName.toLowerCase().contains(nameContains.toLowerCase())) continue;

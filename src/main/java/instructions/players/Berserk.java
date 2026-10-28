@@ -307,9 +307,42 @@ public class Berserk extends Actions {
 		at(444).setHotbarSlot(4).rightClick();
 		at(445).clickGui(LEAP_MAGE);
 		at(446).setHotbarSlot(3);
-		for(int i = 447; i <= 525; i += 5) {
+		for(int i = 447; i <= 520; i += 5) {
 			at(i).snapHeadToNearestEnemy().leftClick();
 		}
+		at(521).setHotbarSlot(5).useSpeedLoadout();
+		at(526).turnHead(9.6f, 75f).setHotbarSlot(1).move("WP");
+		at(531).rightClick();
+		at(532).turnHead(9.6f, 0f).setHotbarSlot(5);
+		at(552).move("WPJ");
+		at(565).turnHead(0f, 90f).move("WP");
+		at(572).leftClick();
+		at(573).leftClick();
+		at(574).leftClick();
+		at(575).leftClick();
+		at(576).leftClick();
+		at(577).leftClick();
+		at(578).leftClick();
+		at(579).leftClick();
+		at(580).leftClick();
+		at(581).leftClick();
+		at(582).leftClick();
+		at(583).leftClick();
+		at(584).leftClick();
+		at(585).leftClick();
+		at(586).leftClick();
+		at(587).leftClick();
+		at(588).leftClick();
+		at(589).leftClick();
+		at(590).leftClick();
+		at(591).leftClick();
+		at(592).leftClick();
+		at(593).move("S");
+		at(605).move("AS");
+		at(606).move("");
+		at(620).move("ASN");
+		at(635).move("N");
+		at(646).move("");
 		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 

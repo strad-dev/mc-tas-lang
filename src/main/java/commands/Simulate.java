@@ -114,7 +114,8 @@ public class Simulate implements CommandExecutor {
 				}
 				lastSimulated = applyTo;
 				lastSimulatedLocation = applyTo.getLocation();
-				new Actions(applyTo).move(inputString, duration);
+				// From the tick-end inputs, as a routine does: run between ticks, the release came due before the first step.
+				TASUtils.scheduleTask(() -> new Actions(applyTo).move(inputString, duration), 1);
 				p.sendMessage(TASUtils.msg("<green>Moved <v0> for <v1> ticks", Placeholder.unparsed("v0", String.valueOf(applyTo.getName())), Placeholder.unparsed("v1", String.valueOf(duration))));
 				return true;
 			}

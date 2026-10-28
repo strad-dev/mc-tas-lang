@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class FakePlayerManager {
 	private static final Map<String, Player> fakePlayers = new HashMap<>();
@@ -54,6 +55,7 @@ public class FakePlayerManager {
 	 * True only inside the ticker's physics step; see the ServerPlayer override in spawnFakePlayer.
 	 */
 	private static boolean steppingPhysics = false;
+	private static boolean kickingAll = false;
 
 	// Each fake's inbound pipeline. Simulated packets enter here, so the server sees them exactly like a real
 	// client's (M7 installs its interceptor before "packet_handler" on join).
@@ -120,11 +122,15 @@ public class FakePlayerManager {
 			// confirms teleports and reports loaded after a respawn, and 26.2 ignores interactions until it does.
 			@Override
 			public void send(@NonNull Packet<?> packet, ChannelFutureListener listener, boolean flush) {
-				if(packet instanceof ClientboundDisconnectPacket) {
+				if(packet instanceof ClientboundDisconnectPacket disconnect) {
+					// The send runs inside whatever kicked, so the trace names the caller.
+					if(!kickingAll) {
+						mcTASLang.getInstance().getLogger().log(Level.WARNING, nmsPlayer.getPlainTextName() + " kicked: " + disconnect.reason().getString(), new Throwable("kicked from"));
+					}
 					// Disabled = onDisable's kickAllFakes, which finishes the kick itself.
 					Connection self = this;
 					if(mcTASLang.getInstance().isEnabled()) {
-						Bukkit.getScheduler().runTask(mcTASLang.getInstance(), () -> finishDisconnect(self));
+						Bukkit.getScheduler().runTask(mcTASLang.getInstance(), () -> finishDisconnect(self, disconnect.reason()));
 					}
 					return;
 				}
@@ -326,22 +332,27 @@ public class FakePlayerManager {
 	public static void kickAllFakes() {
 		TASUtils.endRun();
 		instructions.Actions.cancelAllMovement();
-		fakePlayers.values().forEach(p -> {
-			SpectatorSync.forgetScreen(p);
-			if(p.isOnline()) {
-				p.kick(Component.empty());
-				finishDisconnect(((CraftPlayer) p).getHandle().connection.connection);
-			}
-		});
+		kickingAll = true;
+		try {
+			fakePlayers.values().forEach(p -> {
+				SpectatorSync.forgetScreen(p);
+				if(p.isOnline()) {
+					p.kick(Component.empty());
+					finishDisconnect(((CraftPlayer) p).getHandle().connection.connection, net.minecraft.network.chat.Component.empty());
+				}
+			});
+		} finally {
+			kickingAll = false;
+		}
 		fakePlayers.clear();
 		channels.clear();
 	}
 
 	// A kick closes the socket from the disconnect packet's send callback or the next Connection.tick. A fake has
 	// neither (send above eats the packet, nothing ticks its Connection), so it stayed in the world.
-	private static void finishDisconnect(Connection connection) {
+	private static void finishDisconnect(Connection connection, net.minecraft.network.chat.Component reason) {
 		if(!connection.channel.isOpen()) return;
-		connection.disconnect(net.minecraft.network.chat.Component.empty());
+		connection.disconnect(reason);
 		connection.handleDisconnection();
 	}
 

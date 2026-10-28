@@ -252,6 +252,9 @@ public class Mage extends Actions {
 		at(512).leftClick();
 		at(513).setHotbarSlot(4).rightClick();
 		at(514).clickGui(LEAP_BERS);
+		at(526).turnHead(-20f, 75f).setHotbarSlot(1).move("WP");
+		at(534).rightClick();
+		at(549).move("").snapHeadAtNearestNamed("Storm");
 		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 
