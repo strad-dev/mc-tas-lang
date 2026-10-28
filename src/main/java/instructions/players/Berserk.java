@@ -55,7 +55,8 @@ public class Berserk extends Actions {
 				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
-				setHotbarSlot(3);
+				useDpsLoadout();
+				setHotbarSlot(0);
 				TASUtils.scheduleTask(() -> storm(false), start);
 			}
 			case "goldor" -> {
@@ -297,75 +298,8 @@ public class Berserk extends Actions {
 	}
 
 	public void storm(boolean doContinue) {
-		for(int i = 0; i <= 80; i += 5) {
-			at(i - 1).snapHeadToNearestEnemy();
-			at(i).loopLeftClick();
-		}
-		at(81).setHotbarSlot(0);
-		at(82).rightClick();
-		at(85).rightClick();
-		at(88).rightClick();
-		at(91).rightClick();
-		at(92).setHotbarSlot(3);
-		for(int i = 95; i <= 150; i += 3) {
-			at(i - 1).snapHeadToNearestEnemy();
-			at(i).loopLeftClick();
-		} // clear pad, including shadow assassin
-		at(151).turnHead(154f, 0f);
-		at(152).move("WP", 31).setHotbarSlot(1); // move off the pad early enough
-		at(159).turnHead(154f, 80f);
-		at(160).rightClick(); // bonzo back to pillar
-		at(161).turnHead(154f, 0f).setHotbarSlot(3);
-		for(int i = 187; i <= 532; i += 5) {
-			at(i - 1).snapHeadToNearestEnemy();
-			at(i).loopLeftClick();
-		} // kill outstanding wither skeletons
-		at(533).turnHead(-155f, -90f).setHotbarSlot(5).swapItems(5, 32);
-		at(534).rightClick();
-		at(546).move("WP", 2);
-		at(595).setHotbarSlot(6).swapItems(5, 32); // last breath
-		int lbFor = 8;
-		for(int i = 597; i <= 678 - lbFor - 1; i += lbFor + 1) {
-			at(i).rightClick();
-			at(i + lbFor).stopRightClick();
-		}
-		at(679).setHotbarSlot(3).snapHeadAtNearestNamed("Storm");
-		at(680).leftClick();
-		at(681).setHotbarSlot(4).swapItems(12, 39).swapItems(7, 35); // equip racing helmet (speed auto-set to 650), black cat, and prepare explosive bow
-		at(682).leap(fake("akc0303"));
-		at(683).move("AWP", 0).setHotbarSlot(1);
-		at(685).move("WP", 0);
-		at(707).turnHead(12f, 80f);
-		at(708).rightClick(); // bonzo staff here because there is less time to build up momentum | lands in 12 ticks
-		at(709).turnHead(0f, 0f);
-		at(729).move("WPJ", 1).turnHead(-10f, 80f);
-		at(730).rightClick();
-		// pause to allow time to leap
-		at(745).turnHead(0f, 0f);
-		at(746).move("SN", 0);
-		at(754).move("N", 10);
-		at(755).turnHead(-47f, 80f);
-		at(784).turnHead(0f, 80f);
-		at(785).move("WP", 0);
-		at(786).move("WPJ", 0);
-		at(787).move("WP", 0);
-		at(788).rightClick();
-		at(802).move("WPJ", 0);
-		at(803).rightClick();
-		at(805).turnHead(3f, 0f).setHotbarSlot(5).move("WP", 39);
-		at(821).turnHead(0f, 45f);
-		at(822).leftClick();
-		at(823).leftClick();
-		at(824).leftClick();
-		at(825).leftClick();
-		at(826).leftClick();
-		at(827).leftClick();
-		at(836).turnHead(111f, 0f);
-		at(845).turnHead(-145f, -5).setHotbarSlot(1);
-		if(doContinue) {
-			at(849).dropItem(true);
-			TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
-		}
+
+		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 
 	public void goldor(boolean doContinue) {

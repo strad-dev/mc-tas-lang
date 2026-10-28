@@ -51,6 +51,7 @@ public class Archer extends Actions {
 				swapItems(1, 28);
 				swapItems(6, 33);
 				swapItems(7, 34);
+				useDpsLoadout();
 				setHotbarSlot(4);
 				TASUtils.scheduleTask(() -> storm(false), start);
 			}
@@ -247,65 +248,7 @@ public class Archer extends Actions {
 	}
 
 	public void storm(boolean doContinue) {
-		for(int i = 1; i <= 79; i += 5) {
-			at(i - 1).aimTerminatorAtNearestEnemy();
-			at(i).loopRightClick();
-		}
-		at(79).turnHead(180f, -4f);
-		at(80).move("DN", 60);
-		for(int i = 80; i <= 140; i += 5) {
-			at(i).rightClick();
-		} // clear mid
-		at(141).setHotbarSlot(2);
-		at(142).leap(fake("cookiethebald")); // leap to help clear green pad
-		at(143).turnHead(180f, 0f).setHotbarSlot(4);
-		at(144).move("WP", 0);
-		at(163).move("WN", 3);
-		for(int i = 165; i <= 520; i += 5) {
-			at(i - 1).aimTerminatorAtNearestEnemy();
-			at(i).loopRightClick();
-		}
-		at(525).turnHead(-90f, 30f);
-		at(526).move("D", 0);
-		at(536).move("DN", 2);
-		at(545).setHotbarSlot(5).swapItems(12, 39); // put on racing helmet -> speed auto-set to 650
-		at(546).move("WP", 95); // go to goldor
-		at(576).leftClick();
-		at(577).leftClick();
-		at(578).leftClick();
-		at(579).leftClick();
-		at(580).leftClick();
-		at(581).leftClick();
-		at(582).leftClick();
-		at(583).leftClick();
-		at(584).leftClick();
-		at(585).leftClick();
-		at(586).turnHead(-90f, 0f).setHotbarSlot(1);
-		// tick 587: begin falling
-		at(602).turnHead(-109f, 0f);
-		at(603).rightClick(); // bonzo off opposite wall | lands in 34 ticks
-		at(604).turnHead(71f, 0f).setHotbarSlot(5);
-		at(638).turnHead(45f, 0f);
-		at(640).turnHead(71f, 0f);
-		at(641).leftClick();
-		at(642).leftClick();
-		at(643).leftClick();
-		at(644).leftClick();
-		at(645).turnHead(75f, 30f);
-		at(646).leftClick();
-		at(647).leftClick();
-		at(648).leftClick();
-		at(649).leftClick();
-		at(650).turnHead(0f, 0f);
-		at(684).turnHead(45f, 0f);
-		at(685).move("WP", 0);
-		at(687).turnHead(90f, 0f);
-		at(689).leftClick();
-		at(700).turnHead(125f, 80f).setHotbarSlot(1);
-		at(702).rightClick(); // bonzo towards i4
-		at(717).turnHead(86f, 0f);
-		at(718).move("WPJ", 7);
-		at(726).turnHead(-74.5f, -46f).swapItems(5, 32).setHotbarSlot(5);
+
 		if(doContinue) {
 			at(802).dropItem(false);
 			at(820).rightClick();

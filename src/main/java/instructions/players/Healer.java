@@ -54,7 +54,8 @@ public class Healer extends Actions {
 				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
-				setHotbarSlot(3);
+				useSpeedLoadout();
+				setHotbarSlot(5);
 				TASUtils.scheduleTask(() -> storm(false), start);
 			}
 			case "goldor" -> {
@@ -215,54 +216,7 @@ public class Healer extends Actions {
 	}
 
 	public void storm(boolean doContinue) {
-		for(int i = 0; i <= 80; i += 5) {
-			at(i - 1).snapHeadToNearestEnemy();
-			at(i).loopLeftClick();
-		}
-		at(81).setHotbarSlot(0);
-		at(82).rightClick();
-		at(85).rightClick();
-		at(88).rightClick();
-		at(91).rightClick();
-		at(92).setHotbarSlot(3);
-		for(int i = 95; i <= 170; i += 3) {
-			at(i - 1).snapHeadToNearestEnemy();
-			at(i).loopLeftClick();
-		} // clear pad, including shadow assassin
-		at(171).turnHead(-155f, 0f);
-		at(172).move("WP", 32).setHotbarSlot(1); // move off the pad early enough
-		at(179).turnHead(-155f, 80f);
-		at(180).rightClick(); // bonzo back to pillar
-		at(181).turnHead(-155f, 0f).setHotbarSlot(3);
-		for(int i = 207; i <= 532; i += 5) {
-			at(i - 1).snapHeadToNearestEnemy();
-			at(i).loopLeftClick();
-		} // kill outstanding wither skeletons
-		at(533).turnHead(-85f, 0f).swapItems(5, 32).setHotbarSlot(6);
-		at(546).move("WP", 0).rightClick(); // rag buff
-		at(555).move("WN", 8); // go to checkpoint spot
-		at(565).turnHead(-94.5f, -18.5f);
-		at(607).setHotbarSlot(6).swapItems(5, 32);
-		at(608).rightClick();
-		at(665).stopRightClick();
-		at(684).turnHead(90f, 0f);
-		at(685).move("WP", 0);
-		at(691).turnHead(36f, 0f);
-		at(699).turnHead(36f, 80f).move("WPJ", 0).setHotbarSlot(1);
-		at(702).rightClick();
-		at(703).turnHead(36f, 0f).move("WP", 20).setHotbarSlot(3);
-		at(723).turnHead(-144f, 0f);
-		at(741).move("WP", 4);
-		at(759).snapHeadAtNearestNamed("Storm");
-		at(760).leftClick();
-		at(761).setHotbarSlot(4).swapItems(12, 39); // put on racing helmet -> speed auto-set to 650
-		at(782).leap(fake("RedFish2471"));
-		at(783).setHotbarSlot(1).move("WP", 12);
-		at(784).rightClick();
-		at(785).turnHead(-47f, 0f).setHotbarSlot(5);
-		at(800).turnHead(-141f, 1f);
-		at(812).move("AN", 3);
-		at(814).turnHead(-123f, 1f);
+
 		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 

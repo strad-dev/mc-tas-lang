@@ -53,6 +53,8 @@ public class Tank extends Actions {
 				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
+				useDpsLoadout();
+				setHotbarSlot(0);
 				TASUtils.scheduleTask(() -> storm(false), start);
 				TASUtils.scheduleTask(() -> startAt(32.556, 170, 94.378, 35f, 0f), start + 1);
 			}
@@ -223,62 +225,8 @@ public class Tank extends Actions {
 	}
 
 	public void storm(boolean doContinue) {
-		for(int i = 0; i <= 10; i += 3) {
-			at(i).rightClick();
-		} // clear platform
-		at(11).setHotbarSlot(3);
-		for(int i = 15; i <= 530; i += 5) {
-			at(i - 1).snapHeadToNearestEnemy();
-			at(i).loopLeftClick();
-		} // kill outstanding wither skeletons
-		at(531).setHotbarSlot(4);
-		at(532).leap(fake("NoseThe"));
-		at(533).turnHead(73f, 0f).setHotbarSlot(5).swapItems(12, 39); // swap to black cat racing helmet -> speed auto-set to 650
-		at(546).move("WP", 0);
-		at(554).move("WPJ", 0);
-		at(556).move("WP", 0); // move to i3 dig spot
-		at(573).turnHead(90f, 45f);
-		at(574).leftClick(); // 19/20
-		at(575).leftClick(); // 18/20
-		at(576).leftClick(); // 17/20
-		at(577).leftClick(); // 16/20
-		at(578).leftClick(); // 15/20
-		at(579).leftClick(); // 14/20
-		at(580).leftClick(); // 13/20
-		at(581).leftClick(); // 12/20
-		at(582).leftClick(); // 11/20
-		at(583).leftClick(); // 10/20
-		at(584).leftClick(); // 10/20 regen 1
-		at(585).leftClick(); // 9/20
-		at(586).leftClick(); // 8/20
-		at(587).leftClick(); // 7/20
-		at(588).leftClick(); // 6/20
-		at(589).leftClick(); // 5/20
-		at(590).leftClick(); // 4/20
-		at(591).turnHead(90f, 90f);
-		at(592).leftClick(); // 3/20
-		at(593).leftClick(); // 2/20
-		at(594).leftClick(); // 2/20 regen 1
-		at(595).leftClick(); // 1/20
-		at(596).leftClick(); // 0/20
-		at(604).leftClick();
-		at(614).leftClick();
-		at(624).leftClick();
-		at(634).leftClick();
-		at(644).leftClick();
-		at(654).leftClick();
-		at(664).leftClick();
-		at(674).leftClick();
-		at(684).leftClick();
-		at(694).leftClick();
-		at(704).leftClick();
-		at(714).leftClick();
-		at(724).leftClick();
-		at(734).leftClick(); // move for 22 ticks before landing
-		at(744).leftClick(); // move for 22 ticks before landing
-		at(745).turnHead(72f, -25f).setHotbarSlot(4);
-		at(746).move("WP", 24);
-		at(776).move("WP", 4); // move to in front of dev3
+
+
 		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 

@@ -50,7 +50,8 @@ public class Mage extends Actions {
 				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
-				setHotbarSlot(0);
+				useDpsLoadout();
+				setHotbarSlot(1);
 				TASUtils.scheduleTask(() -> storm(false), start);
 				TASUtils.scheduleTask(() -> startAt(114.640, 170, 94.144, -55f, 0f), start + 1);
 			}
@@ -210,50 +211,7 @@ public class Mage extends Actions {
 	}
 
 	public void storm(boolean doContinue) {
-		for(int i = 0; i <= 10; i += 3) {
-			at(i).rightClick();
-		} // clear platform
-		at(11).setHotbarSlot(3);
-		for(int i = 15; i <= 530; i += 5) {
-			at(i - 1).snapHeadToNearestEnemy();
-			at(i).loopLeftClick();
-		} // kill outstanding wither skeletons
-		at(531).setHotbarSlot(4);
-		at(532).leap(fake("RedFish2471"));
-		at(533).turnHead(-26f, 0f).setHotbarSlot(1).swapItems(5, 32);
-		at(546).move("WP", 0);
-		at(554).move("WPJ", 0);
-		at(556).turnHead(-26f, 80f);
-		at(557).rightClick(); // bonzo back to pad
-		at(558).turnHead(-26f, 0f).move("WP", 15).setHotbarSlot(3);
-		at(574).snapHeadAtNearestNamed("Storm");
-		for(int i = 575; i <= 630; i += 5) {
-			at(i).leftClick();
-		}
-		at(585).setHotbarSlot(5);
-		at(586).rightClick(); // rag buff
-		at(631).move("S", 0);
-		at(637).turnHead(180f, 0f);
-		at(638).move("A", 22);
-		at(647).setHotbarSlot(6).swapItems(5, 32);
-		at(648).rightClick();
-		at(649).turnHead(-171.5f, -29f);
-		at(667).stopRightClick();
-		at(679).setHotbarSlot(3).snapHeadAtNearestNamed("Storm");
-		at(680).leftClick();
-		at(681).setHotbarSlot(4);
-		at(682).leap(fake("NoseThe"));
-		at(683).move("S", 29).setHotbarSlot(3);
-		for(int i = 685; i <= 760; i += 5) {
-			at(i - 1).snapHeadAtNearestNamed("Storm");
-			at(i).leftClick();
-		}
-		at(734).swapItems(11, 36);
-		at(735).move("N", 2);
-		at(738).swapItems(11, 36);
-		at(800).setHotbarSlot(4).swapItems(12, 39); // put on racing helmet -> speed auto-set to 650
-		at(811).leap(fake("NoseThe"));
-		at(812).setHotbarSlot(5);
+
 		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 
