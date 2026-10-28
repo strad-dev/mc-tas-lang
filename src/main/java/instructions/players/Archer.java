@@ -239,6 +239,9 @@ public class Archer extends Actions {
 		at(160).clickGui(LEAP_TANK);
 		at(179).rightClick();
 		at(180).clickGui(LEAP_BERS);
+		at(181).turnHead(44f, 0f).move("WP").setHotbarSlot(4);
+		at(229).turnHead(90f, 0f);
+		at(240).move("");
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 

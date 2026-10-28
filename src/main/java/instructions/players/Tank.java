@@ -21,7 +21,7 @@ public class Tank extends Actions {
 		switch(section) {
 			case "all", "clear" -> startAt(-120.5, 71, -183.5, 0f, 0f);
 			case "maxor", "boss" -> startAt(73.5, 221, 14.5, 0f, 0f);
-			case "storm" -> startAt(46.794, 169, 53.835, -90f, 0f);
+			case "storm" -> startAt(73.5, 165, 53.5, -90f, 0f);
 			case "goldor" -> startAt(-0.240, 120, 76.775, 72f, -25f);
 			case "necron" -> startAt(54.524, 64, 100.707, 180f, -6f);
 			case "witherking" -> startAt(22.3, 6, 94.452, 67.3f, 29.7f);
@@ -54,6 +54,7 @@ public class Tank extends Actions {
 				swapItems(6, 33);
 				swapItems(7, 34);
 				TASUtils.scheduleTask(() -> storm(false), start);
+				TASUtils.scheduleTask(() -> startAt(46.794, 169, 53.835, -90f, 0f), start + 1);
 			}
 			case "goldor" -> {
 				swapItems(1, 28);
@@ -213,6 +214,11 @@ public class Tank extends Actions {
 		at(46).turnHead(50f, 0f).move("");
 		at(179).rightClick();
 		at(180).clickGui(LEAP_BERS);
+		at(181).turnHead(40f, 0f).move("WP").setHotbarSlot(1);
+		at(245).turnHead(20f, 75f).rightClick();
+		at(246).setHotbarSlot(0);
+		at(258).turnHead(35f, 45f); // storm tick 8
+		at(262).move("");
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 

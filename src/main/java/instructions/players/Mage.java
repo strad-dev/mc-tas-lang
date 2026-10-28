@@ -19,7 +19,7 @@ public class Mage extends Actions {
 		switch(section) {
 			case "all", "clear" -> startAt(-120.5, 71, -183.5, 0f, 0f);
 			case "maxor", "boss" -> startAt(73.5, 221, 14.5, 0f, 0f);
-			case "storm" -> startAt(100.504, 169, 53.534, 90f, 0f);
+			case "storm" -> startAt(73.5, 165, 53.5, 90f, 0f);
 			case "goldor" -> startAt(108.5, 120, 94.496, -141f, 1f);
 			case "necron" -> startAt(54.524, 64, 100.707, 180f, -6f);
 			case "witherking" -> startAt(89.7, 6, 94.406, -75.6f, 18.8f);
@@ -52,6 +52,7 @@ public class Mage extends Actions {
 				swapItems(7, 34);
 				setHotbarSlot(0);
 				TASUtils.scheduleTask(() -> storm(false), start);
+				TASUtils.scheduleTask(() -> startAt(100.504, 169, 53.534, 90f, 0f), start + 1);
 			}
 			case "goldor" -> {
 				swapItems(1, 28);
@@ -197,8 +198,14 @@ public class Mage extends Actions {
 		for(int i = 85; i <= 190; i += 5) {
 			at(i).leftClick(); // keep aggro/dps
 		}
-		at(191).setHotbarSlot(4).rightClick();
-		at(192).clickGui(LEAP_BERS);
+		at(191).setHotbarSlot(4).useSpeedLoadout();
+		at(193).rightClick();
+		at(220).clickGui(LEAP_BERS); // wait to leap, use berserk's momentum for faster movement
+		at(221).turnHead(-55f, 0f).setHotbarSlot(1).move("WP");
+		at(238).turnHead(-30f, 75f);
+		at(252).rightClick();
+		at(263).turnHead(-55f, 0f);
+		at(269).move("");
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 

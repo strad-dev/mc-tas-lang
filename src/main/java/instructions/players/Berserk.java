@@ -288,7 +288,10 @@ public class Berserk extends Actions {
 		at(173).rightClick();
 		at(174).setHotbarSlot(5).leftClick();
 		at(175).leftClick();
-		at(177).move("");
+		at(177).move("").setHotbarSlot(0); // stop moving to fall into hole
+		at(181).turnHead(-60f, 0f).move("WP"); // continue moving here, after players leap
+		at(230).turnHead(-90f, 0f);
+		at(240).move("");
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 
