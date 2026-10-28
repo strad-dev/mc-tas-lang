@@ -49,6 +49,7 @@ public class Healer extends Actions {
 				}
 			}
 			case "storm" -> {
+				startAt(36.3, 170, 105.7, 2.5f, 45f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);

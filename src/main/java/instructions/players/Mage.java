@@ -52,7 +52,7 @@ public class Mage extends Actions {
 				swapItems(7, 34);
 				setHotbarSlot(0);
 				TASUtils.scheduleTask(() -> storm(false), start);
-				TASUtils.scheduleTask(() -> startAt(100.504, 169, 53.534, 90f, 0f), start + 1);
+				TASUtils.scheduleTask(() -> startAt(114.640, 170, 94.144, -55f, 0f), start + 1);
 			}
 			case "goldor" -> {
 				swapItems(1, 28);
@@ -205,7 +205,7 @@ public class Mage extends Actions {
 		at(238).turnHead(-30f, 75f);
 		at(252).rightClick();
 		at(263).turnHead(-55f, 0f);
-		at(269).move("");
+		at(269).useDpsLoadout();
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 

@@ -54,7 +54,7 @@ public class Tank extends Actions {
 				swapItems(6, 33);
 				swapItems(7, 34);
 				TASUtils.scheduleTask(() -> storm(false), start);
-				TASUtils.scheduleTask(() -> startAt(46.794, 169, 53.835, -90f, 0f), start + 1);
+				TASUtils.scheduleTask(() -> startAt(32.556, 170, 94.378, 35f, 0f), start + 1);
 			}
 			case "goldor" -> {
 				swapItems(1, 28);
@@ -217,8 +217,8 @@ public class Tank extends Actions {
 		at(181).turnHead(40f, 0f).move("WP").setHotbarSlot(1);
 		at(245).turnHead(20f, 75f).rightClick();
 		at(246).setHotbarSlot(0);
-		at(258).turnHead(35f, 45f); // storm tick 8
-		at(262).move("");
+		at(258).turnHead(35f, 0f); // storm tick 8
+		at(262).useDpsLoadout();
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 

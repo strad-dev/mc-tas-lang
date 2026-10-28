@@ -47,6 +47,7 @@ public class Archer extends Actions {
 				}
 			}
 			case "storm" -> {
+				startAt(46.020, 169, 53.502, 90f, 0f);
 				swapItems(1, 28);
 				swapItems(6, 33);
 				swapItems(7, 34);
@@ -241,7 +242,7 @@ public class Archer extends Actions {
 		at(180).clickGui(LEAP_BERS);
 		at(181).turnHead(44f, 0f).move("WP").setHotbarSlot(4);
 		at(229).turnHead(90f, 0f);
-		at(240).move("");
+		at(240).useDpsLoadout();
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 

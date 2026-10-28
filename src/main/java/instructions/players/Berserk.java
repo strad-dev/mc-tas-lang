@@ -50,6 +50,7 @@ public class Berserk extends Actions {
 				}
 			}
 			case "storm" -> {
+				startAt(100.980, 169, 53.831, -90, 0);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -291,7 +292,7 @@ public class Berserk extends Actions {
 		at(177).move("").setHotbarSlot(0); // stop moving to fall into hole
 		at(181).turnHead(-60f, 0f).move("WP"); // continue moving here, after players leap
 		at(230).turnHead(-90f, 0f);
-		at(240).move("");
+		at(240).useDpsLoadout();
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 
