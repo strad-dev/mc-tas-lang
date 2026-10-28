@@ -298,7 +298,18 @@ public class Berserk extends Actions {
 	}
 
 	public void storm(boolean doContinue) {
-
+		rightClick();
+		at(1).rightClick();
+		at(2).setHotbarSlot(3);
+		for(int i = 3; i < 445; i += 5) {
+			at(i).snapHeadToNearestEnemy().leftClick();
+		}
+		at(444).setHotbarSlot(4).rightClick();
+		at(445).clickGui(LEAP_MAGE);
+		at(446).setHotbarSlot(3);
+		for(int i = 447; i <= 525; i += 5) {
+			at(i).snapHeadToNearestEnemy().leftClick();
+		}
 		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 

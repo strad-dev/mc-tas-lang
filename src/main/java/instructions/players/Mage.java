@@ -51,7 +51,7 @@ public class Mage extends Actions {
 				swapItems(6, 33);
 				swapItems(7, 34);
 				useDpsLoadout();
-				setHotbarSlot(1);
+				setHotbarSlot(3);
 				TASUtils.scheduleTask(() -> storm(false), start);
 				TASUtils.scheduleTask(() -> startAt(114.640, 170, 94.144, -55f, 0f), start + 1);
 			}
@@ -205,13 +205,53 @@ public class Mage extends Actions {
 		at(221).turnHead(-55f, 0f).setHotbarSlot(1).move("WP");
 		at(238).turnHead(-30f, 75f);
 		at(252).rightClick();
-		at(263).turnHead(-55f, 0f);
+		at(263).turnHead(-55f, 0f).setHotbarSlot(3);
 		at(269).useDpsLoadout();
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 
 	public void storm(boolean doContinue) {
-
+		for(int i = 21; i < 80; i += 5) {
+			at(i).snapHeadToNearestEnemy().leftClick();
+		}
+		at(80).setHotbarSlot(0).rightClick();
+		at(81).setHotbarSlot(0).rightClick();
+		for(int i = 85; i < 160; i += 5) {
+			at(i).snapHeadToNearestEnemy().leftClick();
+		}
+		at(160).turnHead(154f, 75f).setHotbarSlot(1).move("WP");
+		at(167).rightClick();
+		at(188).move("").setHotbarSlot(3);
+		for(int i = 190; i <= 445; i += 5) {
+			at(i).snapHeadToNearestEnemy().leftClick();
+		}
+		at(446).turnHead(9.6f, 75f).setHotbarSlot(1).move("WP");
+		at(453).rightClick();
+		at(454).turnHead(9.6f, 45f).setHotbarSlot(5);
+		at(483).move("WPJ");
+		at(486).turnHead(0f, 45f).move("WP");
+		at(493).leftClick();
+		at(494).leftClick();
+		at(495).leftClick();
+		at(496).leftClick();
+		at(497).leftClick();
+		at(498).leftClick();
+		at(499).leftClick();
+		at(500).leftClick();
+		at(501).leftClick();
+		at(502).leftClick();
+		at(503).leftClick();
+		at(504).leftClick();
+		at(505).leftClick();
+		at(506).leftClick();
+		at(507).leftClick();
+		at(508).leftClick();
+		at(509).leftClick();
+		at(510).leftClick();
+		at(511).leftClick();
+		at(512).leftClick();
+		at(513).setHotbarSlot(4).rightClick();
+		at(514).clickGui(LEAP_BERS);
 		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 

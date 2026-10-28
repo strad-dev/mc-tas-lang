@@ -243,11 +243,25 @@ public class Archer extends Actions {
 		at(180).clickGui(LEAP_BERS);
 		at(181).turnHead(44f, 0f).move("WP").setHotbarSlot(4);
 		at(229).turnHead(90f, 0f);
-		at(240).useDpsLoadout();
+		at(240).setHotbarSlot(4).useDpsLoadout();
 		if(doContinue) TASUtils.scheduleTask(() -> storm(true), TAS.MAXOR_TICKS);
 	}
 
 	public void storm(boolean doContinue) {
+		for(int i = 0; i <= 120; i += 5) {
+			at(i).aimTerminatorAtNearestEnemy().rightClick();
+		}
+		at(121).turnHead(180f, 0f).move("WP");
+		at(138).move("");
+
+		for(int i = 140; i <= 505; i += 5) {
+			at(i).aimTerminatorAtNearestEnemy().rightClick();
+		}
+
+		at(506).setHotbarSlot(5).useSpeedLoadout();
+		at(508).turnHead(-90f, 0f).move("D");
+		at(514).move("DN");
+		at(515).move("");
 
 		if(doContinue) {
 			at(802).dropItem(false);

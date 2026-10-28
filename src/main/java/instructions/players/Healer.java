@@ -216,7 +216,95 @@ public class Healer extends Actions {
 	}
 
 	public void storm(boolean doContinue) {
-
+		at(19).turnHead(0f, 45f).move("WP").leftClick(); // start moving again (case of storm-only), mine to chest room
+		at(20).leftClick(); // 18
+		at(21).leftClick(); // 17
+		at(22).leftClick(); // 16
+		at(23).leftClick(); // 15
+		at(24).leftClick(); // 14
+		at(25).leftClick(); // 13
+		at(26).leftClick(); // 12
+		at(27).leftClick(); // 11
+		at(28).leftClick(); // 10
+		at(29).leftClick(); // 10
+		at(30).leftClick(); // 9
+		at(31).leftClick(); // 8
+		at(32).leftClick(); // 7
+		at(33).leftClick(); // 6
+		at(34).leftClick(); // 5
+		at(35).leftClick(); // 4
+		at(36).leftClick(); // 3
+		at(37).leftClick(); // 2
+		// 39: 3
+		// 49: 4
+		at(55).move("WPJ");
+		at(56).move("WP");
+		// 59: 5
+		at(62).turnHead(-90f, 45f);
+		// 69: 6
+		at(70).leftClick(); // 5
+		at(71).leftClick(); // 4
+		at(72).leftClick(); // 3
+		at(73).leftClick(); // 2
+		at(74).leftClick(); // 1
+		at(75).leftClick(); // 0
+		at(79).turnHead(-90f, 90f).leftClick().move("WDP");
+		at(89).leftClick();
+		at(99).leftClick();
+		at(109).leftClick();
+		at(119).leftClick();
+		at(129).leftClick();
+		at(139).leftClick();
+		at(149).leftClick();
+		at(159).leftClick();
+		at(169).leftClick();
+		at(179).leftClick();
+		at(189).leftClick();
+		at(199).leftClick();
+		at(209).leftClick();
+		at(219).leftClick();
+		at(229).leftClick();
+		at(239).leftClick(); // mine down to lights, charges fully regenerate by tick 439
+		at(248).move("WP"); // land on pipe
+		at(252).move("WAP");
+		at(253).move("WDP");
+		at(265).move("WP");
+		at(269).move("WPJ");
+		at(270).move("WDP");
+		at(279).move("").rightClick(8f, -42f);
+		at(280).rightClick(16f, 2f);
+		at(281).rightClick(-18f, -32f);
+		at(282).rightClick(-16f, -17f);
+		at(283).rightClick(-44f, 2f).move("WPJ");
+		at(284).rightClick(-44f, -41f);
+		at(285).setHotbarSlot(4).rightClick(180f, 0f);
+		at(286).clickGui(LEAP_TANK);
+		at(287).turnHead(77.5f, 0f).move("WP").setHotbarSlot(3);
+		at(296).move("WPJ");
+		at(297).move("WP");
+		at(314).move("");
+		for(int i = 315; i <= 495; i += 5) {
+			at(i).snapHeadToNearestEnemy().leftClick();
+		}
+		at(496).setHotbarSlot(5).turnHead(90f, 45f).move("WP");
+		at(497).leftClick();
+		at(498).leftClick();
+		at(499).leftClick();
+		at(500).leftClick();
+		at(501).leftClick();
+		at(502).leftClick();
+		at(503).leftClick();
+		at(504).leftClick();
+		at(505).leftClick();
+		at(506).leftClick();
+		at(507).leftClick();
+		at(508).leftClick();
+		at(509).leftClick();
+		at(510).leftClick();
+		at(511).leftClick();
+		at(512).leftClick();
+		at(513).setHotbarSlot(4).rightClick();
+		at(514).clickGui(LEAP_TANK);
 		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 

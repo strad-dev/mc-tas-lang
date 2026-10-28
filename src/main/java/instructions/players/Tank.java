@@ -225,8 +225,20 @@ public class Tank extends Actions {
 	}
 
 	public void storm(boolean doContinue) {
-
-
+		for(int i = 21; i < 80; i += 5) {
+			at(i).snapHeadToNearestEnemy().leftClick();
+		}
+		at(80).setHotbarSlot(0).rightClick();
+		at(81).setHotbarSlot(0).rightClick();
+		for(int i = 85; i < 180; i += 5) {
+			at(i).snapHeadToNearestEnemy().leftClick();
+		}
+		at(180).turnHead(-155f, 75f).setHotbarSlot(1).move("WP");
+		at(187).rightClick();
+		at(208).move("").setHotbarSlot(3);
+		for(int i = 210; i <= 525; i += 5) {
+			at(i).snapHeadToNearestEnemy().leftClick();
+		}
 		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 

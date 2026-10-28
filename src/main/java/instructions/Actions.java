@@ -318,9 +318,9 @@ public class Actions {
 		}
 	}
 
-	/** Aims at the nearest visible non-player mob, for hitscan abilities (mage beam). */
+	/** Aims at the nearest visible non-player mob, never a boss (wither), for hitscan abilities (mage beam). */
 	public void snapHeadToNearestEnemy() {
-		LivingEntity target = findNearestEnemy(player, MAGE_BEAM_RANGE, le -> hasLineOfSight(player, le));
+		LivingEntity target = findNearestEnemy(player, MAGE_BEAM_RANGE, le -> !(le instanceof Wither) && hasLineOfSight(player, le));
 		if(target == null) return;
 		snapHeadAtEntity(target);
 	}
@@ -357,14 +357,15 @@ public class Actions {
 
 	/**
 	 * Aims a Terminator arrow (spawn {@code eye + (0, -0.1, 0)}, speed 3.175) at the nearest reachable non-player
-	 * mob. Solves the angle iteratively for gravity 0.05/t and drag 0.99/t; skips terrain-blocked targets.
+	 * mob, never a boss (wither). Solves the angle iteratively for gravity 0.05/t and drag 0.99/t; skips
+	 * terrain-blocked targets.
 	 */
 	public void aimTerminatorAtNearestEnemy() {
 		int now = MinecraftServer.currentTick;
 		terminatorClaimedUntil.entrySet().removeIf(e -> e.getValue() <= now);
 
-		LivingEntity target = findNearestEnemy(player, TERMINATOR_MAX_RANGE, le ->
-				!terminatorClaimedUntil.containsKey(le.getUniqueId()) && canTerminatorReach(player, le));
+		LivingEntity target = findNearestEnemy(player, TERMINATOR_MAX_RANGE, le -> !(le instanceof Wither)
+				&& !terminatorClaimedUntil.containsKey(le.getUniqueId()) && canTerminatorReach(player, le));
 		if(target == null) return;
 		aimTerminatorAtEntity(target);
 	}
