@@ -252,9 +252,31 @@ public class Mage extends Actions {
 		at(512).leftClick();
 		at(513).setHotbarSlot(4).rightClick();
 		at(514).clickGui(LEAP_BERS);
+		at(515).swapItems(5, 32);
 		at(526).turnHead(-20f, 75f).setHotbarSlot(1).move("WP");
 		at(534).rightClick();
+		at(540).setHotbarSlot(5).rightClick(); // charge rag
 		at(549).move("").snapHeadAtNearestNamed("Storm");
+		for(int i = 550; i <= 595; i += 5) {
+			at(i).leftClick();
+		}
+		// storm: begins moving on tick 645, crushed at 660, therefore pillar must start moving at 600
+		at(598).turnHead(94.2f, 75f).move("S");
+		at(600).move("WP");
+		at(606).setHotbarSlot(1).rightClick();
+		at(625).swapItems(5, 32).setHotbarSlot(6).rightClick(-155f, -28f);
+		at(647).stopRightClick();
+		at(660).setHotbarSlot(3).snapHeadAtNearestNamed("Storm").leftClick();
+		at(661).setHotbarSlot(4).rightClick();
+		at(662).clickGui(LEAP_HEAL);
+		at(663).turnHead(-90f, 0f).move("S").setHotbarSlot(3);
+		at(688).move("J");
+		at(737).move("");
+		at(740).snapHeadAtNearestNamed("Storm").leftClick();
+		at(741).useSpeedLoadout();
+		at(756).setHotbarSlot(4).rightClick();
+		at(757).clickGui(LEAP_HEAL);
+		at(758).setHotbarSlot(5).turnHead(-120f, 3f);
 		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 

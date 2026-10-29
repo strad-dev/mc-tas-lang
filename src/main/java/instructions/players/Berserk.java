@@ -343,6 +343,21 @@ public class Berserk extends Actions {
 		at(620).move("ASN");
 		at(635).move("N");
 		at(646).move("");
+		at(702).turnHead(5f, 35f).move("WP");
+		at(710).turnHead(0f, 35f).leftClick();
+		at(711).leftClick();
+		at(712).leftClick();
+		at(713).leftClick();
+		at(714).leftClick().move("W");
+		at(715).leftClick();
+		at(718).turnHead(92.5f, 0f).move("WP");
+		at(730).setHotbarSlot(1).turnHead(78f, 75f);
+		at(733).rightClick();
+		at(734).setHotbarSlot(5).turnHead(78f, -90f);
+		at(761).turnHead(0f, 0f);
+		at(771).turnHead(85f, 0f);
+		at(790).turnHead(60f, 0f).move("S");
+		at(796).move("").turnHead(0f, 0f);
 		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 

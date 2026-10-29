@@ -35,7 +35,7 @@ public class TAS implements CommandExecutor {
 	/** Chained run (all, boss): ticks from a segment's start to the next's. A routine may pass its own instead. */
 	public static final int CLEAR_TICKS = 727;
 	public static final int MAXOR_TICKS = 250;
-	public static final int STORM_TICKS = 881;
+	public static final int STORM_TICKS = 800;
 	public static final int GOLDOR_TICKS = 350;
 	public static final int NECRON_TICKS = 600;
 

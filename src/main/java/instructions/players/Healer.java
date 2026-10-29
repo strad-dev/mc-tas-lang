@@ -305,7 +305,39 @@ public class Healer extends Actions {
 		at(512).leftClick();
 		at(513).setHotbarSlot(4).rightClick();
 		at(514).clickGui(LEAP_TANK);
-		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
+		at(515).useDpsLoadout();
+		at(526).turnHead(-93f, 0f).move("WP");
+		at(537).move("N");
+		at(547).move("");
+		at(548).setHotbarSlot(6).rightClick(-95.5f, -20f);
+		at(645).stopRightClick();
+		at(660).setHotbarSlot(3).snapHeadAtNearestNamed("Storm").leftClick();
+		at(661).useSpeedLoadout();
+		at(663).turnHead(42.5f, 75f).setHotbarSlot(1).move("WP");
+		at(668).move("WPJ");
+		at(671).rightClick();
+		at(672).move("WP");
+		at(691).move("");
+		at(700).setHotbarSlot(4).rightClick();
+		at(701).clickGui(LEAP_BERS);
+		at(702).setHotbarSlot(1).turnHead(33f, 75f).move("S");
+		at(703).rightClick();
+		at(704).turnHead(-147f, 0f).move("WP");
+		at(732).move("");
+
+		// TODO move into goldor
+		at(741).setHotbarSlot(5).turnHead(180f, 0f).leftClick();
+		at(742).leftClick();
+		at(743).leftClick();
+		at(744).setHotbarSlot(5).turnHead(180f, 26f).leftClick();
+		at(745).leftClick();
+		at(746).leftClick();
+		at(747).turnHead(26f, 0f).move("WPJ");
+		at(750).move("").turnHead(-129f, 2f);
+
+		if(doContinue) {
+			TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
+		}
 	}
 
 	public void goldor(boolean doContinue) {

@@ -274,7 +274,7 @@ public class Tank extends Actions {
 		at(602).move("WP");
 		at(610).move("");
 		at(625).move("WAP");
-		at(626).move("");
+		at(626).move("").turnHead(62f, 37f).setHotbarSlot(4);
 		if(doContinue) TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 	}
 

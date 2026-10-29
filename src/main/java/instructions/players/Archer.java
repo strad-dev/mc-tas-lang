@@ -259,10 +259,33 @@ public class Archer extends Actions {
 		}
 
 		at(506).setHotbarSlot(5).useSpeedLoadout();
-		at(508).turnHead(-90f, 0f).move("D");
+		at(508).turnHead(-90f, 35f).move("D");
 		at(514).move("DN");
 		at(515).move("");
-
+		at(526).move("WP");
+		at(555).leftClick();
+		at(556).leftClick();
+		at(557).leftClick();
+		at(558).leftClick();
+		at(559).leftClick();
+		at(560).leftClick();
+		at(561).leftClick();
+		at(562).leftClick();
+		at(563).leftClick();
+		at(564).leftClick();
+		at(566).turnHead(40f, 0f);
+		at(588).turnHead(90f, 35f);
+		at(606).leftClick();
+		at(607).leftClick();
+		at(608).leftClick();
+		at(609).leftClick();
+		at(610).leftClick();
+		at(611).leftClick();
+		at(632).turnHead(180f, -90f);
+		at(639).move("");
+		at(643).move("WP");
+		at(670).turnHead(150f, 0f);
+		at(674).swapItems(5, 32).swapItems(18, 39).swapItems(17, 38).swapItems(16, 37).swapItems(15, 36).turnHead(-74.5f, -46f); // equip thermodynamic
 		if(doContinue) {
 			at(802).dropItem(false);
 			at(820).rightClick();

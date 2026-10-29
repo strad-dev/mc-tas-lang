@@ -358,6 +358,7 @@ public class FakePlayerManager {
 
 	private static Method updateFluidInteraction;
 	private static java.lang.reflect.Field noJumpDelay;
+	private static java.lang.reflect.Field[] spamThrottlers;
 	private static java.lang.reflect.Field[] reportedPosition;
 
 	public static void syncReportedPosition(ServerPlayer fake) {
@@ -395,6 +396,12 @@ public class FakePlayerManager {
 			updateFluidInteraction.setAccessible(true);
 			noJumpDelay = net.minecraft.world.entity.LivingEntity.class.getDeclaredField("noJumpDelay");
 			noJumpDelay.setAccessible(true);
+			String[] names = {"dropSpamThrottler", "chatSpamThrottler", "commandSpamThrottler", "tabSpamThrottler", "recipeSpamPackets"};
+			spamThrottlers = new java.lang.reflect.Field[names.length];
+			for(int i = 0; i < names.length; i++) {
+				spamThrottlers[i] = net.minecraft.server.network.ServerGamePacketListenerImpl.class.getDeclaredField(names[i]);
+				spamThrottlers[i].setAccessible(true);
+			}
 		} catch(NoSuchMethodException | NoSuchFieldException e) {
 			throw new RuntimeException("Failed to find updateFluidInteraction", e);
 		}
@@ -410,6 +417,13 @@ public class FakePlayerManager {
 		for(Player fake : fakePlayers.values()) {
 			if(!(fake instanceof CraftPlayer)) continue;
 			ServerPlayer npc = ((CraftPlayer) fake).getHandle();
+			// The spam throttlers decay in ServerGamePacketListenerImpl.tick, which never runs for a fake, so every
+			// command it ever ran counted until one got "Kicked for spamming".
+			try {
+				for(java.lang.reflect.Field throttler : spamThrottlers) ((net.minecraft.util.TickThrottler) throttler.get(npc.connection)).tick();
+			} catch(IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
 			npc.setNoGravity(false);
 			new Actions(fake).sendHeldInput();
 			npc.updatePlayerPose();

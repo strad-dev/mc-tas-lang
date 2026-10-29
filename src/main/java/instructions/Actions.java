@@ -51,6 +51,8 @@ public class Actions {
 
 	/** Mage beam range, as M7's beam in the arena. Helpers skip if nothing's inside. */
 	private static final double MAGE_BEAM_RANGE = 50.0;
+	/** M7's {@code ItemUtils.MAGE_BEAM_LENIENCY}: the beam grows every hitbox by this per face. */
+	private static final double MAGE_BEAM_LENIENCY = 0.5;
 	/** Auto-aim search radius: past this the arrow hits terrain or flies long enough that the target moves. */
 	private static final double TERMINATOR_MAX_RANGE = 100.0;
 
@@ -318,20 +320,21 @@ public class Actions {
 		}
 	}
 
-	/** Aims at the nearest visible non-player mob, never a boss (wither), for hitscan abilities (mage beam). */
+	/** Aims at the nearest non-player mob a mage beam can hit, never a boss (wither). */
 	public void snapHeadToNearestEnemy() {
-		LivingEntity target = findNearestEnemy(player, MAGE_BEAM_RANGE, le -> !(le instanceof Wither) && hasLineOfSight(player, le));
+		LivingEntity target = findNearestEnemy(player, MAGE_BEAM_RANGE, le -> !(le instanceof Wither) && beamAimPoint(player, le) != null);
 		if(target == null) return;
 		snapHeadAtEntity(target);
 	}
 
-	/** Aims at the target's box centre; no LOS or filtering (caller picked it). */
+	/** Aims at a hitbox point the beam reaches ({@link #beamAimPoint}), else the box centre; no filtering (caller picked it). */
 	public void snapHeadAtEntity(LivingEntity target) {
 		Location eye = player.getEyeLocation();
-		Vector center = target.getBoundingBox().getCenter();
-		double dx = center.getX() - eye.getX();
-		double dy = center.getY() - eye.getY();
-		double dz = center.getZ() - eye.getZ();
+		Vector aim = beamAimPoint(player, target);
+		if(aim == null) aim = target.getBoundingBox().getCenter();
+		double dx = aim.getX() - eye.getX();
+		double dy = aim.getY() - eye.getY();
+		double dz = aim.getZ() - eye.getZ();
 
 		float yaw = (float) Math.toDegrees(Math.atan2(-dx, dz));
 		float pitch = (float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx * dx + dz * dz)));
@@ -429,21 +432,83 @@ public class Actions {
 
 	private static boolean mageBeamWouldHit(Player p) {
 		Location eye = p.getEyeLocation();
-		Vector dir = eye.getDirection();
-		// raySize 0.5 = ItemUtils.MAGE_BEAM_LENIENCY, so the gate is never stricter than the real beam.
-		RayTraceResult entityHit = p.getWorld().rayTraceEntities(eye, dir, MAGE_BEAM_RANGE, 0.5, entity -> {
-			if(!(entity instanceof LivingEntity le)) return false;
-			if(le instanceof Player) return false;
-			if(le.isDead()) return false;
-			return !(le.hasPotionEffect(PotionEffectType.RESISTANCE)
-					&& le.getPotionEffect(PotionEffectType.RESISTANCE).getAmplifier() == 255);
-		});
-		if(entityHit == null) return false;
-		// Beam stops at a closer block.
-		RayTraceResult blockHit = p.getWorld().rayTraceBlocks(eye, dir, MAGE_BEAM_RANGE, FluidCollisionMode.NEVER, true);
-		if(blockHit == null) return true;
+		return beamTarget(p, eye, eye.getDirection(), beamCandidates(p, eye)) != null;
+	}
+
+	/**
+	 * First point of {@code target}'s hitbox whose eye-to-point beam hits it: centre, face centres, edge midpoints,
+	 * then corners. Null if none does.
+	 */
+	private static Vector beamAimPoint(Player p, LivingEntity target) {
+		Location eye = p.getEyeLocation();
 		Vector eyeVec = eye.toVector();
-		return entityHit.getHitPosition().distanceSquared(eyeVec) <= blockHit.getHitPosition().distanceSquared(eyeVec);
+		Collection<Entity> candidates = beamCandidates(p, eye);
+		BoundingBox b = target.getBoundingBox();
+		double[] xs = {b.getMinX(), b.getCenterX(), b.getMaxX()};
+		double[] ys = {b.getMinY(), b.getCenterY(), b.getMaxY()};
+		double[] zs = {b.getMinZ(), b.getCenterZ(), b.getMaxZ()};
+		for(int extremes = 0; extremes <= 3; extremes++) {
+			for(int i = 0; i < 27; i++) {
+				int x = i % 3, y = i / 3 % 3, z = i / 9;
+				if((x != 1 ? 1 : 0) + (y != 1 ? 1 : 0) + (z != 1 ? 1 : 0) != extremes) continue;
+				Vector point = new Vector(xs[x], ys[y], zs[z]);
+				Vector dir = point.clone().subtract(eyeVec);
+				if(dir.lengthSquared() < 1e-12) return point;
+				if(beamTarget(p, eye, dir.normalize(), candidates) == target) return point;
+			}
+		}
+		return null;
+	}
+
+	private static Collection<Entity> beamCandidates(Player p, Location eye) {
+		double reach = MAGE_BEAM_RANGE + MAGE_BEAM_LENIENCY;
+		return p.getWorld().getNearbyEntities(eye, reach, reach, reach);
+	}
+
+	/**
+	 * The mob M7's beam ({@code ItemUtils.mageBeam} / {@code findTargetEntity}) hits along {@code dir}, or null:
+	 * the NEAREST one the ray enters, boxes grown by the leniency, skipping players, dead and Resistance 255 mobs,
+	 * unless a block is closer.
+	 */
+	private static LivingEntity beamTarget(Player p, Location eye, Vector dir, Collection<Entity> candidates) {
+		Vector start = eye.toVector();
+		LivingEntity best = null;
+		double bestT = Double.MAX_VALUE;
+		for(Entity e : candidates) {
+			if(!(e instanceof LivingEntity le) || e instanceof Player || e.isDead()) continue;
+			if(le.hasPotionEffect(PotionEffectType.RESISTANCE) && le.getPotionEffect(PotionEffectType.RESISTANCE).getAmplifier() == 255) continue;
+			double t = rayBoxDistance(start, dir, e.getBoundingBox().expand(MAGE_BEAM_LENIENCY), MAGE_BEAM_RANGE);
+			if(t >= 0 && t < bestT) {
+				bestT = t;
+				best = le;
+			}
+		}
+		if(best == null) return null;
+		RayTraceResult blockHit = p.getWorld().rayTraceBlocks(eye, dir, MAGE_BEAM_RANGE, FluidCollisionMode.NEVER, true);
+		if(blockHit != null && blockHit.getHitPosition().distance(start) < bestT) return null;
+		return best;
+	}
+
+	/** Copied from M7's {@code ItemUtils.rayBoxDistance}: where the ray (unit dir) enters {@code box}, -1 if not within {@code maxDist}. */
+	private static double rayBoxDistance(Vector start, Vector direction, BoundingBox box, double maxDist) {
+		double[] o = {start.getX(), start.getY(), start.getZ()};
+		double[] d = {direction.getX(), direction.getY(), direction.getZ()};
+		double[] lo = {box.getMinX(), box.getMinY(), box.getMinZ()};
+		double[] hi = {box.getMaxX(), box.getMaxY(), box.getMaxZ()};
+		double tmin = 0.0, tmax = maxDist;
+		for(int i = 0; i < 3; i++) {
+			if(Math.abs(d[i]) < 1e-8) {
+				if(o[i] < lo[i] || o[i] > hi[i]) return -1;
+			} else {
+				double t1 = (lo[i] - o[i]) / d[i];
+				double t2 = (hi[i] - o[i]) / d[i];
+				if(t1 > t2) { double tmp = t1; t1 = t2; t2 = tmp; }
+				tmin = Math.max(tmin, t1);
+				tmax = Math.min(tmax, t2);
+				if(tmin > tmax) return -1;
+			}
+		}
+		return tmin;
 	}
 
 	/**
