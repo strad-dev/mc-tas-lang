@@ -21,8 +21,12 @@ public class Tank extends Actions {
 		switch(section) {
 			case "all", "clear" -> startAt(-120.5, 71, -183.5, 0f, 0f);
 			case "maxor", "boss" -> startAt(73.5, 221, 14.5, 0f, 0f);
-			case "storm" -> startAt(73.5, 165, 53.5, -90f, 0f);
-			case "goldor" -> startAt(-0.240, 120, 76.775, 72f, -25f);
+			case "storm" -> {
+				startAt(73.5, 165, 53.5, -90f, 0f);
+				// The run's tick 1; start() comes a tick after this.
+				TASUtils.scheduleTask(() -> startAt(32.556, 170, 94.378, 35f, 0f), TAS.startDelay(section) + 2);
+			}
+			case "goldor" -> startAt(-0.557, 120, 77.748, 62f, 37f);
 			case "necron" -> startAt(54.524, 64, 100.707, 180f, -6f);
 			case "witherking" -> startAt(22.3, 6, 94.452, 67.3f, 29.7f);
 		}
@@ -56,14 +60,13 @@ public class Tank extends Actions {
 				useDpsLoadout();
 				setHotbarSlot(0);
 				TASUtils.scheduleTask(() -> storm(false), start);
-				TASUtils.scheduleTask(() -> startAt(32.556, 170, 94.378, 35f, 0f), start + 1);
 			}
 			case "goldor" -> {
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
-				swapItems(12, 39);
+				useSpeedLoadout();
 				setHotbarSlot(4);
 				TASUtils.scheduleTask(() -> goldor(false), start);
 			}

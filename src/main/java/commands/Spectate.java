@@ -44,6 +44,11 @@ public class Spectate implements CommandExecutor {
 		final Set<Player> hiddenFakePlayers = new HashSet<>();
 	}
 
+	// Teleport id for our snaps; the client confirms it. Was the entity id: once the player's own teleport count reached
+	// it, a confirm with nothing pending got them kicked ("Invalid move player packet received"). The server's counter
+	// wraps before MAX_VALUE, so this one never matches a real teleport.
+	private static final int SNAP_TELEPORT_ID = Integer.MAX_VALUE;
+
 	// Maps a real Player to the fake Player they are spectating
 	private static final Map<Player, Player> spectatorMap = new HashMap<>();
 
@@ -180,7 +185,7 @@ public class Spectate implements CommandExecutor {
 			SpectatorState state = spectatorStates.get(spectator);
 			if(state == null) continue;
 			ServerPlayer nmsSpectator = craftSpectator.getHandle();
-			nmsSpectator.connection.send(new ClientboundPlayerPositionPacket(nmsSpectator.getId(), PositionMoveRotation.of(nmsFake), Set.of()));
+			nmsSpectator.connection.send(new ClientboundPlayerPositionPacket(SNAP_TELEPORT_ID, PositionMoveRotation.of(nmsFake), Set.of()));
 			nmsSpectator.absSnapTo(nmsFake.getX(), nmsFake.getY(), nmsFake.getZ(), nmsFake.getYRot(), nmsFake.getXRot());
 			state.prevFakePosition = nmsFake.position();
 			state.lastKnownClientPosition = nmsFake.position();
@@ -291,7 +296,7 @@ public class Spectate implements CommandExecutor {
 					}
 
 					if(posSnap) {
-						nmsSpectator.connection.send(new ClientboundPlayerPositionPacket(nmsSpectator.getId(), PositionMoveRotation.of(nmsFake), Set.of()));
+						nmsSpectator.connection.send(new ClientboundPlayerPositionPacket(SNAP_TELEPORT_ID, PositionMoveRotation.of(nmsFake), Set.of()));
 						nmsSpectator.absSnapTo(nmsFake.getX(), nmsFake.getY(), nmsFake.getZ(), fakeYaw, fakePitch);
 						state.lastKnownClientPosition = nmsFake.position();
 						state.lastSentRotation = new float[]{fakeYaw, fakePitch};

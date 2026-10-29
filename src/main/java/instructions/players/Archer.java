@@ -19,8 +19,8 @@ public class Archer extends Actions {
 		switch(section) {
 			case "all", "clear" -> startAt(-120.5, 71, -183.5, 0f, 0f);
 			case "maxor", "boss" -> startAt(73.5, 221, 14.5, 0f, 0f);
-			case "storm" -> startAt(65.087, 165, 69.329, 180f, -4f);
-			case "goldor" -> startAt(63.811, 127, 35.940, -74.5f, -46f);
+			case "storm" -> startAt(46.020, 169, 53.502, 90f, 0f);
+			case "goldor" -> startAt(63.444, 127, 35.569, -74.5f, -46f);
 			case "necron" -> startAt(54.524, 64, 100.707, 180f, -6f);
 			case "witherking" -> startAt(22.3, 6, 59.408, 65.6f, 29.3f);
 		}
@@ -47,7 +47,6 @@ public class Archer extends Actions {
 				}
 			}
 			case "storm" -> {
-				startAt(46.020, 169, 53.502, 90f, 0f);
 				swapItems(1, 28);
 				swapItems(6, 33);
 				swapItems(7, 34);
@@ -60,9 +59,9 @@ public class Archer extends Actions {
 				swapItems(5, 32);
 				swapItems(6, 33);
 				swapItems(7, 34);
-				swapItems(12, 39);
 				setHotbarSlot(5);
 				at(1).dropItem(false);
+				at(2).useSpeedLoadout(); // not tick 1: the pets menu would still be open for the drop
 				at(19).rightClick();
 				at(26).stopRightClick();
 				at(27).rightClick();
@@ -77,7 +76,7 @@ public class Archer extends Actions {
 				at(56).rightClick();
 				at(57).turnHead(-3f, 4f);
 				// rapid fire #2 at 58
-				at(59).turnHead(-14.5f, 5f);
+				at(59).turnHead(-14.5f, 5f).setHotbarSlot(5);
 				TASUtils.scheduleTask(() -> goldor(false), start);
 			}
 			case "necron" -> {
@@ -285,7 +284,7 @@ public class Archer extends Actions {
 		at(639).move("");
 		at(643).move("WP");
 		at(670).turnHead(150f, 0f);
-		at(674).swapItems(5, 32).swapItems(18, 39).swapItems(17, 38).swapItems(16, 37).swapItems(15, 36).turnHead(-74.5f, -46f); // equip thermodynamic
+		at(674).swapItems(5, 32).swapItems(18, 39).swapItems(19, 38).swapItems(20, 37).swapItems(21, 36).turnHead(-74.5f, -46f); // equip thermodynamic
 		if(doContinue) {
 			at(802).dropItem(false);
 			at(820).rightClick();

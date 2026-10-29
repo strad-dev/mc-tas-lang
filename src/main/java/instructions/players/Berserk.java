@@ -21,8 +21,8 @@ public class Berserk extends Actions {
 		switch(section) {
 			case "all", "clear" -> startAt(-120.5, 71, -183.5, 0f, 0f);
 			case "maxor", "boss" -> startAt(73.5, 221, 14.5, 0f, 0f);
-			case "storm" -> startAt(114.145, 170, 93.962, 154f, 0f);
-			case "goldor" -> startAt(91.351, 115, 133.781, -145f, -5f);
+			case "storm" -> startAt(100.980, 169, 53.831, -90f, 0f);
+			case "goldor" -> startAt(61.499, 132, 138.940, 0f, 0f);
 			case "necron" -> startAt(54.524, 64, 100.707, 180f, -6f);
 			case "witherking" -> startAt(90.7, 6, 56.581, -79.7f, 19.1f);
 		}
@@ -50,7 +50,6 @@ public class Berserk extends Actions {
 				}
 			}
 			case "storm" -> {
-				startAt(100.980, 169, 53.831, -90, 0);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -64,10 +63,8 @@ public class Berserk extends Actions {
 				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
-				swapItems(12, 39);
+				useSpeedLoadout();
 				setHotbarSlot(1);
-				at(1).swapItems(7, 35);
-				at(49).dropItem(true);
 				TASUtils.scheduleTask(() -> goldor(false), start);
 			}
 			case "necron" -> {
@@ -75,7 +72,6 @@ public class Berserk extends Actions {
 				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
-				at(1).swapItems(7, 35);
 				TASUtils.scheduleTask(() -> necron(false), start);
 			}
 			case "witherking" -> {
@@ -84,7 +80,6 @@ public class Berserk extends Actions {
 				swapItems(7, 34);
 				swapItems(13, 39);
 				setHotbarSlot(5);
-				at(1).swapItems(7, 35);
 				TASUtils.scheduleTask(this::witherKing, start);
 			}
 		}

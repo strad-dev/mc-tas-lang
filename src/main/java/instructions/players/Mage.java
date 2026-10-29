@@ -19,8 +19,12 @@ public class Mage extends Actions {
 		switch(section) {
 			case "all", "clear" -> startAt(-120.5, 71, -183.5, 0f, 0f);
 			case "maxor", "boss" -> startAt(73.5, 221, 14.5, 0f, 0f);
-			case "storm" -> startAt(73.5, 165, 53.5, 90f, 0f);
-			case "goldor" -> startAt(108.5, 120, 94.496, -141f, 1f);
+			case "storm" -> {
+				startAt(73.5, 165, 53.5, 90f, 0f);
+				// The run's tick 1; start() comes a tick after this.
+				TASUtils.scheduleTask(() -> startAt(114.640, 170, 94.144, -55f, 0f), TAS.startDelay(section) + 2);
+			}
+			case "goldor" -> startAt(108.424, 120, 92.967, -120f, 3f);
 			case "necron" -> startAt(54.524, 64, 100.707, 180f, -6f);
 			case "witherking" -> startAt(89.7, 6, 94.406, -75.6f, 18.8f);
 		}
@@ -53,14 +57,13 @@ public class Mage extends Actions {
 				useDpsLoadout();
 				setHotbarSlot(3);
 				TASUtils.scheduleTask(() -> storm(false), start);
-				TASUtils.scheduleTask(() -> startAt(114.640, 170, 94.144, -55f, 0f), start + 1);
 			}
 			case "goldor" -> {
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
-				swapItems(12, 39);
+				useSpeedLoadout();
 				setHotbarSlot(5);
 				TASUtils.scheduleTask(() -> goldor(false), start);
 			}

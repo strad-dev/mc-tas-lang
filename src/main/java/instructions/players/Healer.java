@@ -21,8 +21,8 @@ public class Healer extends Actions {
 		switch(section) {
 			case "all", "clear" -> startAt(-120.5, 71, -183.5, 0f, 0f);
 			case "maxor", "boss" -> startAt(73.5, 221, 14.5, 0f, 0f);
-			case "storm" -> startAt(32.702, 170, 95.151, -155f, 0f);
-			case "goldor" -> startAt(107.622, 120, 93.618, -123f, 1f);
+			case "storm" -> startAt(36.3, 170, 105.7, 2.5f, 45f);
+			case "goldor" -> startAt(107.970, 120, 93.897, 12f, -2f);
 			case "necron" -> startAt(54.524, 64, 100.707, 180f, -6f);
 			case "witherking" -> startAt(56.326, 8, 130.7, -16.2f, 18.8f);
 		}
@@ -49,7 +49,6 @@ public class Healer extends Actions {
 				}
 			}
 			case "storm" -> {
-				startAt(36.3, 170, 105.7, 2.5f, 45f);
 				swapItems(1, 28);
 				swapItems(3, 30);
 				swapItems(6, 33);
@@ -63,7 +62,7 @@ public class Healer extends Actions {
 				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
-				swapItems(12, 39);
+				useSpeedLoadout();
 				setHotbarSlot(5);
 				TASUtils.scheduleTask(() -> goldor(false), start);
 			}
@@ -333,9 +332,11 @@ public class Healer extends Actions {
 		at(745).leftClick();
 		at(746).leftClick();
 		at(747).turnHead(26f, 0f).move("WPJ");
-		at(750).move("").turnHead(-129f, 2f);
+		at(750).move("").turnHead(12f, -2f);
 
 		if(doContinue) {
+			at(770).dropItem(true);
+			at(771).turnHead(-129f, 2f);
 			TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 		}
 	}
