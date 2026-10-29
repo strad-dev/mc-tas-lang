@@ -306,7 +306,9 @@ public class Tank extends Actions {
 		at(24).clickGui(TERM_SOLUTION_1); // s1 1
 
 		at(25).setHotbarSlot(4).rightClick(0f, 0f);
-		at(26).clickGui(LEAP_BERS);
+		at(28).clickGui(LEAP_BERS); // wait 1 tick for more optimal movement
+		at(29).turnHead(180f, 5f).move("WP").setHotbarSlot(5);
+		at(31).move("");
 
 		/*
 		 * ██████╗
@@ -316,6 +318,11 @@ public class Tank extends Actions {
 		 * ███████╗
 		 * ╚══════╝
 		 */
+		at(39).rightClick();
+		at(40).clickGui(TERM_SOLUTION_1); // s2 1
+
+		at(41).setHotbarSlot(4).rightClick(0f, 0f);
+		at(42).clickGui(LEAP_BERS);
 
 		/*
 		 * ██████╗

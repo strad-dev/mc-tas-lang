@@ -64,7 +64,7 @@ public class Berserk extends Actions {
 				swapItems(6, 33);
 				swapItems(7, 34);
 				useSpeedLoadout();
-				setHotbarSlot(1);
+				setHotbarSlot(5);
 				TASUtils.scheduleTask(() -> goldor(false), start);
 			}
 			case "necron" -> {
@@ -366,6 +366,11 @@ public class Berserk extends Actions {
 		 * ╚══════╝╚══════╝╚══════╝
 		 */
 		rightClick(); // complete i2
+		at(1).turnHead(-148f, 0f).move("WP");
+		at(25).turnHead(180f, 15f);
+		at(27).turnHead(65f, 0f).move("WP");
+		at(30).move("WPJ");
+		at(40).move("");
 
 		/*
 		 * ██████╗

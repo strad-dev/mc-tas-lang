@@ -295,6 +295,20 @@ public class Mage extends Actions {
 		rightClick();
 		at(1).rightClick();
 		at(2).rightClick();
+		at(3).setHotbarSlot(1).move("WP").rightClick(58f, 75f);
+		at(14).setHotbarSlot(5).turnHead(83f, 30f).leftClick();
+		at(15).turnHead(90f, 25f).leftClick();
+		at(16).leftClick();
+		at(19).turnHead(180f, 0f).move("WP");
+		at(20).move("").rightClick(62f, 0f);
+		at(21).clickGui(TERM_SOLUTION_4); // s1 4
+
+		at(22).turnHead(180f, 0f).move("WP");
+		at(38).rightClick(126f, 8f);
+		at(39).clickGui(TERM_SOLUTION_3); // s1 3
+
+		at(40).setHotbarSlot(4).rightClick(0f, 0f);
+		at(41).clickGui(LEAP_BERS);
 
 		/*
 		 * ██████╗
