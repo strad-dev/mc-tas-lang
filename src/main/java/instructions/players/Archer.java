@@ -322,38 +322,6 @@ public class Archer extends Actions {
 		 * ███████╗███████╗██████╔╝
 		 * ╚══════╝╚══════╝╚═════╝
 		 */
-		at(2).turnHead(81f, 0f);
-		// tick 4: device completes
-		at(6).move("WP", 0);
-		at(8).move("WPJ", 0);
-		at(10).move("WP", 0);
-		at(23).move("WPJ", 0);
-		at(25).move("WP", 0);
-		at(39).turnHead(81f, 80f).setHotbarSlot(1);
-		at(40).rightClick();
-		at(41).turnHead(81f, 0f).setHotbarSlot(5);
-		at(60).swapItems(9, 39);
-		// tick 60: death tick
-		at(62).swapItems(9, 39);
-		at(67).turnHead(0f, 30f);
-		at(68).move("WP", 0);
-		at(70).leftClick();
-		at(71).leftClick().move("WAP", 0);
-		at(72).leftClick().move("WP", 17);
-		at(73).leftClick();
-		at(74).leftClick();
-		at(75).leftClick();
-		at(77).turnHead(55f, 0f);
-		at(91).turnHead(120f, 0f);
-		// tick 110: tank leaps
-		at(111).setHotbarSlot(1).turnHead(22.5f, 0f);
-		at(112).move("WP", 15);
-		at(114).turnHead(22.5f, 80f);
-		at(115).rightClick();
-		at(116).turnHead(22.5f, 0f);
-		at(119).swapItems(10, 39);
-		// tick 120: death tick
-		at(121).swapItems(10, 39);
 
 		/*
 		 * ██████╗
@@ -363,21 +331,6 @@ public class Archer extends Actions {
 		 * ██████╔╝
 		 * ╚═════╝
 		 */
-		at(122).turnHead(0f, 0f);
-		at(128).turnHead(-25f, 0f);
-		at(129).move("WP", 26);
-		at(132).turnHead(0f, -2f).setHotbarSlot(5);
-		at(133).leftClick();
-		at(134).leftClick();
-		at(135).leftClick();
-		at(137).turnHead(0f, 80f).setHotbarSlot(1);
-		at(138).rightClick();
-		at(139).turnHead(6f, 0f).setHotbarSlot(2);
-		at(155).turnHead(55f, 2f);
-		at(156).rightClick();
-		// tick 157: terminal completes
-
-		at(158).leap(fake("Beethoven"));
 
 		/*
 		 * ██╗  ██╗
@@ -387,19 +340,6 @@ public class Archer extends Actions {
 		 *      ██║
 		 *      ╚═╝
 		 */
-		at(159).turnHead(130f, 0f);
-		at(160).move("WP", 15).setHotbarSlot(5);
-		at(174).turnHead(138f, 32f);
-		at(175).rightClick(); // s4 1
-		// tick 176: terminal completes
-
-		at(177).turnHead(-90f, -4f);
-		at(178).move("WP", 5);
-		at(189).setHotbarSlot(2);
-		at(190).rightClick(); // s4 2
-		// tick 191: terminal completes
-
-		at(192).leap(fake("Beethoven"));
 
 		/*
 		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
@@ -409,29 +349,7 @@ public class Archer extends Actions {
 		 * ██║     ██║╚██████╔╝██║  ██║   ██║
 		 * ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
 		 */
-		at(193).move("WP", 35).setHotbarSlot(5);
-		at(227).turnHead(0f, 42f);
-		at(228).leftClick();
-		at(229).turnHead(0f, 0f);
-		at(240).turnHead(180f, -6f);
-		// lands at tick 271
-		at(272).turnHead(42f, 66f);
-		at(273).leftClick();
-		at(274).leftClick();
-		at(275).turnHead(123f, 55f);
-		at(276).leftClick();
-		at(277).leftClick();
-		at(278).turnHead(-160f, 52f);
-		at(279).leftClick();
-		at(281).leftClick();
-		at(282).turnHead(-73f, 58f);
-		at(283).leftClick();
-		at(284).leftClick();
-		at(285).turnHead(-180f, 90f);
-		at(298).leftClick();
-		at(299).setHotbarSlot(2);
-		at(300).leap(fake("Beethoven"));
-		at(301).swapItems(5, 32).swapItems(12, 39);
+
 		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}
 

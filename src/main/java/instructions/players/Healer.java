@@ -358,31 +358,10 @@ public class Healer extends Actions {
 		 */
 		rightClick(-129f, 2f);
 		at(1).rightClick();
-		// tick 2: body-blocked by tank
-		// tick 3: body-blocked by tank
+		at(2).rightClick();
+		at(3).rightClick();
 		at(4).rightClick();
 		at(5).rightClick();
-		at(6).rightClick();
-		at(7).rightClick(); // s1 dev
-
-		at(8).turnHead(0f, 80f).setHotbarSlot(1);
-		at(9).move("WP", 0);
-		at(10).move("WPJ", 0);
-		at(12).move("WP", 12);
-		at(14).rightClick();
-		at(15).turnHead(0f, 0f).setHotbarSlot(5);
-		at(24).turnHead(18f, 1f);
-		at(25).rightClick(); // s1 left
-
-		at(26).turnHead(75f, 90f).setHotbarSlot(1);
-		at(27).move("J", 0);
-		at(29).move("WP", 10);
-		at(31).rightClick();
-		at(40).turnHead(83f, 35f).setHotbarSlot(5);
-		at(41).rightClick(); //s1 right
-
-		at(42).setHotbarSlot(4);
-		at(51).leap(fake("RedFish2471")); // delay for better positioning
 
 		/*
 		 * ██████╗
@@ -392,22 +371,6 @@ public class Healer extends Actions {
 		 * ███████╗
 		 * ╚══════╝
 		 */
-		at(52).turnHead(0f, 90f).setHotbarSlot(7);
-		at(53).move("WP", 44);
-		at(59).rightClick();
-		at(60).turnHead(0f, -10f).setHotbarSlot(5);
-		at(99).rightClick(); // s2 dev
-
-		at(100).turnHead(90f, 80f).setHotbarSlot(1);
-		at(101).move("W", 0);
-		at(102).move("WP", 27);
-		at(108).rightClick();
-		at(109).turnHead(90f, 0f).setHotbarSlot(4);
-		at(123).turnHead(96f, 0f);
-		at(128).turnHead(90f, 6f);
-		at(129).rightClick(); // s2 top
-
-		at(130).leap(fake("akc0303"));
 
 		/*
 		 * ██████╗
@@ -417,18 +380,6 @@ public class Healer extends Actions {
 		 * ██████╔╝
 		 * ╚═════╝
 		 */
-		at(131).turnHead(90f, 5f).setHotbarSlot(5);
-		at(132).rightClick(); // s3 4
-		// tick 133: terminal completes
-
-		at(134).turnHead(-8f, 0f);
-		at(135).move("WP", 10);
-		at(142).turnHead(55f, 0f);
-		at(157).turnHead(53f, -8f).setHotbarSlot(4);
-		at(158).rightClick(); // s3 2
-		// tick 159: terminal completes
-
-		at(160).leap(fake("Beethoven"));
 
 		/*
 		 * ██╗  ██╗
@@ -438,15 +389,6 @@ public class Healer extends Actions {
 		 *      ██║
 		 *      ╚═╝
 		 */
-		at(161).move("WP", 0).setHotbarSlot(1);
-		at(170).move("WPJ", 12);
-		at(172).turnHead(-100f, 80f);
-		at(173).rightClick();
-		at(174).turnHead(-100f, 0f).setHotbarSlot(4);
-		at(180).turnHead(-151f, -22f);
-		at(181).rightClick(); // s4 bottom
-
-		at(191).leap(fake("Beethoven"));
 
 		/*
 		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
@@ -456,15 +398,7 @@ public class Healer extends Actions {
 		 * ██║     ██║╚██████╔╝██║  ██║   ██║
 		 * ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
 		 */
-		at(200).turnHead(180f, 0f).setHotbarSlot(3);
-		at(219).move("WP", 5);
-		at(223).turnHead(-111f, -2f).swapItems(12, 39);
-		at(224).leftClick();
-		at(225).setHotbarSlot(4);
-		at(245).leap(fake("akc0303"));
-		at(246).move("WP", 0);
-		at(287).move("WN", 0); 
-		at(297).move("N", 10);
+
 		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}
 

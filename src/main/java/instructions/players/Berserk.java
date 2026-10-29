@@ -358,23 +358,14 @@ public class Berserk extends Actions {
 
 	public void goldor(boolean doContinue) {
 		/*
-		 *  ██╗
-		 * ███║
-		 * ╚██║
-		 *  ██║
-		 *  ██║
-		 *  ╚═╝
+		 * ███████╗███████╗██████╗
+		 * ██╔════╝██╔════╝╚════██╗
+		 * █████╗  █████╗   █████╔╝
+		 * ██╔══╝  ██╔══╝  ██╔═══╝
+		 * ███████╗███████╗███████╗
+		 * ╚══════╝╚══════╝╚══════╝
 		 */
-		turnHead(110f, 80f);
-		setHotbarSlot(1);
-		at(1).move("WP", 25);
-		at(2).rightClick();
-		at(3).turnHead(110f, 0f).setHotbarSlot(5);
-		at(26).turnHead(170f, 5f);
-		// tick 37: tank leaps
-		at(38).turnHead(65f, 0f);
-		at(39).move("WP", 0);
-		at(41).move("WPJ", 10);
+		rightClick(); // complete i2
 
 		/*
 		 * ██████╗
@@ -384,29 +375,7 @@ public class Berserk extends Actions {
 		 * ███████╗
 		 * ╚══════╝
 		 */
-		at(51).turnHead(58f, 80f);
-		// tick 52: tank leaps
-		at(53).turnHead(90f, -30f);
-		at(54).move("WP", 8).setHotbarSlot(7);
-		at(58).rightClick();
-		// holy shit nosethe clutch with the explosive bow idea
-		at(71).stopRightClick();
-		at(72).turnHead(-150f, 10f).setHotbarSlot(5);
-		at(73).move("WPD", 0);
-		at(74).move("WP", 26);
-		at(96).turnHead(180f, 10f);
-		at(97).rightClick(); // s2 5
-		// tick 98: terminal completes
 
-		at(99).turnHead(-95f, 10f);
-		at(100).move("WAP", 0);
-		at(102).move("WP", 6);
-		at(117).move("WP", 5);
-		at(121).rightClick(); // s2 3
-		// tick 122: terminal completes
-
-		at(123).setHotbarSlot(4);
-		at(128).leap(fake("akc0303")); // better positioning
 
 		/*
 		 * ██████╗
@@ -416,17 +385,7 @@ public class Berserk extends Actions {
 		 * ██████╔╝
 		 * ╚═════╝
 		 */
-		at(129).turnHead(-47.5f, 90f).setHotbarSlot(1);
-		at(130).move("WP", 0);
-		at(131).move("WPJ", 0);
-		at(133).rightClick();
-		at(134).turnHead(-47.5f, 28f).setHotbarSlot(4);
-		at(135).move("WP", 16);
-		at(149).turnHead(-30f, -45f);
-		at(169).rightClick();
-		// tick 170: terminal activates
 
-		at(171).leap(fake("Beethoven"));
 
 		/*
 		 * ██╗  ██╗
@@ -436,11 +395,7 @@ public class Berserk extends Actions {
 		 *      ██║
 		 *      ╚═╝
 		 */
-		at(172).move("WP", 15);
-		at(187).rightClick(); // s4 3
-		// tick 188: terminal completes
 
-		at(191).leap(fake("Beethoven"));
 
 		/*
 		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
@@ -450,15 +405,7 @@ public class Berserk extends Actions {
 		 * ██║     ██║╚██████╔╝██║  ██║   ██║
 		 * ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
 		 */
-		at(200).turnHead(180f, 0f).setHotbarSlot(3);
-		at(219).move("WP", 5);
-		at(223).turnHead(-111f, -2f).swapItems(12, 39);
-		at(224).leftClick();
-		at(225).setHotbarSlot(4);
-		at(245).leap(fake("akc0303"));
-		at(246).move("WP", 0);
-		at(287).move("WN", 0);
-		at(297).move("N", 10);
+
 		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}
 

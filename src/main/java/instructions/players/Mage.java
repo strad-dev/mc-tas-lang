@@ -295,28 +295,6 @@ public class Mage extends Actions {
 		rightClick();
 		at(1).rightClick();
 		at(2).rightClick();
-		at(3).rightClick();
-		at(4).rightClick();
-		at(5).rightClick();
-
-		at(6).turnHead(65f, 80f).setHotbarSlot(1);
-		at(7).move("WP", 16);
-		at(8).rightClick();
-		at(16).turnHead(90f, 5f).setHotbarSlot(5);
-		at(22).turnHead(87f, 5f);
-		at(23).rightClick(); // s1 4
-		// tick 24: terminal completes
-
-		at(25).turnHead(-180f, 0f);
-		at(26).move("WPD", 0);
-		at(28).move("WP", 1);
-		at(32).move("WPA", 13);
-		at(35).turnHead(90f, 9f);
-		at(44).rightClick(); // s1 3
-		// tick 45: terminal completes
-
-		at(46).setHotbarSlot(4);
-		at(48).leap(fake("RedFish2471"));
 
 		/*
 		 * ██████╗
@@ -326,11 +304,6 @@ public class Mage extends Actions {
 		 * ███████╗
 		 * ╚══════╝
 		 */
-		at(49).turnHead(155f, 0f).setHotbarSlot(5);
-		at(69).move("WP", 20);
-		at(89).turnHead(-85f, 30);
-		at(90).rightClick(); // s2 2
-		// tick 91: terminal completes
 
 		/*
 		 *  ██████╗ ██████╗ ██████╗ ███████╗
@@ -340,26 +313,6 @@ public class Mage extends Actions {
 		 * ╚██████╗╚██████╔╝██║  ██║███████╗
 		 *  ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
 		 */
-		at(92).turnHead(155f, 25f);
-		at(93).leftClick();
-		at(94).leftClick();
-		at(95).move("WP", 62);
-		at(96).turnHead(177.4f, 45f);
-		at(97).leftClick();
-		at(98).leftClick();
-		at(99).leftClick();
-		at(100).leftClick();
-		at(101).leftClick();
-		at(102).leftClick();
-		at(147).turnHead(180f, 45f);
-		at(148).leftClick();
-		at(149).leftClick();
-		at(150).turnHead(180f, 0f);
-
-		// turn head to save a tick on other players having to turn head
-		at(157).turnHead(-91f, 0f);
-		at(159).turnHead(-96f, 80f);
-		at(170).turnHead(-128f, 10f);
 
 		/*
 		 * ██╗  ██╗
@@ -369,8 +322,6 @@ public class Mage extends Actions {
 		 *      ██║
 		 *      ╚═╝
 		 */
-		at(172).turnHead(0f, 0f);
-		at(173).move("WP", 8);
 
 		/*
 		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
@@ -380,15 +331,7 @@ public class Mage extends Actions {
 		 * ██║     ██║╚██████╔╝██║  ██║   ██║
 		 * ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
 		 */
-		at(200).turnHead(180f, 0f).setHotbarSlot(3);
-		at(219).move("WP", 5);
-		at(223).turnHead(-111f, -2f).swapItems(12, 39);
-		at(224).leftClick();
-		at(225).setHotbarSlot(4);
-		at(245).leap(fake("akc0303"));
-		at(246).move("WP", 0);
-		at(287).move("WN", 0);
-		at(297).move("N", 10);
+
 		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}
 

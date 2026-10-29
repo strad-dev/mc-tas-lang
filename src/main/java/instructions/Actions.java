@@ -35,6 +35,15 @@ import plugin.SpectatorSync;
 
 @SuppressWarnings("unused")
 public class Actions {
+	// Perfect RNG terminals, by terminal number in each section; 3 is left-click only, 5 (S2) is Melody.
+	protected static final int TERM_SOLUTION_1 = 31;
+	protected static final int TERM_SOLUTION_2 = 40;
+	protected static final int TERM_SOLUTION_3 = 31;
+	protected static final int TERM_SOLUTION_4 = 31;
+	protected static final int MELODY_1 = 16;
+	protected static final int MELODY_2 = 25;
+	protected static final int MELODY_3 = 34;
+
 	protected final Player player;
 
 	public Actions(Player player) {

@@ -290,30 +290,23 @@ public class Tank extends Actions {
 		 *  ██║
 		 *  ╚═╝
 		 */
-		rightClick(); // complete i2
-		at(1).leap(fake("NoseThe"));
-		at(2).setHotbarSlot(5).move("WAP", 0); // get out of the way
-		at(3).move("N", 0).turnHead(-112f, -4f); // prevent fall
-		at(4).rightClick();
-		at(5).rightClick();
-		at(6).rightClick(); // finish i1
+		rightClick(); // complete i3
+		at(1).rightClick(-90f, 0f);
+		at(2).clickGui(LEAP_MAGE);
+		at(3).turnHead(-155f, 0f).move("WP").setHotbarSlot(5);
+		at(5).rightClick(-102f, 4f).move("WAP");
+		at(6).rightClick(-70f, 2f).move("A");
+		at(7).rightClick(-33f, -4f).move("AS"); // help with i1
+		at(8).turnHead(-135f, 0f).move("WAP");
+		at(18).rightClick(0f, 22f);
+		at(19).clickGui(TERM_SOLUTION_2); // s1 2
 
-		at(7).turnHead(-5.5f, 80f).setHotbarSlot(1);
-		at(8).rightClick(); // bonzo
-		at(9).turnHead(-155f, 0f).setHotbarSlot(5);
-		at(10).move("WP", 4);
-		at(21).turnHead(-94f, 25f);
-		at(22).rightClick(); // s1 2
-		// tick 23: terminal completes
+		at(22).move("N");
+		at(23).rightClick(180f, 74f);
+		at(24).clickGui(TERM_SOLUTION_1); // s1 1
 
-		at(24).turnHead(-155f, 45f);
-		at(25).move("WP", 6);
-		at(31).turnHead(-101f, 69f);
-		at(34).rightClick(); // s1 1
-		// tick 35: terminal completes
-
-		at(36).setHotbarSlot(4);
-		at(37).leap(fake("RedFish2471"));
+		at(25).setHotbarSlot(4).rightClick(0f, 0f);
+		at(26).clickGui(LEAP_BERS);
 
 		/*
 		 * ██████╗
@@ -323,30 +316,6 @@ public class Tank extends Actions {
 		 * ███████╗
 		 * ╚══════╝
 		 */
-		at(46).rightClick(); // s2 1
-		// tick 47: terminal completes
-
-		at(52).leap(fake("RedFish2471"));
-		at(53).move("WP", 0).setHotbarSlot(1);
-		at(55).rightClick();
-		at(56).turnHead(58f, 0f).setHotbarSlot(5);
-		at(69).turnHead(90f, 0f);
-		at(70).move("WAP", 0);
-		at(71).move("WP", 3);
-		at(74).turnHead(-3f, 22.5f);
-		at(75).rightClick(); // s2 4
-		// tick 76: terminal completes
-
-		at(77).turnHead(90f, 0f).setHotbarSlot(1);
-		at(78).move("W", 4);
-		at(82).turnHead(-20f, 0);
-		at(99).rightClick();
-		at(100).turnHead(160f, 25f).setHotbarSlot(4);
-		at(101).move("WP", 6);
-		at(106).swapItems(9, 39); // equip mask for preleap
-		at(107).rightClick(); // s2 bottom
-
-		at(108).leap(fake("akc0303"));
 
 		/*
 		 * ██████╗
@@ -356,23 +325,6 @@ public class Tank extends Actions {
 		 * ██████╔╝
 		 * ╚═════╝
 		 */
-		// wait for better timing, going too early results in worse bonzos
-		at(111).move("W", 2).setHotbarSlot(5);
-		at(119).move("WP", 9);
-		// tick 120: death tick
-		at(121).swapItems(9, 39); // racing helmet back on -> speed auto-set to 650
-		at(122).turnHead(180f, -20f);
-		at(123).dropItem(true);
-		at(129).turnHead(108f, -8f);
-		at(130).rightClick(); // s3 left
-
-		at(131).turnHead(112.5f, 80f).setHotbarSlot(1);
-		at(132).rightClick();
-		at(133).turnHead(-90f, 78f).setHotbarSlot(4);
-		at(134).move("WP", 8);
-		at(142).rightClick(); // s3 right
-
-		at(158).leap(fake("Beethoven"));
 
 		/*
 		 * ██╗  ██╗
@@ -383,19 +335,6 @@ public class Tank extends Actions {
 		 *      ╚═╝
 		 */
 
-		at(159).move("WP", 0).setHotbarSlot(5);
-		at(168).turnHead(-5f, 10f).move("WAP", 0);
-		at(169).move("WP", 2);
-		at(172).rightClick(); // s4 4
-		// tick 173: terminal completes
-
-		at(174).move("WP", 8).turnHead(-90f, 90f).setHotbarSlot(7);
-		at(190).rightClick();
-		at(191).turnHead(-90f, -43f).setHotbarSlot(4);
-		at(200).rightClick(); // s4 top FUCK THIS STUPID FUCKING LEVER
-
-		at(201).leap(fake("Beethoven"));
-
 		/*
 		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
 		 * ██╔════╝██║██╔════╝ ██║  ██║╚══██╔══╝
@@ -404,15 +343,7 @@ public class Tank extends Actions {
 		 * ██║     ██║╚██████╔╝██║  ██║   ██║
 		 * ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
 		 */
-		at(202).turnHead(180f, 0f).setHotbarSlot(3);
-		at(219).move("WP", 5);
-		at(223).turnHead(-111f, -2f).swapItems(12, 39);
-		at(224).leftClick();
-		at(225).setHotbarSlot(4);
-		at(245).leap(fake("akc0303"));
-		at(246).move("WP", 0);
-		at(287).move("WN", 0);
-		at(297).move("N", 10);
+
 		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}
 
