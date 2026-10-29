@@ -234,8 +234,7 @@ public class Archer extends Actions {
 		at(47).clickGui(LEAP_TANK);
 		at(80).move("WN");
 		at(91).move("WP");
-		at(114).move("").swapItems(11, 36);
-		at(120).rightClick();
+		at(114).swapItems(11, 36).rightClick();
 		at(160).clickGui(LEAP_TANK);
 		at(179).rightClick();
 		at(180).clickGui(LEAP_BERS);
@@ -322,6 +321,27 @@ public class Archer extends Actions {
 		 * ███████╗███████╗██████╔╝
 		 * ╚══════╝╚══════╝╚═════╝
 		 */
+		at(4).turnHead(141f, 0f).move("WAP").setHotbarSlot(1);
+		at(28).move("").rightClick(-120f, 0f);
+		at(29).move("WAP").turnHead(105f, 0f).setHotbarSlot(5);
+		at(53).turnHead(0f, 30f).move("WP");
+		at(56).leftClick();
+		at(57).leftClick();
+		at(58).leftClick();
+		at(59).swapItems(9, 39).move("WP").leftClick();
+		// tick 60: take death tick, body blocked by bers
+		at(61).swapItems(9, 39).move("W").leftClick();
+		at(62).leftClick();
+		at(64).move("").setHotbarSlot(1).rightClick(-125f, 0f);
+		at(65).turnHead(10f, 0f).move("WDP").setHotbarSlot(5);
+		at(81).move("");
+		at(87).turnHead(15f, 0f).move("WP");
+		at(93).turnHead(-18f, -3f);
+		at(96).leftClick();
+		at(97).leftClick().turnHead(3f, -5f);
+		at(98).leftClick();
+		at(99).turnHead(3f, 75f).setHotbarSlot(1);
+		at(100).rightClick();
 
 		/*
 		 * ██████╗

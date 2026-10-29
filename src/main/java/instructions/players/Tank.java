@@ -321,8 +321,23 @@ public class Tank extends Actions {
 		at(39).rightClick();
 		at(40).clickGui(TERM_SOLUTION_1); // s2 1
 
-		at(41).setHotbarSlot(4).rightClick(0f, 0f);
-		at(42).clickGui(LEAP_BERS);
+		at(41).setHotbarSlot(4);
+		at(45).rightClick(0f, 0f);
+		at(46).clickGui(LEAP_MAGE);
+		at(47).turnHead(138f, 3f).move("WP");
+		at(49).move("WPJ");
+		at(50).move("WP");
+		at(59).rightClick(133f, 16f);
+		at(60).clickGui(TERM_SOLUTION_3); // s2 3
+
+		at(61).turnHead(75f, 0f).move("WDP");
+		at(62).move("WP");
+		at(71).turnHead(90f, -90f);
+		at(72).move("");
+		at(85).rightClick(80f, -38f); // s2 bl
+
+		at(86).setHotbarSlot(4).rightClick(0f, 0f);
+		at(87).clickGui(LEAP_ARCH);
 
 		/*
 		 * ██████╗

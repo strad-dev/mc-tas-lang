@@ -380,17 +380,54 @@ public class Berserk extends Actions {
 		 * ███████╗
 		 * ╚══════╝
 		 */
+		at(42).turnHead(-155f, 0f).move("WP");
+		at(45).move("S");
+		at(47).turnHead(-155f, -90f);
+		at(51).move("");
+		at(56).rightClick(90f, -72f);
+		at(57).clickGui(TERM_SOLUTION_2); // s2 2
 
+		at(58).swapItems(9, 39).setHotbarSlot(4).rightClick(0f, 0f);
+		at(59).clickGui(LEAP_ARCH);
+//		at(43).turnHead(180f, 0f).move("WDN");
+//		at(44).move("WP");
+//		at(47).move("");
+//		at(55).move("WP");
+//		at(63).move("").rightClick(-149f, 0f);
+//		at(64).clickGui(TERM_SOLUTION_2); // s2 2
 
 		/*
-		 * ██████╗
-		 * ╚════██╗
-		 *  █████╔╝
-		 *  ╚═══██╗
-		 * ██████╔╝
-		 * ╚═════╝
+		 *  ██████╗ ██████╗ ██████╗ ███████╗
+		 * ██╔════╝██╔═══██╗██╔══██╗██╔════╝
+		 * ██║     ██║   ██║██████╔╝█████╗
+		 * ██║     ██║   ██║██╔══██╗██╔══╝
+		 * ╚██████╗╚██████╔╝██║  ██║███████╗
+		 *  ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
 		 */
-
+		at(60).turnHead(180f, 0f).move("WP");
+		at(61).swapItems(9, 39).move("WP");
+		at(65).turnHead(-90f, 75f);
+		at(68).setHotbarSlot(1).rightClick();
+		at(69).turnHead(-90f, 40f).setHotbarSlot(5);
+		at(71).move("WDP");
+		at(73).move("WP");
+		at(85).leftClick();
+		at(86).turnHead(-90f, 75f).setHotbarSlot(1).rightClick();
+		at(100).move("");
+//		at(65).turnHead(180f, 85f).move("WP");
+//		at(87).leftClick();
+//		at(88).leftClick();
+//		at(89).leftClick();
+//		at(91).turnHead(180f, 35f).leftClick();
+//		at(92).leftClick();
+//		at(93).leftClick();
+//		at(94).leftClick();
+//		at(95).leftClick();
+//		at(96).leftClick();
+//		at(97).turnHead(132.5f, 0f).move("WDP");
+//		at(129).move("WP").turnHead(177.5f, 20f).leftClick();
+//		at(130).leftClick();
+//		at(134).move("");
 
 		/*
 		 * ██╗  ██╗

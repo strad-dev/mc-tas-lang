@@ -307,8 +307,8 @@ public class Mage extends Actions {
 		at(38).rightClick(126f, 8f);
 		at(39).clickGui(TERM_SOLUTION_3); // s1 3
 
-		at(40).setHotbarSlot(4).rightClick(0f, 0f);
-		at(41).clickGui(LEAP_BERS);
+		at(40).setHotbarSlot(4).swapItems(7, 35).rightClick(0f, 0f);
+		at(42).clickGui(LEAP_BERS);
 
 		/*
 		 * ██████╗
@@ -318,14 +318,23 @@ public class Mage extends Actions {
 		 * ███████╗
 		 * ╚══════╝
 		 */
+		at(43).turnHead(95f, 0f).setHotbarSlot(7).move("WP");
+		at(51).move("S").rightClick();
+		at(71).turnHead(91f, -5f).stopRightClick();
+		at(72).turnHead(178f, 5f).move("WP");
+		at(85).rightClick();
+		at(86).clickGui(MELODY_1).clickGui(MELODY_2).clickGui(MELODY_3); // s2 5
+
+		at(87).setHotbarSlot(4).rightClick(0f, 0f);
+		at(88).clickGui(LEAP_ARCH);
 
 		/*
-		 *  ██████╗ ██████╗ ██████╗ ███████╗
-		 * ██╔════╝██╔═══██╗██╔══██╗██╔════╝
-		 * ██║     ██║   ██║██████╔╝█████╗
-		 * ██║     ██║   ██║██╔══██╗██╔══╝
-		 * ╚██████╗╚██████╔╝██║  ██║███████╗
-		 *  ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
+		 * ██████╗
+		 * ╚════██╗
+		 *  █████╔╝
+		 *  ╚═══██╗
+		 * ██████╔╝
+		 * ╚═════╝
 		 */
 
 		/*

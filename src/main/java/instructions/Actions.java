@@ -277,6 +277,7 @@ public class Actions {
 	/** Puts this player on its section start. Setup before the run, not a client action (/tas passes --no-teleport). */
 	protected void startAt(double x, double y, double z, float yaw, float pitch) {
 		player.teleport(new Location(player.getWorld(), x, y, z, yaw, pitch), PlayerTeleportEvent.TeleportCause.PLUGIN);
+		((CraftPlayer) player).getHandle().setDeltaMovement(Vec3.ZERO);
 		((CraftPlayer) player).getHandle().updatePlayerPose();
 		Spectate.snapSpectatorsToFake(player);
 	}

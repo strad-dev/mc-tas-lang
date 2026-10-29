@@ -206,6 +206,10 @@ public class FakePlayerManager {
 			SpectatorSync.mirrorSound(fake, packet);
 			SpectatorSync.mirrorHud(fake, packet);
 			if(packet instanceof ClientboundRespawnPacket) reply(fake, new ServerboundPlayerLoadedPacket());
+			// A vanilla death (outside a run, or the anticheat's end) opens the death screen; nobody clicks Respawn.
+			if(packet instanceof ClientboundPlayerCombatKillPacket kill && kill.playerId() == fake.getId()) {
+				reply(fake, new ServerboundClientCommandPacket(ServerboundClientCommandPacket.Action.PERFORM_RESPAWN));
+			}
 		}
 	}
 

@@ -374,7 +374,7 @@ public class Healer extends Actions {
 		at(34).rightClick(70f, 10f);
 
 		at(35).setHotbarSlot(4).rightClick(0f, 0f);
-		at(40).clickGui(LEAP_BERS); // delay leap for a more advantageous position
+		at(42).clickGui(LEAP_BERS); // delay leap for a more advantageous position
 
 		/*
 		 * ██████╗
@@ -384,7 +384,19 @@ public class Healer extends Actions {
 		 * ███████╗
 		 * ╚══════╝
 		 */
+		at(43).setHotbarSlot(1).turnHead(56f, 75f).move("WP");
+		at(44).rightClick();
+		at(45).setHotbarSlot(5);
+		at(46).turnHead(93f, 0f);
+		at(63).move("").rightClick(29f, 24f);
+		at(64).clickGui(TERM_SOLUTION_4); // s2 4
 
+		at(65).turnHead(95f, -90f).move("WP");
+		at(72).move("");
+		at(87).rightClick(90f, -20f); // s2 tl
+
+		at(88).setHotbarSlot(4).rightClick();
+		at(89).clickGui(LEAP_ARCH);
 
 		/*
 		 * ██████╗
