@@ -20,7 +20,7 @@ public class Archer extends Actions {
 			case "all", "clear" -> startAt(-120.5, 71, -183.5, 0f, 0f);
 			case "maxor", "boss" -> startAt(73.5, 221, 14.5, 0f, 0f);
 			case "storm" -> startAt(46.020, 169, 53.502, 90f, 0f);
-			case "goldor" -> startAt(63.444, 127, 35.569, -74.5f, -46f);
+			case "goldor" -> startAt(63.487, 127, 36.068, -75f, -50f);
 			case "necron" -> startAt(54.524, 64, 100.707, 180f, -6f);
 			case "witherking" -> startAt(22.3, 6, 59.408, 65.6f, 29.3f);
 		}
@@ -59,24 +59,23 @@ public class Archer extends Actions {
 				swapItems(5, 32);
 				swapItems(6, 33);
 				swapItems(7, 34);
+				dropItem(false);
 				setHotbarSlot(5);
-				at(1).dropItem(false);
-				at(2).useSpeedLoadout(); // not tick 1: the pets menu would still be open for the drop
-				at(19).rightClick();
-				at(26).stopRightClick();
-				at(27).rightClick();
-				at(34).stopRightClick();
-				at(35).rightClick();
-				at(42).stopRightClick();
-				at(45).turnHead(-10.5f, -15.5f).setHotbarSlot(4);
-				at(46).swapItems(18, 39).swapItems(19, 38).swapItems(20, 37).swapItems(21, 36);
-				at(50).dropItem(true);
-				at(51).turnHead(-3f, -4f);
-				at(55).turnHead(-15f, -2.5f);
-				at(56).rightClick();
-				at(57).turnHead(-3f, 4f);
-				// rapid fire #2 at 58
-				at(59).turnHead(-14.5f, 5f).setHotbarSlot(5);
+				useSpeedLoadout();
+				at(2).swapItems(18, 39).swapItems(19, 38).swapItems(20, 37).swapItems(21, 36);
+				at(24).rightClick();
+				at(31).stopRightClick();
+				at(32).rightClick();
+				at(39).stopRightClick();
+				at(40).rightClick();
+				at(47).stopRightClick();
+				at(48).turnHead(-12f, -17f).setHotbarSlot(4);
+				at(49).dropItem(true);
+				at(51).turnHead(-4f, -4f);
+				// tick 52: rapid fire arrow shoots
+				at(55).rightClick(-16f, -2f).turnHead(-4f, 4f);
+				// tick 56: rapid fire arrow 2 shoots
+				at(59).rightClick(-16f, 6f).setHotbarSlot(5);
 				TASUtils.scheduleTask(() -> goldor(false), start);
 			}
 			case "necron" -> {
@@ -283,25 +282,23 @@ public class Archer extends Actions {
 		at(632).turnHead(180f, -90f);
 		at(639).move("");
 		at(643).move("WP");
-		at(670).turnHead(150f, 0f);
-		at(674).swapItems(5, 32).swapItems(18, 39).swapItems(19, 38).swapItems(20, 37).swapItems(21, 36).turnHead(-74.5f, -46f); // equip thermodynamic
+		at(670).turnHead(120f, 0f);
+		at(672).swapItems(5, 32).swapItems(18, 39).swapItems(19, 38).swapItems(20, 37).swapItems(21, 36).turnHead(-74.5f, -50f); // equip thermodynamic
 		if(doContinue) {
-			at(802).dropItem(false);
-			at(820).rightClick();
-			at(827).stopRightClick();
-			at(828).rightClick();
-			at(835).stopRightClick();
-			at(836).rightClick();
-			at(843).stopRightClick();
-			at(844).turnHead(-10.5f, -15.5f).setHotbarSlot(4);
-			at(845).swapItems(18, 39).swapItems(19, 38).swapItems(20, 37).swapItems(21, 36);
-			at(850).dropItem(true);
-			at(851).turnHead(-3f, -4f);
-			at(855).turnHead(-15f, -2.5f);
-			at(856).rightClick();
-			at(857).turnHead(-3f, 4f);
-			// rapid fire #2 at 858
-			at(859).turnHead(-14.5f, 5f);
+			at(740).dropItem(false);
+			at(764).rightClick();
+			at(771).stopRightClick();
+			at(772).rightClick();
+			at(779).stopRightClick();
+			at(780).rightClick();
+			at(787).stopRightClick();
+			at(788).turnHead(-12f, -17f).setHotbarSlot(4);
+			at(789).dropItem(true);
+			at(791).turnHead(-4f, -4f);
+			// tick 792: rapid fire arrow shoots
+			at(795).rightClick(-16f, -2f).turnHead(-4f, 4f);
+			// tick 796: rapid fire arrow 2 shoots
+			at(799).rightClick(-16f, 6f).setHotbarSlot(5);
 			TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 		}
 	}
@@ -315,7 +312,6 @@ public class Archer extends Actions {
 		 * ██║     ██║
 		 * ╚═╝     ╚═╝
 		 */
-		rightClick();
 		at(1).swapItems(5, 32).swapItems(18, 39).swapItems(19, 38).swapItems(20, 37).swapItems(21, 36);
 
 		/*
@@ -327,7 +323,7 @@ public class Archer extends Actions {
 		 * ╚══════╝╚══════╝╚═════╝
 		 */
 		at(2).turnHead(81f, 0f);
-		// tick 5: device completes
+		// tick 4: device completes
 		at(6).move("WP", 0);
 		at(8).move("WPJ", 0);
 		at(10).move("WP", 0);

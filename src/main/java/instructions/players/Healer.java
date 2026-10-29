@@ -22,7 +22,7 @@ public class Healer extends Actions {
 			case "all", "clear" -> startAt(-120.5, 71, -183.5, 0f, 0f);
 			case "maxor", "boss" -> startAt(73.5, 221, 14.5, 0f, 0f);
 			case "storm" -> startAt(36.3, 170, 105.7, 2.5f, 45f);
-			case "goldor" -> startAt(107.970, 120, 93.897, 12f, -2f);
+			case "goldor" -> startAt(110.7, 120, 88.3, 180f, 0f);
 			case "necron" -> startAt(54.524, 64, 100.707, 180f, -6f);
 			case "witherking" -> startAt(56.326, 8, 130.7, -16.2f, 18.8f);
 		}
@@ -64,6 +64,15 @@ public class Healer extends Actions {
 				swapItems(7, 34);
 				useSpeedLoadout();
 				setHotbarSlot(5);
+				at(1).setHotbarSlot(5).turnHead(180f, 0f).leftClick();
+				at(2).leftClick();
+				at(3).leftClick();
+				at(4).setHotbarSlot(5).turnHead(180f, 26f).leftClick();
+				at(5).leftClick();
+				at(6).leftClick();
+				at(7).turnHead(26f, 0f).move("WPJ");
+				at(10).move("").turnHead(12f, -2f);
+				at(31).dropItem(true);
 				TASUtils.scheduleTask(() -> goldor(false), start);
 			}
 			case "necron" -> {
@@ -324,19 +333,16 @@ public class Healer extends Actions {
 		at(704).turnHead(-147f, 0f).move("WP");
 		at(732).move("");
 
-		// TODO move into goldor
-		at(741).setHotbarSlot(5).turnHead(180f, 0f).leftClick();
-		at(742).leftClick();
-		at(743).leftClick();
-		at(744).setHotbarSlot(5).turnHead(180f, 26f).leftClick();
-		at(745).leftClick();
-		at(746).leftClick();
-		at(747).turnHead(26f, 0f).move("WPJ");
-		at(750).move("").turnHead(12f, -2f);
-
 		if(doContinue) {
-			at(770).dropItem(true);
-			at(771).turnHead(-129f, 2f);
+			at(741).setHotbarSlot(5).turnHead(180f, 0f).leftClick();
+			at(742).leftClick();
+			at(743).leftClick();
+			at(744).setHotbarSlot(5).turnHead(180f, 26f).leftClick();
+			at(745).leftClick();
+			at(746).leftClick();
+			at(747).turnHead(26f, 0f).move("WPJ");
+			at(750).move("").turnHead(12f, -2f);
+			at(771).dropItem(true);
 			TASUtils.scheduleTask(() -> goldor(true), TAS.STORM_TICKS);
 		}
 	}
@@ -350,7 +356,7 @@ public class Healer extends Actions {
 		 *  ██║
 		 *  ╚═╝
 		 */
-		rightClick();
+		rightClick(-129f, 2f);
 		at(1).rightClick();
 		// tick 2: body-blocked by tank
 		// tick 3: body-blocked by tank
