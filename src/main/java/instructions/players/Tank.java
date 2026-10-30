@@ -81,9 +81,11 @@ public class Tank extends Actions {
 			}
 			case "witherking" -> {
 				swapItems(1, 28);
+				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
-				swapItems(13, 39);
+				swapItems(7, 35);
+				useSpeedLoadout();
 				setHotbarSlot(5);
 				TASUtils.scheduleTask(this::witherKing, start);
 			}
@@ -419,60 +421,38 @@ public class Tank extends Actions {
 
 	public void witherKing() {
 		rightClick();
-		at(1).setHotbarSlot(4);
-		at(23).leap(fake("akc0303"));
-		at(24).turnHead(-105f, -10f).setHotbarSlot(8);
-		at(25).rightClick();
-		at(26).turnHead(-6.25f, 0f);
-		at(27).move("WP", 0);
-		at(60).move("WPJ", 0);
-		at(62).move("WP", 0);
-		at(71).move("WPJ", 0);
-		at(73).move("WP", 0);
-		at(83).move("WPJ", 2);
-		at(85).swapItems(5, 32).swapItems(13, 39);
-		at(101).setHotbarSlot(5).turnHead(180f, -90f);
-		at(200).rightClick();
-		at(261).setHotbarSlot(6);
-		int lbFor = 8;
-		for(int i = 290; i <= 386 - lbFor - 1; i += lbFor + 1) {
-			at(i).rightClick();
-			at(i + lbFor).stopRightClick();
-		}
-		at(387).setHotbarSlot(3);
-		at(388).leftClick();
-		at(393).leftClick();
-		at(394).setHotbarSlot(4);
-		at(490).leap(fake("Beethoven"));
-		at(491).setHotbarSlot(5);
-		at(529).rightClick();
-		at(590).setHotbarSlot(6);
-		lbFor = 10;
-		for(int i = 630; i <= 726 - lbFor - 1; i += lbFor + 1) {
-			at(i).rightClick();
-			at(i + lbFor).stopRightClick();
-		}
-		at(727).setHotbarSlot(3);
-		at(728).leftClick();
-		at(729).turnHead(92.5f, -90f).setHotbarSlot(5);
-		at(730).rightClick().move("WP", 0);
-		at(780).move("WPJ", 2);
-		at(791).setHotbarSlot(6);
-		for(int i = 792; i <= 826 - lbFor - 1; i += lbFor + 1) {
-			at(i).rightClick();
-			at(i + lbFor).stopRightClick();
-		}
-		at(827).setHotbarSlot(3);
-		at(828).leftClick();
-		at(829).turnHead(-3f, -90f).setHotbarSlot(6);
-		at(830).move("WP", 0);
-		at(851).move("WPJ", 0);
-		at(853).move("WP", 14);
-		for(int i = 858; i <= 926 - lbFor - 1; i += lbFor + 1) {
-			at(i).rightClick();
-			at(i + lbFor).stopRightClick();
-		}
-		at(927).setHotbarSlot(3);
-		at(928).leftClick();
+		at(1).setHotbarSlot(4).rightClick();
+		at(20).clickGui(LEAP_ARCH);
+		at(21).setHotbarSlot(8).rightClick(-100f, -8f);
+		at(22).swapItems(3, 30).swapItems(5, 32).useDpsLoadout();
+		at(83).setHotbarSlot(4).rightClick();
+		at(84).clickGui(LEAP_MAGE);
+		at(85).setHotbarSlot(5).rightClick();
+		at(145).setHotbarSlot(6).rightClick();
+		at(182).stopRightClick().setHotbarSlot(3);
+		at(184).leftClick();
+		at(185).setHotbarSlot(4).rightClick();
+		at(186).clickGui(LEAP_ARCH);
+		at(187).setHotbarSlot(6).rightClick();
+		at(241).stopRightClick().setHotbarSlot(3);
+		at(244).leftClick();
+		at(245).move("WP");
+		at(260).move("WPJ");
+		at(261).move("WP");
+		at(280).move("").setHotbarSlot(6).rightClick();
+		at(341).stopRightClick().setHotbarSlot(3);
+		at(344).leftClick();
+		at(345).turnHead(91.5f, -90f).setHotbarSlot(5).rightClick().move("WP");
+		at(390).move("WPJ");
+		at(392).move("");
+		at(405).setHotbarSlot(6).rightClick();
+		at(441).stopRightClick().setHotbarSlot(3);
+		at(444).leftClick();
+		at(445).turnHead(-1f, -90f).move("WP");
+		at(454).move("WPJ");
+		at(455).move("WP");
+		at(478).move("").setHotbarSlot(6).rightClick();
+		at(541).stopRightClick().setHotbarSlot(3);
+		at(544).leftClick();
 	}
 }

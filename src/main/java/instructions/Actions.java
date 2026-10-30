@@ -1028,9 +1028,5 @@ public class Actions {
 			TASUtils.scheduleTask(() -> Actions.this.send(packet), delay);
 			return this;
 		}
-
-		public Object rogj(float v, float v1) {
-			return null;
-		}
 	}
 }

@@ -2,11 +2,14 @@ package lint;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.IdentifierTree;
+import com.sun.source.tree.IfTree;
 import com.sun.source.tree.LambdaExpressionTree;
 import com.sun.source.tree.LiteralTree;
 import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.SwitchExpressionTree;
+import com.sun.source.tree.SwitchTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.TreePathScanner;
@@ -23,6 +26,7 @@ import javax.tools.Diagnostic;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -76,6 +80,47 @@ public class DuplicateAt extends AbstractProcessor {
 			} finally {
 				scopes.pop();
 			}
+		}
+
+		// Cases and if-branches never both run: each starts from what came before and merges back after.
+		@Override
+		public Void visitSwitch(SwitchTree tree, Void v) {
+			scan(tree.getExpression(), v);
+			branches(tree.getCases(), v);
+			return null;
+		}
+
+		@Override
+		public Void visitSwitchExpression(SwitchExpressionTree tree, Void v) {
+			scan(tree.getExpression(), v);
+			branches(tree.getCases(), v);
+			return null;
+		}
+
+		@Override
+		public Void visitIf(IfTree tree, Void v) {
+			scan(tree.getCondition(), v);
+			branches(tree.getElseStatement() == null ? List.of(tree.getThenStatement())
+					: List.of(tree.getThenStatement(), tree.getElseStatement()), v);
+			return null;
+		}
+
+		private void branches(List<? extends Tree> branches, Void v) {
+			if(scopes.isEmpty()) {
+				for(Tree branch : branches) scan(branch, v);
+				return;
+			}
+			Map<Integer, Tree> before = scopes.peek();
+			Map<Integer, Tree> after = new HashMap<>(before);
+			for(Tree branch : branches) {
+				scopes.push(new HashMap<>(before));
+				try {
+					scan(branch, v);
+				} finally {
+					scopes.pop().forEach(after::putIfAbsent);
+				}
+			}
+			before.putAll(after);
 		}
 
 		@Override

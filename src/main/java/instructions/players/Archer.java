@@ -89,8 +89,9 @@ public class Archer extends Actions {
 				swapItems(1, 28);
 				swapItems(6, 33);
 				swapItems(7, 34);
-				swapItems(13, 39);
 				setHotbarSlot(5);
+				useSpeedLoadout();
+				at(2).swapItems(13, 39);
 				TASUtils.scheduleTask(this::witherKing, start);
 			}
 		}
@@ -425,43 +426,27 @@ public class Archer extends Actions {
 
 	public void witherKing() {
 		rightClick();
-		at(1).turnHead(-120f, -7f);
-		at(2).move("WP", 22);
-		at(24).rightClick();
-		at(25).swapItems(5, 32).swapItems(13, 39);
-		at(26).setHotbarSlot(2);
-		at(100).leap(fake("cookiethebald"));
-		at(101).setHotbarSlot(6).turnHead(180f, -90f);
-		at(200).rightClick();
-		at(261).setHotbarSlot(5);
-		int lbFor = 8;
-		for(int i = 290; i <= 386 - lbFor - 1; i += lbFor + 1) {
-			at(i).rightClick();
-			at(i + lbFor).stopRightClick();
-		}
-		at(394).setHotbarSlot(2);
-		at(490).leap(fake("Beethoven"));
-		at(566).rightClick();
-		at(629).setHotbarSlot(5);
-		lbFor = 10;
-		for(int i = 630; i <= 726 - lbFor - 1; i += lbFor + 1) {
-			at(i).rightClick();
-			at(i + lbFor).stopRightClick();
-		}
-		at(729).turnHead(92.5f, -90f);
-		at(730).move("WP", 0);
-		at(780).move("WPJ", 2);
-		for(int i = 792; i <= 826 - lbFor - 1; i += lbFor + 1) {
-			at(i).rightClick();
-			at(i + lbFor).stopRightClick();
-		}
-		at(829).turnHead(-3f, -90f);
-		at(830).move("WP", 0);
-		at(851).move("WPJ", 0);
-		at(853).move("WP", 14);
-		for(int i = 858; i <= 926 - lbFor - 1; i += lbFor + 1) {
-			at(i).rightClick();
-			at(i + lbFor).stopRightClick();
-		}
+		at(1).turnHead(-166.65f, 0f).move("WDP");
+		at(22).move("").rightClick(-115f, -15f);
+		at(23).swapItems(13, 39).turnHead(-36f, 0f).move("WP");
+		at(51).move("WPJ");
+		at(60).move("").turnHead(-176f, -90f).swapItems(5, 32).useDpsLoadout();
+		at(187).setHotbarSlot(5).rightClick();
+		at(241).stopRightClick();
+		at(245).move("WP");
+		at(260).move("WPJ");
+		at(261).move("WP");
+		at(280).move("").rightClick();
+		at(341).stopRightClick();
+		at(345).turnHead(91.5f, -90f).setHotbarSlot(5).rightClick().move("WP");
+		at(390).move("WPJ");
+		at(392).move("");
+		at(405).rightClick();
+		at(441).stopRightClick();
+		at(445).turnHead(-1f, -90f).move("WP");
+		at(454).move("WPJ");
+		at(455).move("WP");
+		at(478).move("").rightClick();
+		at(541).stopRightClick();
 	}
 }
