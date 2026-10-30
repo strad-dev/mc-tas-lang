@@ -23,7 +23,7 @@ public class Berserk extends Actions {
 			case "maxor", "boss" -> startAt(73.5, 221, 14.5, 0f, 0f);
 			case "storm" -> startAt(100.980, 169, 53.831, -90f, 0f);
 			case "goldor" -> startAt(61.499, 132, 138.940, 0f, 0f);
-			case "necron" -> startAt(54.524, 64, 100.707, 180f, -6f);
+			case "necron" -> startAt(54.6, 105, 27.3, 180f, -6f);
 			case "witherking" -> startAt(90.7, 6, 56.581, -79.7f, 19.1f);
 		}
 	}
@@ -389,12 +389,6 @@ public class Berserk extends Actions {
 
 		at(58).swapItems(9, 39).setHotbarSlot(4).rightClick(0f, 0f);
 		at(59).clickGui(LEAP_ARCH);
-//		at(43).turnHead(180f, 0f).move("WDN");
-//		at(44).move("WP");
-//		at(47).move("");
-//		at(55).move("WP");
-//		at(63).move("").rightClick(-149f, 0f);
-//		at(64).clickGui(TERM_SOLUTION_2); // s2 2
 
 		/*
 		 *  ██████╗ ██████╗ ██████╗ ███████╗
@@ -413,21 +407,10 @@ public class Berserk extends Actions {
 		at(73).move("WP");
 		at(85).leftClick();
 		at(86).turnHead(-90f, 75f).setHotbarSlot(1).rightClick();
+		at(87).setHotbarSlot(5);
 		at(100).move("");
-//		at(65).turnHead(180f, 85f).move("WP");
-//		at(87).leftClick();
-//		at(88).leftClick();
-//		at(89).leftClick();
-//		at(91).turnHead(180f, 35f).leftClick();
-//		at(92).leftClick();
-//		at(93).leftClick();
-//		at(94).leftClick();
-//		at(95).leftClick();
-//		at(96).leftClick();
-//		at(97).turnHead(132.5f, 0f).move("WDP");
-//		at(129).move("WP").turnHead(177.5f, 20f).leftClick();
-//		at(130).leftClick();
-//		at(134).move("");
+		at(101).swapItems(10, 39);
+		at(121).swapItems(10, 39);
 
 		/*
 		 * ██╗  ██╗
@@ -437,7 +420,13 @@ public class Berserk extends Actions {
 		 *      ██║
 		 *      ╚═╝
 		 */
-
+		at(141).turnHead(-12.5f, 0f).move("WP");
+		at(152).turnHead(0f, 35f).leftClick();
+		at(153).leftClick();
+		at(154).leftClick();
+		at(155).leftClick();
+		at(156).move("").turnHead(169f, 0f);
+		at(157).useDpsLoadout();
 
 		/*
 		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
@@ -447,6 +436,8 @@ public class Berserk extends Actions {
 		 * ██║     ██║╚██████╔╝██║  ██║   ██║
 		 * ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
 		 */
+		at(160).move("WP").setHotbarSlot(3);
+		at(165).move("").snapHeadAtNearestNamed("Goldor").leftClick();
 
 		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}

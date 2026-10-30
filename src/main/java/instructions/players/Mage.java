@@ -25,7 +25,7 @@ public class Mage extends Actions {
 				TASUtils.scheduleTask(() -> startAt(114.640, 170, 94.144, -55f, 0f), TAS.startDelay(section) + 2);
 			}
 			case "goldor" -> startAt(108.424, 120, 92.967, -120f, 3f);
-			case "necron" -> startAt(54.524, 64, 100.707, 180f, -6f);
+			case "necron" -> startAt(54.6, 105, 27.3, 180f, -6f);
 			case "witherking" -> startAt(89.7, 6, 94.406, -75.6f, 18.8f);
 		}
 	}
@@ -191,7 +191,7 @@ public class Mage extends Actions {
 		move("WP"); // move to aggro spot
 		at(44).move("WPJ"); // make the jump
 		at(52).move("WP"); // sneak at end of conveyor belt
-		at(56).turnHead(180f, -5).move("SN");
+		at(56).turnHead(180f, -5f).move("SN");
 		at(60).leftClick().move("N");
 		at(65).leftClick();
 		at(70).leftClick().move("");
@@ -321,7 +321,7 @@ public class Mage extends Actions {
 		at(43).turnHead(95f, 0f).setHotbarSlot(7).move("WP");
 		at(51).move("S").rightClick();
 		at(71).turnHead(91f, -5f).stopRightClick();
-		at(72).turnHead(178f, 5f).move("WP");
+		at(72).turnHead(178f, 5f).move("WP").setHotbarSlot(5);
 		at(85).rightClick();
 		at(86).clickGui(MELODY_1).clickGui(MELODY_2).clickGui(MELODY_3); // s2 5
 
@@ -336,6 +336,14 @@ public class Mage extends Actions {
 		 * ██████╔╝
 		 * ╚═════╝
 		 */
+		at(89).turnHead(0f, 0f).setHotbarSlot(1).move("WP");
+		at(90).rightClick(-35f, 75f);
+		at(91).turnHead(-35f, -90f).setHotbarSlot(5);
+		at(122).rightClick(-89.5f, -45f);
+		at(123).clickGui(TERM_SOLUTION_3); // s3 3
+
+		at(124).setHotbarSlot(4).rightClick(0f, 0f);
+		at(125).clickGui(LEAP_BERS);
 
 		/*
 		 * ██╗  ██╗
@@ -345,6 +353,15 @@ public class Mage extends Actions {
 		 *      ██║
 		 *      ╚═╝
 		 */
+		at(126).turnHead(-96f, 0f).move("WP").setHotbarSlot(1);
+		at(134).move("WPJ");
+		at(137).rightClick(-96f, 75f);
+		at(138).setHotbarSlot(5);
+		at(147).rightClick(-140f, -25f); // s4 bl
+
+		at(148).setHotbarSlot(4).rightClick(0f, 0f);
+		at(157).clickGui(LEAP_BERS);
+		at(158).useDpsLoadout();
 
 		/*
 		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
@@ -354,6 +371,8 @@ public class Mage extends Actions {
 		 * ██║     ██║╚██████╔╝██║  ██║   ██║
 		 * ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
 		 */
+		at(160).move("WP").setHotbarSlot(3);
+		at(165).move("").snapHeadAtNearestNamed("Goldor").leftClick();
 
 		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}

@@ -23,7 +23,7 @@ public class Healer extends Actions {
 			case "maxor", "boss" -> startAt(73.5, 221, 14.5, 0f, 0f);
 			case "storm" -> startAt(36.3, 170, 105.7, 2.5f, 45f);
 			case "goldor" -> startAt(110.7, 120, 88.3, 180f, 0f);
-			case "necron" -> startAt(54.524, 64, 100.707, 180f, -6f);
+			case "necron" -> startAt(54.6, 105, 27.3, 180f, -6f);
 			case "witherking" -> startAt(56.326, 8, 130.7, -16.2f, 18.8f);
 		}
 	}
@@ -396,7 +396,7 @@ public class Healer extends Actions {
 		at(87).rightClick(90f, -20f); // s2 tl
 
 		at(88).setHotbarSlot(4).rightClick();
-		at(89).clickGui(LEAP_ARCH);
+		at(93).clickGui(LEAP_ARCH);
 
 		/*
 		 * ██████╗
@@ -406,6 +406,17 @@ public class Healer extends Actions {
 		 * ██████╔╝
 		 * ╚═════╝
 		 */
+		at(94).setHotbarSlot(5).rightClick(82f, 6f);
+		at(95).clickGui(TERM_SOLUTION_4); // s3 4
+
+		at(96).turnHead(-10f, 0f).move("WP");
+		at(101).turnHead(0f, 40f).leftClick();
+		at(102).turnHead(70f, -90f);
+		at(115).rightClick(39f, -55f);
+		at(116).clickGui(TERM_SOLUTION_2); // s3 2
+
+		at(117).swapItems(9, 39).setHotbarSlot(4).rightClick(0f, 0f);
+		at(118).clickGui(LEAP_BERS);
 
 		/*
 		 * ██╗  ██╗
@@ -415,6 +426,13 @@ public class Healer extends Actions {
 		 *      ██║
 		 *      ╚═╝
 		 */
+		at(119).turnHead(-85f, -90f).move("WP").setHotbarSlot(5);
+		at(120).swapItems(9, 39).move("WP");
+		at(135).move("");
+		at(157).rightClick(16f, -30f); // s4 tl
+
+		at(158).setHotbarSlot(4).rightClick(0f, 0f);
+		at(159).clickGui(LEAP_BERS);
 
 		/*
 		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
@@ -424,12 +442,39 @@ public class Healer extends Actions {
 		 * ██║     ██║╚██████╔╝██║  ██║   ██║
 		 * ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
 		 */
+		at(160).move("WP").setHotbarSlot(5);
+		at(171).turnHead(180f, 35f);
+		at(174).leftClick(); // 19
+		at(175).leftClick(); // 18
+		at(176).leftClick(); // 17
+		at(177).leftClick(); // 16
+		at(178).leftClick(); // 15
+		at(179).leftClick(); // 14
+		at(180).turnHead(180f, 90f).leftClick(); // 13
+		at(181).leftClick(); // 12
+		at(182).leftClick(); // 11
+		at(183).leftClick(); // 10
+		at(185).leftClick(); // 10
+		at(188).leftClick(); // 9
+		at(190).leftClick(); // 8
+		at(191).leftClick(); // 7
+		at(192).leftClick(); // 6
+		at(193).leftClick(); // 5
+		at(194).turnHead(180f, 35f).leftClick(); // 4
+		at(195).leftClick(); // 3
+		at(196).leftClick(); // 2
+		at(197).leftClick(); // 1
+		at(198).leftClick(); // 1
+		at(199).leftClick(); // 0
+		at(200).useDpsLoadout();
+		at(204).leftClick();
+		at(214).leftClick();
+		at(224).leftClick();
 
 		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}
 
 	public void necron(boolean doContinue) {
-		setHotbarSlot(6);
 		at(1).rightClick();
 		at(152).stopRightClick();
 		at(153).setHotbarSlot(3);

@@ -15,6 +15,7 @@ import com.sun.source.tree.TypeCastTree;
 import com.sun.source.tree.UnaryTree;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.TreePathScanner;
+import com.sun.source.util.TreeScanner;
 import com.sun.source.util.Trees;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -96,6 +97,13 @@ public class HeadAngles extends AbstractProcessor {
 		public Void visitMethodInvocation(MethodInvocationTree call, Void v) {
 			String name = methodName(call);
 			boolean turn = TURNS.contains(name) && call.getArguments().size() == 2;
+			if(turn) {
+				requireFloat(name, "yaw", call.getArguments().get(0));
+				requireFloat(name, "pitch", call.getArguments().get(1));
+			} else if(name.equals("startAt") && call.getArguments().size() == 5) {
+				requireFloat(name, "yaw", call.getArguments().get(3));
+				requireFloat(name, "pitch", call.getArguments().get(4));
+			}
 			if(turn || OTHER_TURNS.contains(name)) {
 				Float yaw = null, pitch = null;
 				if(turn) {
@@ -110,6 +118,28 @@ public class HeadAngles extends AbstractProcessor {
 				}
 			}
 			return super.visitMethodInvocation(call, v);
+		}
+
+		private void requireFloat(String name, String axis, ExpressionTree arg) {
+			new TreeScanner<Void, Void>() {
+				@Override
+				public Void visitLiteral(LiteralTree literal, Void v) {
+					if(literal.getValue() instanceof Number && literal.getKind() != Tree.Kind.FLOAT_LITERAL) {
+						warn(literal, name + " " + axis + " " + literal + " needs an f suffix");
+					}
+					return null;
+				}
+
+				@Override
+				public Void visitLambdaExpression(LambdaExpressionTree lambda, Void v) {
+					return null;
+				}
+
+				@Override
+				public Void visitMethodInvocation(MethodInvocationTree call, Void v) {
+					return null;
+				}
+			}.scan(arg, null);
 		}
 
 		private Float constantFloat(ExpressionTree arg) {

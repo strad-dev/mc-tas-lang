@@ -27,7 +27,7 @@ public class Tank extends Actions {
 				TASUtils.scheduleTask(() -> startAt(32.556, 170, 94.378, 35f, 0f), TAS.startDelay(section) + 2);
 			}
 			case "goldor" -> startAt(-0.557, 120, 77.748, 62f, 37f);
-			case "necron" -> startAt(54.524, 64, 100.707, 180f, -6f);
+			case "necron" -> startAt(54.6, 105, 27.3, 180f, -6f);
 			case "witherking" -> startAt(22.3, 6, 94.452, 67.3f, 29.7f);
 		}
 	}
@@ -324,7 +324,7 @@ public class Tank extends Actions {
 		at(41).setHotbarSlot(4);
 		at(45).rightClick(0f, 0f);
 		at(46).clickGui(LEAP_MAGE);
-		at(47).turnHead(138f, 3f).move("WP");
+		at(47).turnHead(138f, 3f).move("WP").setHotbarSlot(5);
 		at(49).move("WPJ");
 		at(50).move("WP");
 		at(59).rightClick(133f, 16f);
@@ -347,6 +347,18 @@ public class Tank extends Actions {
 		 * ██████╔╝
 		 * ╚═════╝
 		 */
+		at(88).turnHead(-177.5f, -5f).move("WP");
+		at(93).swapItems(7, 35).setHotbarSlot(7).rightClick();
+		at(109).stopRightClick();
+		at(110).rightClick(114f, -26f); // s3 ll
+
+		at(111).setHotbarSlot(1).rightClick(100f, 72f);
+		at(112).setHotbarSlot(5);
+		at(112).turnHead(90f, 0f).move("WP");
+		at(119).rightClick(-90f, 45f); // s3 rl
+
+		at(120).setHotbarSlot(4).rightClick(0f, 0f);
+		at(121).clickGui(LEAP_BERS);
 
 		/*
 		 * ██╗  ██╗
@@ -356,6 +368,19 @@ public class Tank extends Actions {
 		 *      ██║
 		 *      ╚═╝
 		 */
+		at(122).turnHead(-127f, 0f).move("WP").setHotbarSlot(5);
+		at(137).turnHead(-127f, 34f).rightClick();
+		at(138).clickGui(TERM_SOLUTION_3); // s4 3
+
+		at(140).setHotbarSlot(4).rightClick(0f, 0f);
+		at(141).clickGui(LEAP_BERS);
+		at(142).turnHead(-90f, 0f).move("WP").setHotbarSlot(5);
+		at(152).turnHead(0f, 0f);
+		at(155).rightClick(-1f, 3f);
+		at(156).clickGui(TERM_SOLUTION_4); // s4 4
+
+		at(157).setHotbarSlot(4).rightClick(180f, 0f);
+		at(158).clickGui(LEAP_BERS);
 
 		/*
 		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
@@ -365,6 +390,9 @@ public class Tank extends Actions {
 		 * ██║     ██║╚██████╔╝██║  ██║   ██║
 		 * ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
 		 */
+		at(160).move("WP").setHotbarSlot(3);
+		at(165).move("").snapHeadAtNearestNamed("Goldor").leftClick();
+		at(166).useDpsLoadout();
 
 		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}

@@ -21,7 +21,7 @@ public class Archer extends Actions {
 			case "maxor", "boss" -> startAt(73.5, 221, 14.5, 0f, 0f);
 			case "storm" -> startAt(46.020, 169, 53.502, 90f, 0f);
 			case "goldor" -> startAt(63.487, 127, 36.068, -75f, -50f);
-			case "necron" -> startAt(54.524, 64, 100.707, 180f, -6f);
+			case "necron" -> startAt(54.6, 105, 27.3, 180f, -6f);
 			case "witherking" -> startAt(22.3, 6, 59.408, 65.6f, 29.3f);
 		}
 	}
@@ -336,12 +336,6 @@ public class Archer extends Actions {
 		at(65).turnHead(10f, 0f).move("WDP").setHotbarSlot(5);
 		at(81).move("");
 		at(87).turnHead(15f, 0f).move("WP");
-		at(93).turnHead(-18f, -3f);
-		at(96).leftClick();
-		at(97).leftClick().turnHead(3f, -5f);
-		at(98).leftClick();
-		at(99).turnHead(3f, 75f).setHotbarSlot(1);
-		at(100).rightClick();
 
 		/*
 		 * ██████╗
@@ -351,6 +345,17 @@ public class Archer extends Actions {
 		 * ██████╔╝
 		 * ╚═════╝
 		 */
+		at(93).turnHead(-25f, 0f);
+		at(96).turnHead(0f, 0f).leftClick();
+		at(97).leftClick().turnHead(4f, -5f).move("WPD");
+		at(98).leftClick().move("WP");
+		at(99).turnHead(-5f, 75f).setHotbarSlot(1).rightClick();
+		at(100).turnHead(4f, 0f).setHotbarSlot(5);
+		at(118).rightClick(75f, 4f);
+		at(119).clickGui(TERM_SOLUTION_1); // s3 1
+
+		at(120).setHotbarSlot(2).rightClick(0f, 0f);
+		at(121).clickGui(LEAP_BERS);
 
 		/*
 		 * ██╗  ██╗
@@ -360,6 +365,28 @@ public class Archer extends Actions {
 		 *      ██║
 		 *      ╚═╝
 		 */
+		at(122).turnHead(130f, 0f).move("WP").setHotbarSlot(5);
+		at(137).rightClick(107f, 29f);
+		at(138).clickGui(TERM_SOLUTION_1); // s4 1
+
+		at(150).rightClick(-90f, -46.5f);
+		at(151).clickGui(TERM_SOLUTION_2); // s4 2
+
+		at(156).setHotbarSlot(2).rightClick(0f, 0f);
+		at(157).clickGui(LEAP_BERS);
+		at(158).useDpsLoadout();
+		at(162).turnHead(180f, 90f).setHotbarSlot(5).leftClick();
+		at(163).leftClick();
+		at(164).leftClick();
+		at(165).leftClick();
+		at(167).leftClick();
+		at(170).leftClick();
+		at(172).leftClick();
+		at(174).leftClick();
+		at(175).leftClick();
+		at(176).leftClick();
+		at(177).leftClick();
+		at(178).leftClick();
 
 		/*
 		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
