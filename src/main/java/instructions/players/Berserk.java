@@ -24,7 +24,7 @@ public class Berserk extends Actions {
 			case "storm" -> startAt(100.980, 169, 53.831, -90f, 0f);
 			case "goldor" -> startAt(61.499, 132, 138.940, 0f, 0f);
 			case "necron" -> startAt(54.6, 105, 27.3, 180f, -6f);
-			case "witherking" -> startAt(90.7, 6, 56.581, -79.7f, 19.1f);
+			case "witherking" -> startAt(90.2, 6.0625, 56.749, -90f, 0f);
 		}
 	}
 
@@ -444,34 +444,20 @@ public class Berserk extends Actions {
 	}
 
 	public void necron(boolean doContinue) {
-		setHotbarSlot(6);
-		at(1).rightClick();
-		at(152).stopRightClick();
-		at(153).setHotbarSlot(3);
-		at(160).leftClick();
-		at(161).setHotbarSlot(6);
-		at(162).rightClick();
-		at(183).stopRightClick();
-		at(184).setHotbarSlot(3);
-		for(int i = 185; i <= 360; i += 5) {
-			at(i).leftClick();
+		setHotbarSlot(4);
+		rightClick();
+		at(1).clickGui(LEAP_HEAL);
+		at(2).setHotbarSlot(3);
+		for(int i = 5; i <= 320; i += 5) {
+			at(i).snapHeadAtNearestNamed("Necron").leftClick();
 		}
-		at(361).setHotbarSlot(6);
-		at(362).rightClick();
-		at(383).stopRightClick();
-		at(384).setHotbarSlot(3);
-		for(int i = 385; i <= 500; i += 5) {
-			at(i).leftClick();
-		}
-		at(501).setHotbarSlot(4);
-		at(502).leap(fake("akc0303"));
-		at(503).swapItems(13, 39);
-		at(504).turnHead(-122f, 0f).setHotbarSlot(5);
-		at(505).move("WP", 0);
-		at(523).move("WPJ", 0);
-		at(525).move("WP", 12);
-		at(537).turnHead(-90f, 0f);
-		at(538).swapItems(3, 30);
+		at(321).setHotbarSlot(4).rightClick();
+		at(322).clickGui(LEAP_ARCH);
+		at(323).useSpeedLoadout();
+		at(325).turnHead(-165f, 0f).setHotbarSlot(5).move("WDP");
+		at(338).turnHead(-120f, 0f).move("WPJ");
+		at(339).turnHead(-165f, 0f).move("WDP");
+		at(350).turnHead(-90f, 0f).swapItems(13, 39);
 		if(doContinue) TASUtils.scheduleTask(this::witherKing, TAS.NECRON_TICKS);
 	}
 

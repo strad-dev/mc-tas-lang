@@ -26,7 +26,7 @@ public class Mage extends Actions {
 			}
 			case "goldor" -> startAt(108.424, 120, 92.967, -120f, 3f);
 			case "necron" -> startAt(54.6, 105, 27.3, 180f, -6f);
-			case "witherking" -> startAt(89.7, 6, 94.406, -75.6f, 18.8f);
+			case "witherking" -> startAt(89.7, 6, 94.506, -90f, 0f);
 		}
 	}
 
@@ -380,22 +380,20 @@ public class Mage extends Actions {
 	}
 
 	public void necron(boolean doContinue) {
-		setHotbarSlot(6);
-		at(1).rightClick();
-		at(152).stopRightClick();
-		at(153).setHotbarSlot(3);
-		for(int i = 155; i <= 500; i += 5) {
-			at(i).leftClick();
+		setHotbarSlot(4);
+		rightClick();
+		at(1).clickGui(LEAP_HEAL);
+		at(2).setHotbarSlot(3);
+		for(int i = 5; i <= 320; i += 5) {
+			at(i).snapHeadAtNearestNamed("Necron").leftClick();
 		}
-		at(501).setHotbarSlot(4);
-		at(502).leap(fake("akc0303"));
-		at(503).swapItems(13, 39);
-		at(504).turnHead(-67f, 0f).setHotbarSlot(5);
-		at(505).move("WP", 0);
-		at(521).move("WPJ", 0);
-		at(522).move("WP", 12);
-		at(534).turnHead(-90f, 0f);
-		at(535).swapItems(3, 30);
+		at(321).setHotbarSlot(4).rightClick();
+		at(322).clickGui(LEAP_ARCH);
+		at(323).useSpeedLoadout();
+		at(325).turnHead(-109f, 0f).setHotbarSlot(5).move("WDP");
+		at(339).turnHead(-64f, 0f).move("WPJ");
+		at(340).turnHead(-109f, 0f).move("WDP");
+		at(349).turnHead(-90f, 0f).move("");
 		if(doContinue) TASUtils.scheduleTask(this::witherKing, TAS.NECRON_TICKS);
 	}
 

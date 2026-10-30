@@ -22,7 +22,7 @@ public class Archer extends Actions {
 			case "storm" -> startAt(46.020, 169, 53.502, 90f, 0f);
 			case "goldor" -> startAt(63.487, 127, 36.068, -75f, -50f);
 			case "necron" -> startAt(54.6, 105, 27.3, 180f, -6f);
-			case "witherking" -> startAt(22.3, 6, 59.408, 65.6f, 29.3f);
+			case "witherking" -> startAt(22.626, 6, 59.644, 90f, 0f);
 		}
 	}
 
@@ -372,6 +372,15 @@ public class Archer extends Actions {
 		at(150).rightClick(-90f, -46.5f);
 		at(151).clickGui(TERM_SOLUTION_2); // s4 2
 
+		/*
+		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
+		 * ██╔════╝██║██╔════╝ ██║  ██║╚══██╔══╝
+		 * █████╗  ██║██║  ███╗███████║   ██║
+		 * ██╔══╝  ██║██║   ██║██╔══██║   ██║
+		 * ██║     ██║╚██████╔╝██║  ██║   ██║
+		 * ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
+		 */
+
 		at(156).setHotbarSlot(2).rightClick(0f, 0f);
 		at(157).clickGui(LEAP_BERS);
 		at(158).useDpsLoadout();
@@ -387,37 +396,30 @@ public class Archer extends Actions {
 		at(176).leftClick();
 		at(177).leftClick();
 		at(178).leftClick();
-
-		/*
-		 * ███████╗██╗ ██████╗ ██╗  ██╗████████╗
-		 * ██╔════╝██║██╔════╝ ██║  ██║╚══██╔══╝
-		 * █████╗  ██║██║  ███╗███████║   ██║
-		 * ██╔══╝  ██║██║   ██║██╔══██║   ██║
-		 * ██║     ██║╚██████╔╝██║  ██║   ██║
-		 * ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
-		 */
+		at(179).move("");
 
 		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}
 
 	public void necron(boolean doContinue) {
-		setHotbarSlot(5);
-		at(1).rightClick();
-		at(152).stopRightClick();
-		at(153).swapItems(5, 32);
-		at(154).turnHead(180f, 62f).move("WP", 0).setHotbarSlot(5);
-		at(155).move("WPJ", 0);
-		at(157).move("WP", 59);
-		at(215).leftClick();
-		at(216).leftClick();
-		at(217).leftClick();
-		at(218).turnHead(180f, 0f);
-		at(219).swapItems(13, 39);
-		at(503).turnHead(121.3f, 0f);
-		at(504).move("WP", 0);
-		at(522).move("WPJ", 0);
-		at(524).move("WP", 9);
-		at(533).turnHead(90f, 0f);
+		setHotbarSlot(2);
+		rightClick();
+		at(1).clickGui(LEAP_HEAL);
+		at(2).swapItems(5, 32);
+		at(3).setHotbarSlot(5).rightClick();
+		at(99).aimTerminatorAtNearestEnemy().stopRightClick();
+		at(100).rightClick();
+		at(102).stopRightClick();
+		at(103).rightClick();
+		at(105).stopRightClick();
+		at(106).swapItems(5, 32).turnHead(180f, 90f).move("J").leftClick();
+		at(107).move("SN").leftClick();
+		at(108).move("");
+		at(109).useSpeedLoadout();
+		at(323).turnHead(74f, 0f).move("WDP");
+		at(337).turnHead(119f, 0f).move("WPJ");
+		at(338).turnHead(74f, 0f).move("WDP");
+		at(345).turnHead(90f, 0f).swapItems(13, 39);
 		if(doContinue) TASUtils.scheduleTask(this::witherKing, TAS.NECRON_TICKS);
 	}
 

@@ -36,8 +36,8 @@ public class TAS implements CommandExecutor {
 	public static final int CLEAR_TICKS = 728;
 	public static final int MAXOR_TICKS = 250;
 	public static final int STORM_TICKS = 800;
-	public static final int GOLDOR_TICKS = 350;
-	public static final int NECRON_TICKS = 600;
+	public static final int GOLDOR_TICKS = 225;
+	public static final int NECRON_TICKS = 380;
 
 	/** Ticks from /tas until the section starts. M7 gives boss and maxor no countdown, only its fixed grace. */
 	public static int startDelay(String section) {

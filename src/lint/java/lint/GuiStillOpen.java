@@ -100,6 +100,18 @@ public class GuiStillOpen extends AbstractProcessor {
 		}
 
 		private void check(Map<Object, List<Input>> ticks) {
+			for(Map.Entry<Object, List<Input>> entry : ticks.entrySet()) {
+				if(!(entry.getKey() instanceof Integer tick)) continue;
+				List<Input> next = ticks.get(tick + 1);
+				if(next == null) continue;
+				for(Input loadout : entry.getValue()) {
+					if(!loadout.name().endsWith("Loadout")) continue;
+					for(Input input : next) {
+						if(BLOCKED.contains(input.name())) trees.printMessage(Diagnostic.Kind.ERROR, input.name() + " on the pet clickGui tick of the "
+								+ loadout.name() + " on line " + line(loadout.call()) + ": the pet menu is open", input.call(), unit);
+					}
+				}
+			}
 			for(List<Input> inputs : ticks.values()) {
 				inputs.sort(Comparator.comparingLong(Input::end));
 				MethodInvocationTree click = null;

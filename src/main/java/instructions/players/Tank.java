@@ -28,7 +28,7 @@ public class Tank extends Actions {
 			}
 			case "goldor" -> startAt(-0.557, 120, 77.748, 62f, 37f);
 			case "necron" -> startAt(54.6, 105, 27.3, 180f, -6f);
-			case "witherking" -> startAt(22.3, 6, 94.452, 67.3f, 29.7f);
+			case "witherking" -> startAt(22.3, 6, 94.782, 90f, 0f);
 		}
 	}
 
@@ -400,34 +400,20 @@ public class Tank extends Actions {
 	}
 
 	public void necron(boolean doContinue) {
-		setHotbarSlot(6);
-		at(1).rightClick();
-		at(152).stopRightClick();
-		at(153).setHotbarSlot(3);
-		at(160).leftClick();
-		at(161).setHotbarSlot(6);
-		at(162).rightClick();
-		at(183).stopRightClick();
-		at(184).setHotbarSlot(3);
-		for(int i = 185; i <= 360; i += 5) {
-			at(i).leftClick();
+		setHotbarSlot(4);
+		rightClick();
+		at(1).clickGui(LEAP_HEAL);
+		at(2).setHotbarSlot(3);
+		for(int i = 5; i <= 320; i += 5) {
+			at(i).snapHeadAtNearestNamed("Necron").leftClick();
 		}
-		at(361).setHotbarSlot(6);
-		at(362).rightClick();
-		at(383).stopRightClick();
-		at(384).setHotbarSlot(3);
-		for(int i = 385; i <= 500; i += 5) {
-			at(i).leftClick();
-		}
-		at(501).setHotbarSlot(4);
-		at(502).leap(fake("akc0303"));
-		at(503).swapItems(13, 39);
-		at(504).turnHead(65f, 0f).setHotbarSlot(5);
-		at(505).move("WP", 0);
-		at(520).move("WPJ", 0);
-		at(522).move("WP", 10);
-		at(532).turnHead(90f, 0f);
-		at(533).swapItems(3, 30);
+		at(321).setHotbarSlot(4).rightClick();
+		at(322).clickGui(LEAP_ARCH);
+		at(323).useSpeedLoadout();
+		at(325).turnHead(17f, 0f).setHotbarSlot(5).move("WDP");
+		at(337).turnHead(62f, 0f).move("WPJ");
+		at(338).turnHead(17f, 0f).move("WDP");
+		at(348).turnHead(90f, 0f).move("");
 		if(doContinue) TASUtils.scheduleTask(this::witherKing, TAS.NECRON_TICKS);
 	}
 

@@ -24,7 +24,7 @@ public class Healer extends Actions {
 			case "storm" -> startAt(36.3, 170, 105.7, 2.5f, 45f);
 			case "goldor" -> startAt(110.7, 120, 88.3, 180f, 0f);
 			case "necron" -> startAt(54.6, 105, 27.3, 180f, -6f);
-			case "witherking" -> startAt(56.326, 8, 130.7, -16.2f, 18.8f);
+			case "witherking" -> startAt(56.439, 8, 130.7, 0f, 0f);
 		}
 	}
 
@@ -64,14 +64,14 @@ public class Healer extends Actions {
 				swapItems(7, 34);
 				useSpeedLoadout();
 				setHotbarSlot(5);
-				at(1).setHotbarSlot(5).turnHead(180f, 0f).leftClick();
-				at(2).leftClick();
+				at(2).setHotbarSlot(5).turnHead(180f, 0f).leftClick();
 				at(3).leftClick();
-				at(4).setHotbarSlot(5).turnHead(180f, 26f).leftClick();
-				at(5).leftClick();
+				at(4).leftClick();
+				at(5).setHotbarSlot(5).turnHead(180f, 26f).leftClick();
 				at(6).leftClick();
-				at(7).turnHead(26f, 0f).move("WPJ");
-				at(10).move("").turnHead(12f, -2f);
+				at(7).leftClick();
+				at(8).turnHead(26f, 0f).move("WPJ");
+				at(11).move("").turnHead(12f, -2f);
 				at(31).dropItem(true);
 				TASUtils.scheduleTask(() -> goldor(false), start);
 			}
@@ -472,43 +472,27 @@ public class Healer extends Actions {
 		at(203).move("WP");
 		at(204).leftClick();
 		at(214).leftClick();
-		at(224).leftClick();
+		at(224).leftClick().move("");
 
 		if(doContinue) TASUtils.scheduleTask(() -> necron(true), TAS.GOLDOR_TICKS);
 	}
 
 	public void necron(boolean doContinue) {
-		at(1).rightClick();
-		at(152).stopRightClick();
-		at(153).setHotbarSlot(3);
-		at(160).leftClick();
-		at(161).setHotbarSlot(6);
-		at(162).rightClick();
-		at(183).stopRightClick();
-		at(184).setHotbarSlot(3);
-		for(int i = 185; i <= 360; i += 5) {
-			at(i).leftClick();
+		at(2).setHotbarSlot(3);
+		for(int i = 5; i <= 320; i += 5) {
+			at(i).snapHeadAtNearestNamed("Necron").leftClick();
 		}
-		at(361).setHotbarSlot(6);
-		at(362).rightClick();
-		at(383).stopRightClick();
-		at(384).setHotbarSlot(3);
-		for(int i = 385; i <= 500; i += 5) {
-			at(i).leftClick();
-		}
-		at(501).setHotbarSlot(4);
-		at(502).leap(fake("akc0303"));
-		at(503).swapItems(13, 39);
-		at(504).turnHead(-2f, 0f).setHotbarSlot(5);
-		at(505).move("WP", 0);
-		at(515).move("WPJ", 0);
-		at(517).move("WP", 0);
-		at(527).move("WPJ", 0);
-		at(529).move("WP", 0);
-		at(539).move("WPJ", 0);
-		at(541).move("WP", 10);
-		at(551).turnHead(0f, 0f);
-		at(552).swapItems(3, 30);
+		at(321).setHotbarSlot(4).rightClick();
+		at(322).clickGui(LEAP_ARCH);
+		at(323).useSpeedLoadout();
+		at(325).turnHead(-47f, 0f).setHotbarSlot(5).move("WDP");
+		at(334).turnHead(-2f, 0f).move("WPJ");
+		at(335).turnHead(-47f, 0f).move("WDP");
+		at(345).turnHead(-2f, 0f).move("WPJ");
+		at(346).turnHead(-47f, 0f).move("WDP");
+		at(355).turnHead(-2f, 0f).move("WPJ");
+		at(356).turnHead(-47f, 0f).move("WDP");
+		at(366).turnHead(0f, 0f).move("");
 		if(doContinue) TASUtils.scheduleTask(this::witherKing, TAS.NECRON_TICKS);
 	}
 

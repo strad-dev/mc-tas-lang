@@ -49,7 +49,7 @@
                     <useIncrementalCompilation>false</useIncrementalCompilation>
                     <compilerArgs>
                         <arg>-Xlint:deprecation</arg>
-                        <!-- src/lint/java (compiled by antrun's compile-lint): warns on two at(n) for one tick in a method, bad or repeated head angles; errors on input after clickGui on its tick. -->
+                        <!-- src/lint/java (compiled by antrun's compile-lint): warns on two at(n) for one tick in a method, bad or repeated head angles; errors on input after clickGui on its tick or the tick after a use*Loadout. -->
                         <arg>-processorpath</arg>
                         <arg>${project.build.directory}/lint-classes</arg>
                         <arg>-processor</arg>
