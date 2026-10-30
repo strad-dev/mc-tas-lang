@@ -80,6 +80,8 @@ public class Healer extends Actions {
 				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
+				useDpsLoadout();
+				setHotbarSlot(5);
 				TASUtils.scheduleTask(() -> necron(false), start);
 			}
 			case "witherking" -> {
@@ -171,7 +173,7 @@ public class Healer extends Actions {
 		at(122).rightClick().setHotbarSlot(1).move("N"); // red blue 1/4, pre-sneak
 		at(123).rightClick(90f, -90f); // etherwarp to prince
 		at(124).swapItems(4, 31).setHotbarSlot(4).rightClick(90f, 0f); // blow up crypt
-		at(125).swapItems(4, 31).setHotbarSlot(3).leftClick(); // kill prince, crypt 5/5
+		at(125).swapItems(4, 31).setHotbarSlot(3).leftClick().move("N"); // kill prince, crypt 5/5
 		at(126).setHotbarSlot(1).rightClick(180f, -5f); // etherwarp across
 		at(127).rightClick(100f, 10f); // etherwarp to item, red blue 2/4
 		at(128).rightClick(-97f, -4f); // etherwarp to chest
@@ -467,6 +469,7 @@ public class Healer extends Actions {
 		at(198).leftClick(); // 1
 		at(199).leftClick(); // 0
 		at(200).useDpsLoadout();
+		at(203).move("WP");
 		at(204).leftClick();
 		at(214).leftClick();
 		at(224).leftClick();

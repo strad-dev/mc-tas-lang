@@ -72,6 +72,7 @@ public class Berserk extends Actions {
 				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
+				useDpsLoadout();
 				TASUtils.scheduleTask(() -> necron(false), start);
 			}
 			case "witherking" -> {

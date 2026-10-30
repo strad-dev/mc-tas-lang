@@ -72,6 +72,8 @@ public class Mage extends Actions {
 				swapItems(3, 30);
 				swapItems(6, 33);
 				swapItems(7, 34);
+				swapItems(7, 35);
+				useDpsLoadout();
 				TASUtils.scheduleTask(() -> necron(false), start);
 			}
 			case "witherking" -> {

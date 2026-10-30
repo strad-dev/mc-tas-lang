@@ -80,9 +80,9 @@ public class Archer extends Actions {
 			}
 			case "necron" -> {
 				swapItems(1, 28);
-				swapItems(5, 32);
 				swapItems(6, 33);
 				swapItems(7, 34);
+				useDpsLoadout();
 				TASUtils.scheduleTask(() -> necron(false), start);
 			}
 			case "witherking" -> {
